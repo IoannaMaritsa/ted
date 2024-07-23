@@ -8,8 +8,8 @@ const Header = () => {
         <img src="/logo.png" alt="icon" className="header-icon" />
       </div>
       <div className="header-right">
-        <button className="header-button">Button 1</button>
-        <button className="header-button">Button 2</button>
+        <button className="header-button">Σύνδεση</button>
+        <button className="header-button">Εγγραφή</button>
       </div>
     </header>
   );
