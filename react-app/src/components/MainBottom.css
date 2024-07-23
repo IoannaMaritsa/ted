@@ -4,6 +4,9 @@
     align-items: flex-start;
     padding: 20px;
     background-color: #f8f9fa;
+    position: fixed;
+    bottom: 70px;
+    width: 100%;
   }
   
   .column {
