@@ -3,7 +3,7 @@ import React from "react"
 import {BrowserRouter} from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 
-import HomePage from "./pages/Homepage.js";
+import HomePage from "./pages/HomePage.js";
 
 export default function App() {
   return(
