@@ -30,7 +30,7 @@ export default function App() {
       <Route path="/login" element = {<Login />} />
       <Route path="/register" element = {<Register />} />
       <Route path="/forgot_password" element = {<ForgotPass />} />
-      <Route path="/admin_homepage" element = {<Diax_Home />} />
+      <Route path="/admin" element = {<Diax_Home />} />
       <Route path="/epaggelmatias_homepage" element = {<Epag_Home />} />
       <Route path="/epaggelmatias_article" element = {<Epag_article />} />
       <Route path="/epaggelmatias_aggelies" element = {<Epag_job_ad />} />
