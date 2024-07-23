@@ -1,7 +1,44 @@
 :root {
-    --button-yellow: #F6C141;
+    --button-yellow: #f3c55a;
+    --button-hover-yellow: #ecb74d; 
     --button-grey: #2C2C2C;
     --button-light-grey: #E5E5E5;
+    --button-hover-light-grey: #d9d7d3;
     --text-white: #ffffff;
     --text-dark-grey: #4b4b4b;
+    --font-basic: font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif;
 }
+.font {
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif;
+  }
+.button-primary {
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--button-yellow);
+    color: white;
+    font-weight: bold;
+    font-family: var(--font-basic);
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .button-primary:hover {
+    background-color: var(--button-hover-yellow);
+  }
+
+  .button-secondary {
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--button-light-grey);
+    color: var(--text-dark-grey);
+    font-weight: bold;
+    font-family: var(--font-basic);
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .button-secondary:hover {
+    background-color: var(--button-hover-light-grey);
+  }

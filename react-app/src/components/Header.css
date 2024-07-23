@@ -22,16 +22,5 @@
     gap: 10px;
   }
   
-  .header-button {
-    padding: 10px 20px;
-    border: none;
-    background-color: var(--button-yellow);
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
-  .header-button:hover {
-    background-color: #0056b3;
-  }
+
+ 
