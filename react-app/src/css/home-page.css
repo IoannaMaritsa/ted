@@ -1,0 +1,66 @@
+.banner {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Adjust the height as needed */
+    overflow: hidden;
+  }
+  
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the container */
+  }
+  
+  .banner-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white; /* Text color */
+    text-align: center;
+  }
+  
+  .banner-text h1 {
+    font-size: 3rem; /* Adjust the font size as needed */
+    margin: 0;
+  }
+  
+  .banner-text p {
+    font-size: 1.5rem; /* Adjust the font size as needed */
+    margin: 0;
+  }
+
+  .split-page {
+    display: flex;
+    height: fit-content; /* Full viewport height */
+    padding-top: 10px;
+  }
+
+  .text-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 20px;
+  }
+  
+  .large-text {
+    font-size: 3rem; /* Large font size */
+    text-align: center;
+    color: var(--text-dark-grey);
+    font-family: var(--font-basic);
+  }
+  
+  .image-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .right-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover; /* Ensure the image covers the container */
+  }
