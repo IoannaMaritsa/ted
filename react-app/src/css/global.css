@@ -1,3 +1,4 @@
+
 :root {
     --button-yellow: #f3c55a;
     --button-hover-yellow: #ecb74d; 
@@ -6,6 +7,8 @@
     --button-hover-light-grey: #f9f6f1;
     --text-white: #ffffff;
     --text-dark-grey: #4b4b4b;
+    --background-color: #FAF8F8;
+    --border-color: #DFDFDF;
     --font-basic: font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif;
 }
 
@@ -20,6 +23,7 @@
     border-radius: 20px;
     font-size: 16px;
     border: 2px solid var(--button-yellow);
+    transition: background-color 0.3s ease;
   }
   
   .button-primary:hover {
@@ -38,6 +42,7 @@
     border-radius: 20px;
     font-size: 16px;
     border: 2px solid var(--text-dark-grey);
+    transition: background-color 0.3s ease;
   }
   
   .button-secondary:hover {
@@ -56,3 +61,20 @@
     text-decoration: underline;
     font-weight: 500;
   }
+
+
+.signup-prompt {
+   font-family: var(--font-basic);
+    font-size: 1rem;
+    color: var(--text-dark-grey);
+    margin-top: 20px; /* Space between submit button and prompt */
+}
+
+.signup-prompt a {
+    color: var(--primary-color); /* Adjust as needed */
+    text-decoration: none; /* Remove default underline */
+}
+
+.signup-prompt a:hover {
+    text-decoration: underline; /* Underline text on hover */
+}

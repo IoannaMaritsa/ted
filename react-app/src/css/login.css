@@ -1,0 +1,161 @@
+
+
+.login {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: url('background.jpg') no-repeat center center fixed; /* Background image */
+    background-size: cover; /* Ensure the image covers the whole container */
+}
+
+.login-main-div {
+  flex: 1;
+  display: flex; /* Enable flexbox layout */
+  flex-direction: column;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  padding: 20px;
+  background-color: transparent;
+}
+
+.login-box {
+    width: 450px;
+    min-height: 350px;
+    padding: 20px;
+    border-radius: 7px;
+    background-color: #fff;
+    position: relative;
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: 0px 4px 20px rgb(210, 210, 210);
+}
+
+.login-title{
+    font-size: 1.8rem; 
+    color: var(--text-dark-grey); 
+    position: absolute; 
+    top: 20px; 
+    left: 20px; 
+    margin: 0px;
+}
+
+
+input {
+    width: 90%;
+    padding: 10px;
+    min-height: 20px;
+    border:none;
+}
+
+
+input:focus{
+    outline: none;
+}
+
+.input-icon {
+    width: 20px; /* Adjust size as needed */
+    height: 20px;
+    margin-right: 10px; /* Space between icon and input */
+    margin-left: 10px;
+}
+
+
+.logo-container {
+    width: 300px;
+    margin-bottom: 20px; /* Space between logo and login box */
+    text-align: center; /* Center the logo inside this container */
+}
+
+.logo {
+    max-width: 100%; /* Ensure the logo scales with container width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.form {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically within the form container */
+    align-items: center; /* Center horizontally within the form container */
+    width: 100%; /* Ensure it spans the full width of .login-box */
+    height: 100%; /* Ensure it spans the full height of .login-box */
+
+}
+.form-group {
+    display: flex;
+    align-items: center;
+    border: 1.4px solid #9a9a9a; /* Border color and thickness */
+    border-radius: 1px;
+    padding: 5px;
+    width: 90%;
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Space between form groups */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+.form-group:hover{
+    box-shadow: 0px 2px 15px rgba(109, 109, 109, 0.2);
+}
+
+.form-group:focus-within {
+    border-color: #333; /* Darker border color when input is focused */
+    box-shadow: 0px 2px 15px rgba(109, 109, 109, 0.2);
+}
+
+.login-title-box{
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+}
+
+.button-login{
+    width: 70%;
+    padding: 13px 20px;
+    border: none;
+    background-color: var(--button-yellow);
+    color: white;
+    font-weight: bold;
+    font-family: var(--font-basic);
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 16px;
+    border: 2px solid var(--button-yellow);
+    transition: background-color 0.3s ease, border 0.3s ease;
+    margin-top: 15px;
+  }
+  
+  .button-login:hover {
+    background-color: var(--button-hover-yellow);
+    border: 2px solid var(--button-hover-yellow);
+  }
+
+  .wrap{
+    width: 70%;
+    margin-bottom: 10px;
+  }
+
+  .signup-prompt {
+    font-family: var(--font-basic);
+    font-size: 0.9rem;
+    color: var(--text-dark-grey);
+    margin-top: 20px; /* Κενό μεταξύ του submit button και της νέας προτροπής */
+    text-align: center; /* Κεντράρει το περιεχόμενο */
+}
+
+.signup-prompt a {
+    font-weight: bold;
+    color: var(--primary-color); /* Χρώμα του συνδέσμου */
+    text-decoration: none; /* Αφαίρεση της προεπιλεγμένης υπογράμμισης */
+    padding: 7px 15px; /* Add padding for the oval effect */
+    border-radius: 25px; /* Make the background oval */
+    transition: background-color 0.3s ease, color 0.3s ease, text-decoration 0.3s ease; /* Smooth transition */
+}
+
+.signup-prompt span {
+    margin-right: 7px; /* Διάστημα (tab) μεταξύ του κειμένου και του συνδέσμου */
+}
+
+.signup-prompt a:hover {
+    text-decoration: underline; /* Υπογράμμιση του συνδέσμου όταν ο χρήστης τον περάσει από πάνω */
+    background-color: rgba(144, 144, 144, 0.1); /* Light background color on hover */
+}
