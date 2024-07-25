@@ -1,19 +1,12 @@
 import React from "react"
-<<<<<<< HEAD
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import '../css/home-page.css';
-=======
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import MainBottom from '../components/MainBottom'
->>>>>>> c885ba18d742b87288595ca22db4b3cb9c4a3588
 
 export default function HomePage() {
   return(
     <div>
-<<<<<<< HEAD
       <Header />
       <div className="banner">
         <img src="/business-meeting.jpg" alt="Banner" className="banner-image" />
@@ -40,10 +33,6 @@ export default function HomePage() {
           <p className="large-text">Επικοινώνησε με άλλους επαγγελματίες.</p>
         </div>
       </div>
-=======
-      <Header variant="homepage" />
-      <text> hello there..</text>
->>>>>>> c885ba18d742b87288595ca22db4b3cb9c4a3588
       <MainBottom />
       <Footer />
     </div>
