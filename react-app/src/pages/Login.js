@@ -1,16 +1,21 @@
-import React from "react"
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer'
 import '../css/login.css'
 
 export default function Login() {
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    };
     return (
         <div className="login">
 
             <main className="login-main-div">
                 <div className="logo-container">
                     <a href='/'>
-                    <img src="logo.png" alt="Logo" className="logo" />
+                        <img src="logo.png" alt="Logo" className="logo" />
                     </a>
                 </div>
                 <div className="login-box">
@@ -22,12 +27,21 @@ export default function Login() {
                                 name="first"
                                 placeholder="Email" required />
                         </div>
-                        <div className="form-group">
-                            <img src="password-icon.png" alt="Password Icon" className="input-icon" />
-                            <input type="password"
+                        <div className="form-group password-group">
+                            <img src="password-icon.png" alt="Email Icon" className="input-icon" />
+                            <input
+                                type={passwordVisible ? 'text' : 'password'}
                                 id="password"
                                 name="password"
-                                placeholder="Κωδικός" required />
+                                placeholder="Κωδικός"
+                                required
+                            />
+                            <img
+                                src="/eye-icon.png"  // Path to your eye icon image
+                                alt="Toggle visibility"
+                                onClick={togglePasswordVisibility}
+                                className="password-toggle-icon"
+                            />
                         </div>
                         <div class="wrap">
                             <button type="submit" className="button-login"

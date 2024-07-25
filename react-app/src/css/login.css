@@ -89,6 +89,7 @@ input:focus{
     padding: 5px;
     width: 90%;
     box-sizing: border-box;
+    position: relative;
     margin-bottom: 20px; /* Space between form groups */
     transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
 }
@@ -146,16 +147,26 @@ input:focus{
     font-weight: bold;
     color: var(--primary-color); /* Χρώμα του συνδέσμου */
     text-decoration: none; /* Αφαίρεση της προεπιλεγμένης υπογράμμισης */
-    padding: 7px 15px; /* Add padding for the oval effect */
+    padding: 5px 10px; /* Add padding for the oval effect */
     border-radius: 25px; /* Make the background oval */
     transition: background-color 0.3s ease, color 0.3s ease, text-decoration 0.3s ease; /* Smooth transition */
 }
 
-.signup-prompt span {
-    margin-right: 7px; /* Διάστημα (tab) μεταξύ του κειμένου και του συνδέσμου */
-}
+
 
 .signup-prompt a:hover {
     text-decoration: underline; /* Υπογράμμιση του συνδέσμου όταν ο χρήστης τον περάσει από πάνω */
     background-color: rgba(144, 144, 144, 0.1); /* Light background color on hover */
 }
+
+/* Eye icon styles */
+.password-toggle-icon{
+    cursor: pointer;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px; /* Adjust size if needed */
+    height: auto;
+  }
+

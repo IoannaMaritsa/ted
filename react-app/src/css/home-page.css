@@ -36,7 +36,7 @@
     justify-content: center;
     height: fit-content; 
     padding-top: 2%;
-    padding-bottom: 4%;
+    padding-bottom: 7%;
     padding-left: 5%;
     padding-right: 5%;
   }
@@ -65,7 +65,7 @@
   }
   
   .right-image {
-    max-width: 60%;
-    max-height: 60%;
+    max-width: 70%;
+    max-height: 70%;
     object-fit: cover; /* Ensure the image covers the container */
   }

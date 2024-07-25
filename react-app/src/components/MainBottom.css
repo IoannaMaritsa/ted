@@ -3,7 +3,7 @@
     justify-content: space-between;
     align-items: flex-start;
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: var(--background-color);
   }
   
   .image-row {

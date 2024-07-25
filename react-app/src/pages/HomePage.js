@@ -23,12 +23,12 @@ export default function HomePage() {
           <p>Βρες καταρτισμένο προσωπικό για την δημιουργία μιας ισχυρής ομάδας.</p>
         </div>
         <div className="image-section">
-          <img src="/business03.png" alt="Right Section" className="right-image" />
+          <img src="/business05.png" alt="Right Section" className="right-image" />
         </div>
       </div>
       <div className="split-page">
         <div className="image-section">
-          <img src="/business02.png" alt="Left Section" className="right-image" />
+          <img src="/business04.png" alt="Left Section" className="right-image" />
         </div>
         <div className="text-section">
           <h1>Ήξερες ότι ένα μελίσσι μπορεί να έχει πάνω από 80.000 μέλισσες;</h1>
