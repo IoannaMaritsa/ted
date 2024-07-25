@@ -7,7 +7,7 @@ import '../css/home-page.css';
 export default function HomePage() {
   return(
     <div>
-      <Header />
+      <Header variant="homepage" />
       <div className="banner">
         <img src="/business-meeting.jpg" alt="Banner" className="banner-image" />
         <div className="banner-text">
@@ -19,18 +19,20 @@ export default function HomePage() {
       </div>
       <div className="split-page">
         <div className="text-section">
-          <p className="large-text">Βρες πλήρως καταρτισμένο επαγγελματικό δυναμικό.</p>
+          <h1>Κάθε μέλος μίας εταιρείας είναι σαν μια εργάτρια μέλισσα - σημαντικό και απαραίτητο για την επιτυχία.</h1>
+          <p>Βρες καταρτισμένο προσωπικό για την δημιουργία μιας ισχυρής ομάδας.</p>
         </div>
         <div className="image-section">
-          <img src="/handshake-business.jpg" alt="Right Section" className="right-image" />
+          <img src="/business03.png" alt="Right Section" className="right-image" />
         </div>
       </div>
       <div className="split-page">
         <div className="image-section">
-          <img src="/business-digital.jpg" alt="Right Section" className="right-image" />
+          <img src="/business02.png" alt="Left Section" className="right-image" />
         </div>
         <div className="text-section">
-          <p className="large-text">Επικοινώνησε με άλλους επαγγελματίες.</p>
+          <h1>Ήξερες ότι ένα μελίσσι μπορεί να έχει πάνω από 80.000 μέλισσες;</h1>
+          <p>Το CareerHive αποτελεί δίκτυο πάνω από 800.000 επαγγελματιών.</p>
         </div>
       </div>
       <MainBottom />
