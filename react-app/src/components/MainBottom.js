@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import './MainBottom.css'; // We will create this CSS file next
 
 const MainBottom = () => {
@@ -13,21 +14,21 @@ const MainBottom = () => {
       </div>
       <div className="column">
         <b>Γενικά</b>
-        <p>Εγγραφή</p>
-        <p>Κέντρο Βοήθειας</p>
-        <p>FAQ</p>
+        <p><Link to="/register" className="link">Εγγραφή</Link></p>
+        <p><Link to="/help_center" className="link">Κέντρο Βοήθειας</Link></p>
+        <p><Link to="/FAQ" className="link">FAQ</Link></p>
       </div>
       <div className="column">
         <b>Εταιρεία</b>
-        <p>About Us</p>
+        <p><Link to="/about" className="link">About Us</Link></p>
         <p>Γιατί το CareerHive;</p>
-        <p>Επικοινωνία</p>
+        <p><Link to="/communication" className="link">Επικοινωνία</Link></p>
       </div>
       <div className="column">
         <b>Πληροφορίες</b>
-        <p>Όροι και προυποθέσεις</p>
-        <p>Πολιτική Απορρήτου</p>
-        <p>Πολιτική Cookies</p>
+        <p><Link to="/terms_and_conditions" className="link">Όροι και προϋποθέσεις</Link></p>
+        <p><Link to="/privacy_policy" className="link">Πολιτική Απορρήτου</Link></p>
+        <p><Link to="/cookie_policy" className="link">Πολιτική Cookies</Link></p>
       </div>
     </div>
   );

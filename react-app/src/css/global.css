@@ -43,3 +43,14 @@
   .button-secondary:hover {
     background-color: var(--button-hover-light-grey);
   }
+
+  .link {
+    text-decoration: none;
+    color: inherit;
+
+  }
+
+  .link:hover {
+    text-decoration: underline;
+    font-weight: 500;
+  }

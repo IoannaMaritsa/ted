@@ -18,6 +18,13 @@ import Epag_pinformation from "./pages/Epag_pinformation.js";
 import Epag_profile from "./pages/Epag_profile.js";
 import Epag_settings from "./pages/Epag_settings.js";
 import Diax_Home from "./pages/Diax_Home.js";
+import About from "./pages/About.js";
+import Communication from "./pages/Communication.js";
+import CooPolicy from "./pages/CooPolicy.js";
+import FAQ from "./pages/FAQ.js";
+import Help from "./pages/Help.js";
+import Pripolicy from "./pages/Pripolicy.js";
+import Terms from "./pages/Terms.js";
 
 
 
@@ -41,6 +48,13 @@ export default function App() {
       <Route path="/epaggelmatias_personal_info" element = {<Epag_pinformation />} />
       <Route path="/epaggelmatias_profile" element = {<Epag_profile />} />
       <Route path="/epaggelmatias_settings" element = {<Epag_settings />} />
+      <Route path="/communication" element = {<Communication />} />
+      <Route path="/cookie_policy" element = {<CooPolicy />} />
+      <Route path="/FAQ" element = {<FAQ />} />
+      <Route path="/help_center" element = {<Help />} />
+      <Route path="/privacy_policy" element = {<Pripolicy />} />
+      <Route path="/terms_and_conditions" element = {<Terms/>} />
+      <Route path="/about" element = {<About />} />
     </Routes>
     </BrowserRouter>
     </div>
