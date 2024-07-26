@@ -16,9 +16,12 @@ export default function Register() {
         profilePhoto: null,
     });
 
-    const[errors, setErrors] = useState({
+    const [errors, setErrors] = useState({
         passwordMismatch: false,
-        emailInvalid: false
+        emailInvalid: false,
+        passwordInvalid: false,
+        phoneInvalid: false,
+        dobInvalid: false
     });
 
     const fileInputRef = useRef(null);
@@ -32,23 +35,24 @@ export default function Register() {
         }
     };
 
-    const handlePassChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
 
-        if (name === 'confirmPassword') {
-            // Check for password mismatch
-            if (value !== formData.password) {
-                setErrors({ passwordMismatch: true });
-            } else {
-                setErrors({ passwordMismatch: false });
-            }
-        }
-    };
 
     const handleDateChange = (dates) => {
-        setFormData({ ...formData, dateOfBirth: dates[0] });
-    };
+        const selectedDate = dates[0];
+        setFormData({ ...formData, dob: selectedDate });
+
+        const today = new Date();
+        const minAge = 18; // Minimum age requirement
+        const age = today.getFullYear() - selectedDate.getFullYear();
+        const monthDiff = today.getMonth() - selectedDate.getMonth();
+        const dayDiff = today.getDate() - selectedDate.getDate();
+
+        if (age < minAge || (age === minAge && monthDiff < 0) || (age === minAge && monthDiff === 0 && dayDiff < 0)) {
+            setErrors({ ...errors, dobInvalid: true });
+        } else {
+            setErrors({ ...errors, dobInvalid: false });
+        }
+    }; 
 
     const handleReset = () => {
         setFormData({ ...formData, profilePhoto: null });
@@ -78,6 +82,20 @@ export default function Register() {
         if (name === 'confirmPassword') {
             // Check for password mismatch
             setErrors({ ...errors, passwordMismatch: value !== formData.password });
+        }
+
+        if (name === 'password') {
+            // Validate password on change
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            const isPasswordValid = passwordRegex.test(value);
+            setErrors({ ...errors, passwordInvalid: !isPasswordValid });
+        }
+
+        if (name === 'phone') {
+            // Validate phone number on change
+            const phoneRegex = /^[0-9]{10}$/;
+            const isPhoneValid = phoneRegex.test(value);
+            setErrors({ ...errors, phoneInvalid: !isPhoneValid });
         }
     };
 
@@ -179,6 +197,7 @@ export default function Register() {
                                 </div>
                             </div>
                         </div>
+                        {errors.emailInvalid && <div className='error-message-div'><span className="error-message">Εισάγετε έγκυρο email</span></div>}
                         <div className={`form-group ${errors.emailInvalid ? 'error' : ''}`}>
                             <img src="email-icon.png" alt="Email Icon" className="input-icon" />
                             <input type="text"
@@ -188,10 +207,11 @@ export default function Register() {
                                 value={formData.email}
                                 onChange={handleChange2}
                                 required />
-                                
+
                         </div>
-                        {errors.emailInvalid && <span className="error-message">Invalid email address</span>}
-                        <div className={`form-group ${errors.passwordMismatch ? 'error' : ''}`}>
+                        {errors.passwordInvalid &&
+                            <div className="error-message-div"><span className="error-message">Ο κωδικός σας πρέπει να περιέχει τουλάχιστον 1 γράμμα και 1 ψηφίο και να έχει τουλάχιστον 8 χαρακτήρες</span></div>}
+                        <div className={`form-group ${errors.passwordMismatch || errors.passwordInvalid ? 'error' : ''}`}>
                             <img src="password-icon.png" alt="Password Icon" className="input-icon" />
                             <input
                                 type="password"
@@ -204,6 +224,9 @@ export default function Register() {
                             />
 
                         </div>
+                        {errors.passwordMismatch && (
+                            <div className="error-message-div"> <span className="error-message">Οι κωδικοί που έχετε εισάγει δεν ταιριάζουν</span> </div>
+                        )}
                         <div className={`form-group ${errors.passwordMismatch ? 'error' : ''}`}>
                             <img src="again.png" alt="Redo Icon" className="input-icon" />
                             <input
@@ -217,10 +240,10 @@ export default function Register() {
                             />
 
                         </div>
-                        {errors.passwordMismatch && (
-                            <div className="error-message">Passwords do not match!</div>
+                        {errors.phoneInvalid && (
+                            <div className="error-message-div"> <span className="error-message">Εισάγετε έγκυρο αριθμό τηλεφώνου</span> </div>
                         )}
-                        <div className="form-group">
+                        <div className={`form-group ${errors.phoneInvalid ? 'error' : ''}`}>
                             <img src="phone.png" alt="Phone Icon" className="input-icon" />
                             <input
                                 type="text"
@@ -228,12 +251,15 @@ export default function Register() {
                                 name="phone"
                                 placeholder="Τηλέφωνο Επικοινωνίας"
                                 value={formData.phone}
-                                onChange={handleChange}
+                                onChange={handleChange2}
                                 required
                             />
 
                         </div>
-                        <div className="form-group">
+                        {errors.dobInvalid && (
+                            <div className="error-message-div"> <span className="error-message">Εισάγετε έγκυρη ημερομηνία γέννησης</span> </div>
+                        )}
+                        <div className={`form-group ${errors.dobInvalid ? 'error' : ''}`}>
                             <img src="calendar.png" alt="Calendar Icon" className="input-icon" />
                             <Flatpickr
                                 data-enable-time
@@ -251,7 +277,7 @@ export default function Register() {
                             />
 
                         </div>
-                       
+
                         <div class="wrap">
                             <button type="submit" className="button-register"
                             >
