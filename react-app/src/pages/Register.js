@@ -26,17 +26,6 @@ export default function Register() {
 
     const fileInputRef = useRef(null);
 
-    const handleChange = (e) => {
-        const { name, value, type, files } = e.target;
-        if (type === 'file') {
-            setFormData({ ...formData, [name]: files[0] }); // Handle file input
-        } else {
-            setFormData({ ...formData, [name]: value });
-        }
-    };
-
-
-
     const handleDateChange = (dates) => {
         const selectedDate = dates[0];
         setFormData({ ...formData, dob: selectedDate });
