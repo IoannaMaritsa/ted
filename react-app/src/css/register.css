@@ -316,10 +316,19 @@ input[type="file"]::file-selector-button {
 }
 
 .form-group.error {
-    border-color: red; /* Red border for error state */
+    border-color: var(--error-red); /* Red border for error state */
 }
+
 .error-message {
-    color: red;
-    font-size: 0.875rem;
+    color: var(--error-red);
+    font-size: 0.8rem;
     margin-bottom: 10px;
+    font-family: var(--font-basic);
+}
+.error-message-div{
+    width: 90%;
+    text-align: left;
+    margin-bottom: 7px;
+
+
 }
