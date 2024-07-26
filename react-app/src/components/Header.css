@@ -4,7 +4,7 @@
     align-items: center;
     padding: 10px 20px;
     background-color: #ffffff;
-
+    max-height: 68.5px;
   }
   
   .header-left {
@@ -28,5 +28,120 @@
     gap: 10px;
   }
   
+  .profile-picture {
+    max-width: 50px;
+    cursor: pointer;
+    /* Adjust size as needed */
+    max-height: 50px;
+    /* Adjust size as needed */
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    /* Optional: Add border if desired */
+    background-color: #f0f0f0;
+    /* Optional: Background color if no image */
+    margin: 0px;
+  }
 
- 
+  table tbody tr {
+    background-color: #ffffff; /* White background for all rows */
+  }
+  
+  /* Style for every second row (odd rows) */
+  table tbody tr:nth-child(even) {
+    background-color: #fbfbfb; /* Slightly darker than white */
+  }
+
+
+  .header a {
+    text-decoration: none;
+  }
+  .dropdown {
+    position: absolute;
+    top: 80px; /* Adjust as needed */
+    right: 0;
+    width: 300px; /* Adjust as needed */
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-shadow: 0 5px 40px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .dropdown::before {
+    content: '';
+    position: absolute;
+    top: -20px; /* Adjust based on dropdown height */
+    right: 55px; /* Adjust based on where you want the triangle to appear */
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent rgb(255, 255, 255) transparent; /* Adjust color to match dropdown background */
+
+  }
+  
+  .dropdown-content {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .dropdown-profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 5px;
+    margin-right: 20px;
+  }
+  
+  .dropdown-info {
+    display: flex;
+    font-family: var(--font-basic);
+    flex-direction: column;
+  }
+  
+  .dropdown-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+  
+  .dropdown-email {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .dropdown-footer {
+    padding: 10px;
+    justify-content: center;
+    border-top: 1px solid var(--border-color);
+    background-color: rgb(243, 243, 243);
+  }
+  
+  .sign-out-button {
+    display: flex;
+    padding: 7px 15px;
+    border: none;
+    background-color: var(--button-light-grey);
+    color: var(--text-dark-grey);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    transition: border 0.3s ease;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .sign-out-button:hover {
+    background-color: var(--button-dark-grey);
+  }
+
+  .sign-out-button:hover {
+    border: 1px solid var(--text-dark-grey);
+}
+
+.logout-icon{
+  width: 17px;
+  height: 17px;
+  margin-left: 7px;
+}

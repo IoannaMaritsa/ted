@@ -5,7 +5,7 @@ import 'flatpickr/dist/flatpickr.min.css'
 
 export default function Register() {
 
-    const [dob, setDob] = useState('');
+    const [dob] = useState('');
 
     const [formData, setFormData] = useState({
         email: '',

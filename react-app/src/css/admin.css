@@ -1,0 +1,254 @@
+.admin {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.admin-main-div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 20px;
+    background-color: var(--background-color);
+    height: 85vh;
+    /* Fixed height for the main div */
+    min-height: 85vh;
+    overflow: hidden;
+    /* Prevent overflow affecting other content */
+    position: relative;
+}
+
+.fixed-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.search-container {
+    /* Space from the right */
+    width: 250px;
+    /* Adjust width as needed */
+    display: flex;
+    align-items: center;
+    background: #ebebeb;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 5px;
+    /* Add padding inside the container */
+    transition: 0.3s ease;
+    display: flex;
+    align-items: center;
+
+}
+
+.search-icon {
+    width: 16px;
+    /* Adjust width as needed */
+    height: 16px;
+    /* Adjust height as needed */
+    margin-right: 8px;
+    /* Space between icon and input */
+}
+
+.search-input {
+    flex: 1;
+    /* Allow input to fill the remaining space */
+    padding: 5px;
+    font-size: 14px;
+    border: none;
+    /* Remove border to use the container border */
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    margin-left: 8px;
+    background-color: transparent;
+    box-sizing: border-box;
+
+}
+
+.search-container:focus-within {
+    background-color: white;
+    border-color: #333;
+    box-shadow: 0px 2px 15px rgba(109, 109, 109, 0.2);
+}
+
+.table-wrapper {
+    flex: 1;
+    /* Take up the remaining space */
+    overflow-y: auto;
+    /* Enable vertical scrolling if needed */
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-box {
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    width: 90%;
+    border-collapse: collapse;
+    box-sizing: border-box;
+    overflow: auto;
+    /* Ensure internal scrolling if needed */
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+
+.admin-box th,
+.admin-box td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.admin-box th {
+    background-color: white;
+    color: black;
+}
+
+.admin-box tbody tr {
+    height: 70px;
+    /* Row height */
+}
+
+.admin-box thead tr {
+    height: 50px;
+    /* Header height */
+}
+
+.admin-box th.sortable {
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.admin-box th.sortable.active {
+    color: var(--button-yellow);
+}
+
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-basic);
+    margin-top: 10px;
+    padding: 10px 0;
+    /* Add padding around pagination controls */
+    background-color: var(--background-color);
+    /* Match background color */
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border: none;
+    background-color: var(--button-light-grey);
+    color: var(--text-dark-grey);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    transition: border 0.3s ease;
+}
+
+.pagination button:hover {
+    border: 1px solid var(--text-dark-grey);
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    background-color: #e0e0e0;
+    /* Gray background */
+    color: #a5a5a5;
+    /* Gray text */
+    border: 1px solid #e0e0e0;
+    /* Match border to background */
+    transition: none;
+    /* Disable transition for disabled state */
+}
+
+/* Override hover styles for disabled buttons */
+.pagination button:disabled:hover {
+    background-color: #e0e0e0;
+    /* Ensure background color stays the same */
+    border: 1px solid #e0e0e0;
+    /* Ensure border stays the same */
+}
+
+.pagination span {
+    margin: 0 10px;
+}
+
+.row1 {
+    width: 90%;
+    display: flex;
+    align-items: center;
+    margin-top: 70px;
+
+}
+
+.title {
+    font-size: 1.8rem;
+    color: var(--text-dark-grey);
+    position: absolute;
+    left: 90px;
+    top: 10s0px;
+    flex: 1;
+    /* Allows the title to take available space */
+    text-align: left;
+    /* Adjust color as needed */
+    margin-bottom: 20px;
+}
+
+.export-button {
+
+    display: flex;
+    align-items: center;
+    width: 150px;
+    height: 45px;
+    background-color: var(--button-grey);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: var(--font-basic);
+    cursor: pointer;
+    border: 3px solid var(--button-grey);
+    border-radius: 20px;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+    margin-left: 5px;
+    margin-right: 820px;
+    /* Adjust space between button and title */
+
+
+}
+
+.export-button:hover {
+    background-color: white;
+    color: var(--button-grey);
+}
+
+.export-button:hover .export-icon {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(0%) saturate(0%) hue-rotate(226deg) brightness(97%) contrast(103%);
+    /* Adjust the filter to achieve the desired color change */
+}
+
+.export-icon {
+
+    width: 30px;
+    height: 30px;
+    margin: 10px;
+    pointer-events: none;
+}
