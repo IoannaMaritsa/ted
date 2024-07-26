@@ -1,4 +1,4 @@
-import React, { useState , useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import '../css/register.css'
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.min.css'
@@ -16,8 +16,9 @@ export default function Register() {
         profilePhoto: null,
     });
 
-    const [errors, setErrors] = useState({
-        passwordMismatch: false
+    const[errors, setErrors] = useState({
+        passwordMismatch: false,
+        emailInvalid: false
     });
 
     const fileInputRef = useRef(null);
@@ -63,13 +64,42 @@ export default function Register() {
         }
     };
 
+    const handleChange2 = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+
+        if (name === 'email') {
+            // Validate email on change
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isEmailValid = emailRegex.test(value);
+            setErrors({ ...errors, emailInvalid: !isEmailValid });
+        }
+
+        if (name === 'confirmPassword') {
+            // Check for password mismatch
+            setErrors({ ...errors, passwordMismatch: value !== formData.password });
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Validate email on submit
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmailValid = emailRegex.test(formData.email);
+
+        if (!isEmailValid) {
+            setErrors({ ...errors, emailInvalid: true });
+            return;
+        } else {
+            setErrors({ ...errors, emailInvalid: false });
+        }
+
         if (formData.password !== formData.confirmPassword) {
-            setErrors({ passwordMismatch: true });
+            setErrors({ ...errors, passwordMismatch: true });
             return;
         }
-        setErrors({ passwordMismatch: false });
+        setErrors({ ...errors, passwordMismatch: false });
 
         // Handle form submission, including file upload
         const formDataToSubmit = new FormData();
@@ -78,7 +108,6 @@ export default function Register() {
         });
 
         // Example form submission logic
-        // You might want to use fetch or axios for actual submission
         console.log('Form data to submit:', formDataToSubmit);
 
         // Perform submission here, e.g., using fetch or axios
@@ -114,7 +143,7 @@ export default function Register() {
                                 name="profilePhoto"
                                 accept="image/*"
                                 onChange={handleFileChange}
-                                ref={fileInputRef} 
+                                ref={fileInputRef}
                             />
                         </div>
                         {formData.profilePhoto && (
@@ -126,7 +155,7 @@ export default function Register() {
 
                         <div className="form-row">
                             <div className="form-group form-group-half">
-                            <img src="user.png" alt="User Icon" className="input-icon" />
+                                <img src="user.png" alt="User Icon" className="input-icon" />
                                 <div className="input-container">
                                     <input
                                         type="text"
@@ -138,7 +167,7 @@ export default function Register() {
                                 </div>
                             </div>
                             <div className="form-group form-group-half">
-                            <img src="user.png" alt="User Icon" className="input-icon" />
+                                <img src="user.png" alt="User Icon" className="input-icon" />
                                 <div className="input-container">
                                     <input
                                         type="text"
@@ -150,16 +179,18 @@ export default function Register() {
                                 </div>
                             </div>
                         </div>
-                        <div className="form-group">
+                        <div className={`form-group ${errors.emailInvalid ? 'error' : ''}`}>
                             <img src="email-icon.png" alt="Email Icon" className="input-icon" />
                             <input type="text"
                                 id="email"
                                 name="email"
                                 placeholder="Email"
                                 value={formData.email}
-                                onChange={handleChange}
+                                onChange={handleChange2}
                                 required />
+                                
                         </div>
+                        {errors.emailInvalid && <span className="error-message">Invalid email address</span>}
                         <div className={`form-group ${errors.passwordMismatch ? 'error' : ''}`}>
                             <img src="password-icon.png" alt="Password Icon" className="input-icon" />
                             <input
@@ -168,7 +199,7 @@ export default function Register() {
                                 name="password"
                                 placeholder="Κωδικός"
                                 value={formData.password}
-                                onChange={handlePassChange}
+                                onChange={handleChange2}
                                 required
                             />
 
@@ -181,11 +212,14 @@ export default function Register() {
                                 name="confirmPassword"
                                 placeholder="Επιβεβαίωση Κωδικού"
                                 value={formData.confirmPassword}
-                                onChange={handlePassChange}
+                                onChange={handleChange2}
                                 required
                             />
 
                         </div>
+                        {errors.passwordMismatch && (
+                            <div className="error-message">Passwords do not match!</div>
+                        )}
                         <div className="form-group">
                             <img src="phone.png" alt="Phone Icon" className="input-icon" />
                             <input
@@ -217,9 +251,7 @@ export default function Register() {
                             />
 
                         </div>
-                        {errors.passwordMismatch && (
-                            <div className="error-message">Passwords do not match!</div>
-                        )}
+                       
                         <div class="wrap">
                             <button type="submit" className="button-register"
                             >
