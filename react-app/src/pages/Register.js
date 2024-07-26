@@ -1,6 +1,4 @@
 import React, { useState , useRef} from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer'
 import '../css/register.css'
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.min.css'

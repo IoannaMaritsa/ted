@@ -13,7 +13,7 @@ const Header = ({ variant }) => {
             <a href="/login">
               <button className="button-primary">Σύνδεση</button>
             </a>
-            <a href="/signup">
+            <a href="/register">
               <button className="button-secondary">Εγγραφή</button>
             </a>
           </div>
