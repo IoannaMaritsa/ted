@@ -23,6 +23,7 @@ import Communication from "./pages/Communication.js";
 import CooPolicy from "./pages/CooPolicy.js";
 import FAQ from "./pages/FAQ.js";
 import Help from "./pages/Help.js";
+import Help_em from "./pages/Help_employer.js";
 import Pripolicy from "./pages/Pripolicy.js";
 import Terms from "./pages/Terms.js";
 
@@ -52,6 +53,7 @@ export default function App() {
       <Route path="/cookie_policy" element = {<CooPolicy />} />
       <Route path="/FAQ" element = {<FAQ />} />
       <Route path="/help_center" element = {<Help />} />
+      <Route path="/help_center_for_employers" element = {<Help_em />} />
       <Route path="/privacy_policy" element = {<Pripolicy />} />
       <Route path="/terms_and_conditions" element = {<Terms/>} />
       <Route path="/about" element = {<About />} />

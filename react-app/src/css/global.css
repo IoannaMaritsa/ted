@@ -79,3 +79,61 @@
 .signup-prompt a:hover {
     text-decoration: underline; /* Underline text on hover */
 }
+
+.split-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: fit-content; 
+  padding-top: 2%;
+  padding-bottom: 7%;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.text-section {
+  flex: 1;
+  background-color: #ffffff;
+  padding: 20px;
+}
+
+.text-section h1 {
+  font-size: 48px;
+  color: var(--text-dark-grey);
+  font-weight: 200;
+}
+.text-section p {
+  font-size: 28px;
+  color: var(--text-dark-grey);
+  font-weight: 200;
+}
+.image-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image {
+  max-width: 70%;
+  max-height: 70%;
+  object-fit: cover;
+}
+
+.article-text{
+  flex: 1;
+  background-color: #ffffff;
+  text-align: left;
+}
+
+.article-text h1 {
+  font-size: 40px;
+  color: #2C2C2C;
+  font-weight: 400;
+}
+
+.article-text p {
+  font-size: 30px;
+  color: var(--text-dark-grey);
+  font-weight: 200;
+}
