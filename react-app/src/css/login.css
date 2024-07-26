@@ -112,21 +112,21 @@ input:focus{
     width: 70%;
     padding: 13px 20px;
     border: none;
-    background-color: var(--button-yellow);
+    background-color: var(--button-grey);
     color: white;
     font-weight: bold;
     font-family: var(--font-basic);
     cursor: pointer;
     border-radius: 50px;
     font-size: 16px;
-    border: 2px solid var(--button-yellow);
-    transition: background-color 0.3s ease, border 0.3s ease;
+    border: 3px solid var(--button-grey);
+    transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
     margin-top: 15px;
   }
   
   .button-login:hover {
-    background-color: var(--button-hover-yellow);
-    border: 2px solid var(--button-hover-yellow);
+    background-color: white;
+    color: var(--button-grey);
   }
 
   .wrap{

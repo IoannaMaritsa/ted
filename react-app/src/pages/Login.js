@@ -50,7 +50,7 @@ export default function Login() {
                             </button>
                         </div>
                         <div className="signup-prompt">
-                            <span>Δεν είστε μέλος; </span>   <a href="/signup">Εγγραφείτε τώρα</a>
+                            <span>Δεν είστε μέλος; </span>   <a href="/register">Εγγραφείτε τώρα</a>
                         </div>
                     </form>
                 </div>

@@ -3,10 +3,11 @@
     --button-yellow: #f3c55a;
     --button-hover-yellow: #ecb74d; 
     --button-grey: #2C2C2C;
-    --button-light-grey: #E5E5E5;
+    --button-light-grey: #eeeeee;
     --button-hover-light-grey: #f9f6f1;
     --text-white: #ffffff;
     --text-dark-grey: #4b4b4b;
+    --text-dark-grey2: #6f6f6f;
     --background-color: #FAF8F8;
     --border-color: #DFDFDF;
     --font-basic: font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif;
@@ -45,11 +46,7 @@
     transition: background-color 0.3s ease;
   }
   
-  .button-secondary:hover {
-    padding: 12.5px 19.5px;
-    background-color: var(--button-hover-light-grey);
-    border: 2.5px solid var(--text-dark-grey);
-  }
+ 
 
   .link {
     text-decoration: none;
