@@ -50,7 +50,7 @@ export default function App() {
       <Route path="/epaggelmatias_profile" element = {<Epag_profile />} />
       <Route path="/epaggelmatias_settings" element = {<Epag_settings />} />
       <Route path="/communication" element = {<Communication />} />
-      <Route path="/cookie_policy" element = {<CooPolicy />} />
+      <Route path="/community_policies" element = {<CooPolicy />} />
       <Route path="/FAQ" element = {<FAQ />} />
       <Route path="/help_center" element = {<Help />} />
       <Route path="/help_center_for_employers" element = {<Help_em />} />
