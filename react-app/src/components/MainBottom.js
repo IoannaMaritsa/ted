@@ -21,14 +21,13 @@ const MainBottom = () => {
       <div className="column">
         <b>Εταιρεία</b>
         <p><Link to="/about" className="link">About Us</Link></p>
-        <p>Γιατί το CareerHive;</p>
         <p><Link to="/communication" className="link">Επικοινωνία</Link></p>
       </div>
       <div className="column">
         <b>Πληροφορίες</b>
         <p><Link to="/terms_and_conditions" className="link">Όροι και προϋποθέσεις</Link></p>
         <p><Link to="/privacy_policy" className="link">Πολιτική Απορρήτου</Link></p>
-        <p><Link to="/cookie_policy" className="link">Πολιτική Cookies</Link></p>
+        <p><Link to="/community_policies" className="link">Οδηγίες κοινότητας</Link></p>
       </div>
     </div>
   );
