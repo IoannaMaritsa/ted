@@ -5,7 +5,9 @@ const Header = ({ variant }) => {
   return (
     <header className="header">
       <div className="header-left">
-        <img src="/logo.png" alt="icon" className="header-icon" />
+        <a href='/'>
+          <img src="/logo.png" alt="icon" className="header-icon" />
+        </a>
       </div>
       <div className="header-right">
         {variant === 'homepage' && (

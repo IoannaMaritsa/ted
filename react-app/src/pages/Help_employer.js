@@ -62,7 +62,7 @@ export default function Help() {
 
         </div>
         <div className="article-text">
-            <h1>Κέντρο Βοήθειας για τα άτομα που αναζητούν εργασία</h1>
+            <h1>Κέντρο Βοήθειας για εργοδότες</h1>
             <div className="toggle-buttons">
                 <button className={`toggle-button ${isClicked1 ? 'clicked' : ''}`}
                     onClick={toggleButtonColor1}>Δεν μπορώ να συνδεθώ στον λογαριασμό μου</button>
