@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import './Header.css'; // We will create this CSS file next
 
 const Header = ({ variant }) => {
@@ -63,6 +64,31 @@ const Header = ({ variant }) => {
               </div>
             )}
           </div>
+        )}
+        {variant === 'professional' && (
+          <div className="tabs">
+          <NavLink exact to="/epaggelmatias_homepage" activeClassName="active-tab" className="tab">
+            Αρχική Σελίδα
+          </NavLink>
+          <NavLink to="/epaggelmatias_network" activeClassName="active-tab" className="tab">
+            Δίκτυο
+          </NavLink>
+          <NavLink to="/epaggelmatias_aggelies" activeClassName="active-tab" className="tab">
+            Αγγελίες
+          </NavLink>
+          <NavLink to="/epaggelmatias_messages" activeClassName="active-tab" className="tab">
+            Συζητήσεις
+          </NavLink>
+          <NavLink to="/epaggelmatias_notifications" activeClassName="active-tab" className="tab">
+            Ειδοποιήσεις
+          </NavLink>
+          <NavLink to="/epaggelmatias_personal_info" activeClassName="active-tab" className="tab">
+            Προσωπικά στοιχεία
+          </NavLink>
+          <NavLink to="/epaggelmatias_settings" activeClassName="active-tab" className="tab">
+            Ρυθμίσεις
+          </NavLink>
+        </div>
         )}
         {/* logo-only variant */}
       </div>
