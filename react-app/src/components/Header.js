@@ -35,7 +35,7 @@ const Header = ({ variant }) => {
           <div className="header-button-container">
             <img 
               src="default-avatar.jpeg" 
-              className="profile-picture" 
+              className="profile-picture2" 
               alt="Profile" 
               onClick={handleProfileClick}
             />
