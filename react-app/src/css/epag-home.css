@@ -187,3 +187,62 @@
   .submit-button:hover {
     background-color: var(--button-hover-yellow);
   }
+
+  .articles-page {
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 20px;
+  }
+
+  .network-title{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding-left: 20px;
+    padding-top: 20px;
+    font-size: large;
+  }
+
+  .contacts-page {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .contacts-list {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+  }
+  
+  .contacts-list li {
+    font-size: medium;
+  }
+  
+  .contact{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+  }
+
+  .network-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    background-color: #fff;
+  }
+  
+  .network-page-button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  .network-page-button.active {
+    background-color: var(--button-yellow);
+    color: #fff;
+  }
