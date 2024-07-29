@@ -3,24 +3,28 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { useState } from 'react';
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
     const articles = [
-        {
+        { 
+          id: '1',
           title: 'Article 1',
           author: 'John Doe',
           date: '2024-07-26',
           content: 'This is the content of the first article. It is a brief description of the article.'
         },
         {
+            id: '2',
           title: 'Article 2',
           author: 'Jane Smith',
           date: '2024-07-25',
           content: 'This is the content of the second article. It is a brief description of the article.'
         },
         {
+            id: '3',
             title: 'Article 3',
             author: 'Jojo Siwa',
             date: '2024-07-28',
@@ -126,6 +130,7 @@ export default function Epag_Home() {
   return(
     <div>
         <Header variant="professional" />
+        <Breadcrumbs />
         <div className="split-epag">
             <div className="side-bar">
                 <div className="side-bar-section">
@@ -258,15 +263,16 @@ export default function Epag_Home() {
                 </div>
                 <div className="articles-page">
                 {sortedArticles.map((article, index) => (
-        <Article
-          key={index}
-          title={article.title}
-          author={article.author}
-          date={article.date}
-          content={article.content}
-        />
-      ))}
-    </div>
+                    <Article
+                        key={index}
+                        id = {article.id}
+                        title={article.title}
+                        author={article.author}
+                        date={article.date}
+                        content={article.content}
+                    />
+                ))}
+                </div>
             </div>
         </div>
         <MainBottom />
