@@ -5,7 +5,7 @@ import './article_display.css';
 const Article = ({ id, title, author, date, content }) => {
   return (
     <div className="article">
-      <Link to={`/epaggelmatias_homepage/epaggelmatias_article/${id}`} className="link">
+      <Link to={`/epaggelmatias_article/${id}`} className="link">
         <h2 className="article-title">{title}</h2>
       </Link>
       <div className="article-meta">

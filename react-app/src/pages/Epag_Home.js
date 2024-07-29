@@ -3,7 +3,6 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
-import Breadcrumbs from '../components/Breadcrumbs';
 import { useState } from 'react';
 import '../css/epag-home.css';
 
@@ -130,7 +129,7 @@ export default function Epag_Home() {
   return(
     <div>
         <Header variant="professional" />
-        <Breadcrumbs />
+        <nav className="breadcrumbs">🏠︎/</nav>
         <div className="split-epag">
             <div className="side-bar">
                 <div className="side-bar-section">
