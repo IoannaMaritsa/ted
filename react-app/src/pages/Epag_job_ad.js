@@ -41,7 +41,19 @@ export default function Epag_job_ad() {
   const handleClick = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  const [title, setTitle] = useState('');
+  const [company, setCompany] = useState('');
+  const [speciality, setSpeciality] = useState('');
+  const [location, setLocation] = useState('');
+  const [type, setType] = useState('');
+  const [experience, setExperience] = useState('');
+  const [salary, setSalary] = useState('');
+  const [date, setDate] = useState('');
 
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
+  
   return (
     <div>
       <Header variant="professional" />
@@ -112,7 +124,7 @@ export default function Epag_job_ad() {
               <input
                 type="text"
                 id="title"
-                value={title}
+                value={company}
                 onChange={handleTitleChange}
                 placeholder="Δώστε έναν τίτλο στο άρθρο σας"
               />
@@ -122,7 +134,7 @@ export default function Epag_job_ad() {
               <input
                 type="text"
                 id="title"
-                value={title}
+                value={speciality}
                 onChange={handleTitleChange}
                 placeholder="Δώστε έναν τίτλο στο άρθρο σας"
               />
@@ -132,7 +144,7 @@ export default function Epag_job_ad() {
               <input
                 type="text"
                 id="title"
-                value={title}
+                value={location}
                 onChange={handleTitleChange}
                 placeholder="Δώστε έναν τίτλο στο άρθρο σας"
               />
@@ -142,7 +154,7 @@ export default function Epag_job_ad() {
               <input
                 type="text"
                 id="title"
-                value={title}
+                value={type}
                 onChange={handleTitleChange}
                 placeholder="Δώστε έναν τίτλο στο άρθρο σας"
               />
