@@ -124,7 +124,13 @@
   width: 100%;
   background-color: var(--background-color);
   min-height: 70%;
-  padding: 5px 0px;
+}
+
+.small-icon {
+  margin-left: 20px;
+  max-width: 20px;
+  max-height: 20px;
+  object-fit: cover;
 }
 
 .article-container {
