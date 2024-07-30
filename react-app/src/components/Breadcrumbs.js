@@ -1,21 +1,25 @@
 import React from 'react';
+import { useAppContext } from '../context/appContext';
 import { Link, useLocation } from 'react-router-dom';
 import './Breadcrumbs.css';
 
 const Breadcrumbs = () => {
+  const { isAdmin } = useAppContext();
+
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const breadcrumbNameMap = {
     'epaggelmatias_article': 'Άρθρο',
     'epaggelmatias_aggelies': 'Αγγελίες',
-    'contact': 'Contact'
+    'contact': 'Contact',
+    'admin_user': 'Προφίλ Χρήστη'
     // Add more mappings as needed
   };
 
   return (
     <nav className="breadcrumbs">
-      <Link to="/epaggelmatias_homepage">🏠︎</Link>
+      <Link to={isAdmin ? '/admin' : '/epaggelmatias_homepage'}>🏠︎</Link>
     
       {pathnames.map((value, index) => {
         const to = `/${pathnames.slice(0, index + 1).join('/')}`;
