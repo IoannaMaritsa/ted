@@ -28,7 +28,20 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
-
+.job-display-selected{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 10px;
+    height: fit-content;
+    padding: 10px 10px;
+    text-align: left;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    background-color: #ffb109;
+}
 .job-display:hover {
     background-color: #fbdea0;
 }

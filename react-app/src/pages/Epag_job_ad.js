@@ -4,17 +4,13 @@ import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Breadcrumbs from "../components/Breadcrumbs";
 import Dropdown from '../components/dropdown';
+import Job_create from '../components/job_create';
+import Job from '../components/job_display';
 import '../css/Epag_job_ad.css';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Epag_job_ad() {
-
-  const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
-
-  console.log(selectedOption);
-  const handleOptionSelect = (option) => {
-    setSelectedOption(option);
-  };
 
   const jobs = [
     { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1' },
@@ -25,7 +21,47 @@ export default function Epag_job_ad() {
     // Add more articles as needed
   ];
 
-  //pagination
+  const myjobs = [
+    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1', submitions: [{name: 'Αννιτα Πάνια',date: [23-2-2024]}, {name: 'Στεφανος Χίος',date: [20-3-2007]}] },
+    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Neo Hrakleio', date: 'June 4, 2024', type: 'Part-time', specialization: 'Customer Service', experience: '4', salary: '10.000', details: 'Some more info 2' },
+
+  ];
+
+  const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
+  const [myselectedJob, setMyselectedJob] = useState(null);
+  const [selectedJob, setSelectedJob] = useState(jobs[0]);
+
+  console.log(selectedOption);
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option);
+  };
+
+  const HandleMyJobSelect = (job) => {
+    setMyselectedJob(job);
+  };
+  const HandleJobSelect = (job) => {
+    setSelectedJob(job);
+  };
+  console.log(myselectedJob);
+
+  //pagination for my jobs
+  const [mycurrentPage, setMyCurrentPage] = useState(1);
+  const myjobsPerPage = 4;
+
+  // Calculate total pages
+  const mytotalPages = Math.ceil(myjobs.length / myjobsPerPage);
+
+  // Get current contacts
+  const myindexOfLastJob = mycurrentPage * myjobsPerPage;
+  const myindexOfFirstJob = myindexOfLastJob - myjobsPerPage;
+  const mycurrentJobs = myjobs.slice(myindexOfFirstJob, myindexOfLastJob);
+
+  // Handle page change
+  const myhandleClick = (pageNumber) => {
+    setMyCurrentPage(pageNumber);
+  };
+
+  //pagination for others' jobs
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 4;
 
@@ -41,19 +77,8 @@ export default function Epag_job_ad() {
   const handleClick = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  const [title, setTitle] = useState('');
-  const [company, setCompany] = useState('');
-  const [speciality, setSpeciality] = useState('');
-  const [location, setLocation] = useState('');
-  const [type, setType] = useState('');
-  const [experience, setExperience] = useState('');
-  const [salary, setSalary] = useState('');
-  const [date, setDate] = useState('');
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-  };
-  
+
   return (
     <div>
       <Header variant="professional" />
@@ -68,100 +93,191 @@ export default function Epag_job_ad() {
           <Dropdown options={['Εμπειρία Όλες', 'Πρακτική', '2+ Έτη', '10+ Έτη']} />
           <Dropdown options={['Μισθός Όλες', '40.000+', '80.000+', '120.000+']} />
         </div>
-        <div className="job-split">
-          {selectedOption === 'Οι αγγελίες μου' &&
-            <div>
-              <div className="job-display">
-                <div className="job-display-title">
-                  + Νέα Αγγελία
-                </div>
-              </div>
-              {currentJobs.map((job, index) => (
-                <div className="job-display">
-                  <div key={index}>
-                    <div className="job-display-title">
-                      <p>{job.title}</p>
-                      <p>{job.date}</p>
-                    </div>
-                    <h5>{job.company}</h5>
-                    <h6>Ζητείται {job.specialization}</h6>
-                    <div className="job-display-title">
-                      <p>{job.type}</p>
-                      <p>{job.salary}</p>
-                    </div>
+        <div>
+          {(selectedOption === 'Οι αγγελίες μου' && myselectedJob === null) &&
+            <div className="job-split">
+              <div>
 
+                <div className="job-display-selected">
+                  <div className="job-display-title">
+                    + Νέα Αγγελία
                   </div>
                 </div>
-              ))}
-              <div className="network-pagination">
-                {[...Array(totalPages)].map((_, index) => (
-                  <button
-                    key={index}
-                    className={`network-page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                    onClick={() => handleClick(index + 1)}
-                  >
-                    {index + 1}
+
+                {mycurrentJobs.map((job, index) => (
+                  <button className="job-display" onClick={() => HandleMyJobSelect(job)}>
+                    <div key={index}>
+                      <div className="job-display-title">
+                        <p>{job.title}</p>
+                        <p>{job.date}</p>
+                      </div>
+                      <h5>{job.company}</h5>
+                      <h6>Ζητείται {job.specialization}</h6>
+                      <div className="job-display-title">
+                        <p>{job.type}</p>
+                        <p>{job.salary}</p>
+                      </div>
+
+                    </div>
                   </button>
                 ))}
+                <div className="network-pagination">
+                  {[...Array(mytotalPages)].map((_, index) => (
+                    <button
+                      key={index}
+                      className={`network-page-button ${mycurrentPage === index + 1 ? 'active' : ''}`}
+                      onClick={() => myhandleClick(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
               </div>
+              <Job_create />
             </div>
           }
-          {selectedOption === 'Αγγελίες άλλων' && <div>Content for Option 2</div>}
-          <div className="black-frame">
-            <h2>Δημιουργία Νέας Αγγελίας</h2>
-            <div className="job-input-group">
-              <label htmlFor="title">Τίτλος</label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={handleTitleChange}
-                placeholder="Δώστε έναν τίτλο στο άρθρο σας"
-              />
-            </div>
-            <div className="job-input-group">
-              <label htmlFor="title">Επαγγελματικός φορέας</label>
-              <input
-                type="text"
-                id="title"
-                value={company}
-                onChange={handleTitleChange}
-                placeholder="Δώστε έναν τίτλο στο άρθρο σας"
-              />
-            </div>
-            <div className="job-input-group">
-              <label htmlFor="title">Ειδικότητα</label>
-              <input
-                type="text"
-                id="title"
-                value={speciality}
-                onChange={handleTitleChange}
-                placeholder="Δώστε έναν τίτλο στο άρθρο σας"
-              />
-            </div>
-            <div className="job-input-group">
-              <label htmlFor="title">Περιοχή</label>
-              <input
-                type="text"
-                id="title"
-                value={location}
-                onChange={handleTitleChange}
-                placeholder="Δώστε έναν τίτλο στο άρθρο σας"
-              />
-            </div>
-            <div className="job-input-group">
-              <label htmlFor="title">Απασχόληση</label>
-              <input
-                type="text"
-                id="title"
-                value={type}
-                onChange={handleTitleChange}
-                placeholder="Δώστε έναν τίτλο στο άρθρο σας"
-              />
-            </div>
-          </div>
-        </div>
+          {(selectedOption === 'Οι αγγελίες μου' && myselectedJob != null) &&
+            <div className="job-split">
+              <div>
 
+                <button className="job-display" onClick={() => HandleMyJobSelect(null)}>
+                  <div className="job-display-title">
+                    + Νέα Αγγελία
+                  </div>
+                </button>
+
+                {mycurrentJobs.map((job, index) => (
+                  <div>
+                    {job.id === myselectedJob.id ? (
+                      <button className="job-display-selected" onClick={() => HandleMyJobSelect(job)}>
+                        <div key={index}>
+                          <div className="job-display-title">
+                            <p>{job.title}</p>
+                            <p>{job.date}</p>
+                          </div>
+                          <h5>{job.company}</h5>
+                          <h6>Ζητείται {job.specialization}</h6>
+                          <div className="job-display-title">
+                            <p>{job.type}</p>
+                            <p>{job.salary}</p>
+                          </div>
+
+                        </div>
+                      </button>
+                    ) : (
+                      <button className="job-display" onClick={() => HandleMyJobSelect(job)}>
+                        <div key={index}>
+                          <div className="job-display-title">
+                            <p>{job.title}</p>
+                            <p>{job.date}</p>
+                          </div>
+                          <h5>{job.company}</h5>
+                          <h6>Ζητείται {job.specialization}</h6>
+                          <div className="job-display-title">
+                            <p>{job.type}</p>
+                            <p>{job.salary}</p>
+                          </div>
+
+                        </div>
+                      </button>
+                    )}
+
+                  </div>
+                ))}
+                <div className="network-pagination">
+                  {[...Array(mytotalPages)].map((_, index) => (
+                    <button
+                      key={index}
+                      className={`network-page-button ${mycurrentPage === index + 1 ? 'active' : ''}`}
+                      onClick={() => myhandleClick(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Job
+                id={myselectedJob.id}
+                title={myselectedJob.title}
+                company={myselectedJob.company}
+                location={myselectedJob.location}
+                date={myselectedJob.date}
+                type={myselectedJob.type}
+                speciality={myselectedJob.speciality}
+                experience={myselectedJob.experience}
+                salary={myselectedJob.salary}
+                detail={myselectedJob.detail}
+              />
+            </div>
+          }
+          {selectedOption === 'Αγγελίες άλλων' &&
+            <div className="job-split">
+              <div>
+                {currentJobs.map((job, index) => (
+                  <div>
+                    {job.id === selectedJob.id ? (
+                      <button className="job-display-selected" onClick={() => HandleJobSelect(job)}>
+                        <div key={index}>
+                          <div className="job-display-title">
+                            <p>{job.title}</p>
+                            <p>{job.date}</p>
+                          </div>
+                          <h5>{job.company}</h5>
+                          <h6>Ζητείται {job.specialization}</h6>
+                          <div className="job-display-title">
+                            <p>{job.type}</p>
+                            <p>{job.salary}</p>
+                          </div>
+
+                        </div>
+                      </button>
+                    ) : (
+                      <button className="job-display" onClick={() => HandleJobSelect(job)}>
+                        <div key={index}>
+                          <div className="job-display-title">
+                            <p>{job.title}</p>
+                            <p>{job.date}</p>
+                          </div>
+                          <h5>{job.company}</h5>
+                          <h6>Ζητείται {job.specialization}</h6>
+                          <div className="job-display-title">
+                            <p>{job.type}</p>
+                            <p>{job.salary}</p>
+                          </div>
+                        </div>
+                      </button>
+                    )}
+
+                  </div>
+                ))}
+                <div className="network-pagination">
+                  {[...Array(totalPages)].map((_, index) => (
+                    <button
+                      key={index}
+                      className={`network-page-button ${currentPage === index + 1 ? 'active' : ''}`}
+                      onClick={() => handleClick(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Job
+                id={selectedJob.id}
+                title={selectedJob.title}
+                company={selectedJob.company}
+                location={selectedJob.location}
+                date={selectedJob.date}
+                type={selectedJob.type}
+                speciality={selectedJob.speciality}
+                experience={selectedJob.experience}
+                salary={selectedJob.salary}
+                detail={selectedJob.detail}
+              />
+            </div>
+          }
+
+        </div>
       </div>
       <MainBottom />
       <Footer />
