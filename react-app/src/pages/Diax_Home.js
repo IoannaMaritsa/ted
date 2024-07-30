@@ -1,13 +1,19 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo , useEffect} from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
+import { useAppContext } from "../context/appContext";
 import '../css/admin.css';
+import { Link } from 'react-router-dom';
+import UserRow from "../components/UserRow";
 
 export default function Diax_Home() {
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'ascending' });
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { setUserProfile} = useAppContext();
+
   const itemsPerPage = 6;
 
   // Initial users state
@@ -24,14 +30,6 @@ export default function Diax_Home() {
     { id: 10, name: 'Jack', email: 'jack@example.com', registrationDate: '2023-10-01', profilePic: 'default-avatar.jpeg' },
     { id: 11, name: 'Kara', email: 'kara@example.com', registrationDate: '2023-11-01', profilePic: 'default-avatar.jpeg' },
     { id: 12, name: 'Liam', email: 'liam@example.com', registrationDate: '2023-12-01', profilePic: 'default-avatar.jpeg' },
-    { id: 13, name: 'Mia', email: 'mia@example.com', registrationDate: '2024-01-01', profilePic: 'default-avatar.jpeg' },
-    { id: 14, name: 'Noah', email: 'noah@example.com', registrationDate: '2024-02-01', profilePic: 'default-avatar.jpeg' },
-    { id: 15, name: 'Olivia', email: 'olivia@example.com', registrationDate: '2024-03-01', profilePic: 'default-avatar.jpeg' },
-    { id: 16, name: 'Paul', email: 'paul@example.com', registrationDate: '2024-04-01', profilePic: 'default-avatar.jpeg' },
-    { id: 17, name: 'Quinn', email: 'quinn@example.com', registrationDate: '2024-05-01', profilePic: 'default-avatar.jpeg' },
-    { id: 18, name: 'Rachel', email: 'rachel@example.com', registrationDate: '2024-06-01', profilePic: 'default-avatar.jpeg' },
-    { id: 19, name: 'Sam', email: 'sam@example.com', registrationDate: '2024-07-01', profilePic: 'default-avatar.jpeg' },
-    { id: 20, name: 'Tina', email: 'tina@example.com', registrationDate: '2024-08-01', profilePic: 'default-avatar.jpeg' }
   ]);
 
   // Filter and sort users
@@ -107,6 +105,10 @@ export default function Diax_Home() {
     document.body.removeChild(a);
   };
 
+  const handleProfileClick = (user) => {
+    console.log(user);
+    setUserProfile(user);
+  }
 
   const handleSort = (key) => {
     let direction = 'ascending';
@@ -119,13 +121,14 @@ export default function Diax_Home() {
   return (
     <div className="admin">
       <Header variant="admin" />
+      <nav className="breadcrumbs">🏠︎/</nav>
       <main className="admin-main-div">
         <h2 className="title">Λίστα Χρηστών</h2>
 
         <div className="row1">
-  
+
           <button className="export-button" onClick={handleExport}>
-            
+
             <img src="export.png" alt="Export Icon" class="export-icon"></img>
             Export
           </button>
@@ -164,22 +167,12 @@ export default function Diax_Home() {
           </thead>
           <tbody>
             {currentUsers.map(user => (
-              <tr key={user.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={user.isSelected || false}
-                    onChange={() => {
-                      const updatedUsers = users.map(u => u.id === user.id ? { ...u, isSelected: !u.isSelected } : u);
-                      setUsers(updatedUsers);
-                    }}
-                  />
-                </td>
-                <td><img src={user.profilePic} alt={`${user.name}'s profile`} className="profile-pic" /></td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.registrationDate}</td>
-              </tr>
+              <UserRow
+                key={user.id}
+                user={user}
+                onProfileClick={handleProfileClick}
+                onCheckboxChange={handleCheckboxChange}
+              />
             ))}
           </tbody>
         </table>
