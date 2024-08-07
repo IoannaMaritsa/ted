@@ -28,6 +28,8 @@ export default function Epag_job_ad() {
 
   ];
 
+  const [data, setData] = useState(myjobs);
+
   const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
   const [myselectedJob, setMyselectedJob] = useState(null);
   const [selectedJob, setSelectedJob] = useState(jobs[0]);
@@ -79,10 +81,11 @@ export default function Epag_job_ad() {
     setCurrentPage(pageNumber);
   };
 
-  const handleSave = (updatedData) => {
-    
+  const handleSave = (index, updatedData) => {
+    const newData = [...data];
+    newData[index] = updatedData;
+    setData(newData);
   };
-
 
   return (
     <div>
@@ -204,7 +207,7 @@ export default function Epag_job_ad() {
               </div>
               <div className="jobs-right-section">
                 <MyJob
-                  id={myselectedJob.id}
+                  index={myselectedJob.id}
                   init_title={myselectedJob.title}
                   init_company={myselectedJob.company}
                   init_location={myselectedJob.location}

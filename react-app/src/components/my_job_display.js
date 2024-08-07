@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import './job_display.css';
 
-const MyJob = ({ id, init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail, onSave }) => {
+const MyJob = ({ index, init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail, onSave }) => {
     const [title, setTitle] = useState(init_title);
     const [company, setCompany] = useState(init_company);
     const [location, setLocation] = useState(init_location);
@@ -20,16 +20,18 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_sp
         const year = today.getFullYear();
         const formattedDate = `${month}/${day}/${year}`;
         setDate(formattedDate)
-        onSave({ title, company, location, date, type, speciality, experience, salary, detail });
+        onSave({ index, title, company, location, date, type, speciality, experience, salary, detail });
     };
 
     const locations = [
+        init_location,
         'Athens',
         'Peireus',
         'Hrakleio',
     ];
 
     const types = [
+        init_type,
         'Πλήρης',
         'Μερική',
         'Εθελοντισμός',
@@ -68,7 +70,7 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_sp
             </div>
             <div className="job-input-group">
                 <label htmlFor="location">Περιοχή</label>
-                <select id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={init_location} >
+                <select id="location" value={location} onChange={(e) => setLocation(e.target.value)} >
                     {locations.map((option, index) => (
                         <option key={index} value={option}>
                             {option}
