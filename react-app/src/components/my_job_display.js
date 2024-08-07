@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './job_display.css';
 
 const MyJob = ({ id, init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail, onSave }) => {
@@ -12,6 +12,18 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_sp
     const [experience, setExperience] = useState(init_experience);
     const [salary, setSalary] = useState(init_salary);
     const [detail, setDetail] = useState(init_detail);
+
+      // Effect to update state when props change
+      useEffect(() => {
+        setTitle(init_title || '');
+        setCompany(init_company || '');
+        setLocation(init_location || '');
+        setType(init_type || '');
+        setSpeciality(init_speciality || '');
+        setExperience(init_experience || '');
+        setSalary(init_salary || '');
+        setDetail(init_detail || '');
+    }, [init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail]);
 
     const handleSave = () => {
         const today = new Date();

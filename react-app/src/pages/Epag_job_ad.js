@@ -8,7 +8,7 @@ import Job_create from '../components/job_create';
 import Job from '../components/job_display';
 import MyJob from '../components/my_job_display';
 import '../css/Epag_job_ad.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Epag_job_ad() {
@@ -33,16 +33,21 @@ export default function Epag_job_ad() {
   const [selectedJob, setSelectedJob] = useState(jobs[0]);
 
   console.log(selectedOption);
+
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
-  };
+    setMyselectedJob(null); // Clear myselectedJob when switching options
+    setSelectedJob(null); // Clear selectedJob when switching options
+};
 
-  const HandleMyJobSelect = (job) => {
-    setMyselectedJob(job);
-  };
   const HandleJobSelect = (job) => {
-    setSelectedJob(job);
-  };
+    setSelectedJob(job); // This will trigger a re-render with the new job's details
+};
+
+const HandleMyJobSelect = (job) => {
+    setMyselectedJob(job); // This will trigger a re-render with the new job's details
+};
+
   console.log(myselectedJob);
 
   //pagination for my jobs
@@ -139,7 +144,7 @@ export default function Epag_job_ad() {
                 </div>
               </div>
               <div className="jobs-right-section">
-                <Job_create />
+              <Job_create/>
               </div>
             </div>
           }
