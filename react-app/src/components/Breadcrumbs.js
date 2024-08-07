@@ -13,7 +13,8 @@ const Breadcrumbs = () => {
     'epaggelmatias_article': 'Άρθρο',
     'epaggelmatias_aggelies': 'Αγγελίες',
     'contact': 'Contact',
-    'admin_user': 'Προφίλ Χρήστη'
+    'admin_user': 'Προφίλ Χρήστη',
+    'epaggelmatias_network': 'Δίκτυο',
     // Add more mappings as needed
   };
 

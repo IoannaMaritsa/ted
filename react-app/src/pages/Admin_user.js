@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import { useAppContext } from "../context/appContext";
 import '../css/admin.css';
-import { Link } from 'react-router-dom';
+import {exportDataProfile} from '../utils/exportUtils';
 import Breadcrumbs from "../components/Breadcrumbs";
 
 export default function Diax_Home() {
@@ -21,126 +21,8 @@ export default function Diax_Home() {
             // Set the admin status
             setIsAdmin(isUserAdmin);
         };
-
         checkUserRole();
     }, [setIsAdmin]);
-
-    const sanitizeTagName = (name) => {
-        // Check if the name starts with a digit
-        if (/^\d/.test(name)) {
-            // Prepend an underscore if the name starts with a digit
-            return `_${name}`;
-        }
-        // Replace any invalid characters with underscores
-        return name.replace(/[^a-zA-Z0-9_]/g, '_');
-    };
-
-    const escapeXML = (str) => {
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&apos;');
-    };
-
-    const convertToXML = (data, rootElement) => {
-        let xmlString = `<${rootElement}>`;
-
-        const toXML = (obj, sectionTitle) => {
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    let sanitizedKey = sanitizeTagName(key);
-
-                    if (Array.isArray(obj[key])) {
-                        if (sectionTitle) {
-                            xmlString += `<${sectionTitle}>`;
-                        }
-                        obj[key].forEach((item, index) => {
-                            xmlString += `<${sanitizedKey}>`;
-                            toXML(item);
-                            xmlString += `</${sanitizedKey}>`;
-                        });
-                        if (sectionTitle) {
-                            xmlString += `</${sectionTitle}>`;
-                        }
-                    } else if (typeof obj[key] === 'object') {
-                        xmlString += `<${sanitizedKey}>`;
-                        toXML(obj[key]);
-                        xmlString += `</${sanitizedKey}>`;
-                    } else {
-                        xmlString += `<${sanitizedKey}>${escapeXML(obj[key].toString())}</${sanitizedKey}>`;
-                    }
-                }
-            }
-        };
-
-        // Adding titles for each section with valid XML tags
-        xmlString += `<UserProfile>`;
-        toXML(data.userProfile);
-        xmlString += `</UserProfile>`;
-
-        xmlString += `<WorkExperience>`;
-        toXML(data.workExperience, 'Experience');
-        xmlString += `</WorkExperience>`;
-
-        xmlString += `<Studies>`;
-        toXML(data.studies, 'Study');
-        xmlString += `</Studies>`;
-
-        xmlString += `<Skills>`;
-        toXML(data.skills, 'Skill');
-        xmlString += `</Skills>`;
-
-        xmlString += `<JobAds>`;
-        toXML(data.jobAds, 'Ad');
-        xmlString += `</JobAds>`;
-
-        xmlString += `<Articles>`;
-        toXML(data.articles, 'Article');
-        xmlString += `</Articles>`;
-
-        xmlString += `<Comments>`;
-        toXML(data.comments, 'Comment');
-        xmlString += `</Comments>`;
-
-        xmlString += `<Likes>`;
-        toXML(data.likes, 'Like');
-        xmlString += `</Likes>`;
-
-        xmlString += `</${rootElement}>`;
-
-        return xmlString;
-    };
-
-
-
-
-    const downloadXML = (xmlString, filename) => {
-        const blob = new Blob([xmlString], { type: 'application/xml' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const handleExport = () => {
-        const userData = {
-            userProfile,
-            workExperience,
-            studies,
-            skills,
-            jobAds,
-            articles,
-            comments,
-            likes
-        };
-
-        const xmlString = convertToXML(userData, 'UserData');
-        downloadXML(xmlString, 'user_data.xml');
-    };
 
     const [workExperience, setWorkExperience] = useState([
         { company: 'Google', role: 'Software Engineer', duration: 'Jan 2020 - Dec 2021' },
@@ -190,7 +72,7 @@ export default function Diax_Home() {
         // Add more entries as needed
     ]);
 
-    const exportData = () => {
+    const handleExport = () => {
         const data = {
             userProfile,
             workExperience,
@@ -201,23 +83,9 @@ export default function Diax_Home() {
             comments,
             likes
         };
-
-        let blob;
-        if (exportFormat === 'xml') {
-            const xmlContent = convertToXML(data, 'UserData');
-            blob = new Blob([xmlContent], { type: 'application/xml' });
-        } else {
-            blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        }
-
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `export.${exportFormat}`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
+        exportDataProfile(data, exportFormat, 'export');
+      };
+    
     return (
         <div>
             <Header variant="admin" />
@@ -227,7 +95,7 @@ export default function Diax_Home() {
                     <div className="inner-container">
                         <div class="a-container">
                             <div class="a-square-div">
-                                <div class="a-profile-pic"> <img src={userProfile.profilePic}></img></div>
+                                <div class="a-profile-pic"> <img src={userProfile.profilePic} alt ="Profile"></img></div>
                                 <div class="user-text">
                                     <div class="a-name">{userProfile.name}</div>
                                     <div class="a-profession">Software Engineer</div>
@@ -240,7 +108,7 @@ export default function Diax_Home() {
                                     <option value="json">JSON</option>
                                     <option value="xml">XML</option>
                                 </select>
-                                <button class="a-export-button" onClick={exportData}> <img src="export.png" alt="Export Icon" class="export-icon"></img>
+                                <button class="a-export-button" onClick={handleExport}> <img src="export.png" alt="Export Icon" class="export-icon"></img>
                                     Export</button>
                             </div>
                             <div class="a-square-div2">
@@ -378,11 +246,7 @@ export default function Diax_Home() {
                                 )}
                             </div>
                         </div>
-
-
-
                     </div>
-
                 </div>
             </main>
             <MainBottom />

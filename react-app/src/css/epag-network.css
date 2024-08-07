@@ -1,0 +1,152 @@
+.center-square {
+    width: 950px;
+    height: 750px;
+    background-color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-collapse: collapse;
+    box-sizing: border-box;
+    overflow: auto;
+    /* Ensure internal scrolling if needed */
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    
+}
+
+.box-header {
+    width: 950px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Space between header and centered box */
+    padding: 0 20px; /* Padding for the header */
+    box-sizing: border-box;
+}
+
+.title2 {
+    font-size: 1.8rem;
+    color: var(--text-dark-grey);
+    /* Allows the title to take available space */
+    text-align: left;
+    /* Adjust color as needed */
+    margin-right: 500px;
+}
+
+
+
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 85vh;
+    padding: 20px;
+    background-color: var(--background-color);
+    min-height: 85vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Grid container styling */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    column-gap: 20px;
+    width: 100%;
+    margin:0;
+    max-width: 1200px;
+    justify-content: start; /* Align items to the start (left) */
+    align-content: start; /* Align items to the top */
+    padding: 30px; /* Add padding to the container */
+    box-sizing: border-box;
+}
+
+/* Box styling */
+.box {
+    background-color: #ffffff; /* Light grey background for boxes */
+    padding: 20px;
+    text-align: center;
+    height: 270px;
+    width: 230px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.name{
+    font-weight: bold;
+    font-family: var(--font-basic);
+    font-size:larger;
+    margin: 2px;
+    margin-bottom: 0px;
+}
+
+.e-profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin-bottom: 0px;
+}
+
+.e-profession {
+    color: #000000;
+    font-family: var(--font-basic);
+    font-size:medium;
+    font-weight: 500;
+    margin: 0px;
+}
+
+.e-workplace{
+    color: #6E6E6E;
+    font-size: 15px;
+    font-family: var(--font-basic);
+    margin: 1px;
+}
+
+.workplace-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+}
+
+.workplace-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+}
+
+.user-info{
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    margin-bottom: 30px;
+}
+
+.info-button {
+    padding: 8px 15px;
+    border: none;
+    background-color: var(--button-grey);
+    color: white;
+    font-weight: bold;
+    font-family: var(--font-basic);
+    cursor: pointer;
+    border-radius: 20px;
+    font-size: 14px;
+    transition:  background-color 0.3s ease, color 0.3s ease;
+}
+
+.info-button:hover {
+    outline: 1.5px solid var(--button-grey);
+    background-color: white;
+    color: var(--button-grey);
+  }
