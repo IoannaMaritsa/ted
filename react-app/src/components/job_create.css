@@ -1,0 +1,55 @@
+.job-input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.job-input-group label {
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .job-input-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  .job-input-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 80%;
+  }
+
+  .job-input-group textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 80%;
+  }
+
+  .jobs-create-button {
+    margin-left: 80%;
+    margin-top: 20px;
+    padding: 13px 20px;
+    border: none;
+    background-color: var(--button-yellow);
+    color: #444;
+    font-weight: bold;
+    font-family: var(--font-basic);
+    cursor: pointer;
+    border-radius: 20px;
+    font-size: 14px;
+    border: 2px solid var(--button-yellow);
+    transition: background-color 0.3s ease;
+  }
+
+  .jobs-create-button:hover {
+    background-color: var(--button-hover-yellow);
+    border: 2px solid var(--button-hover-yellow);
+  }

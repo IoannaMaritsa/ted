@@ -6,6 +6,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import Dropdown from '../components/dropdown';
 import Job_create from '../components/job_create';
 import Job from '../components/job_display';
+import MyJob from '../components/my_job_display';
 import '../css/Epag_job_ad.css';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -22,7 +23,7 @@ export default function Epag_job_ad() {
   ];
 
   const myjobs = [
-    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1', submitions: [{name: 'Αννιτα Πάνια',date: [23-2-2024]}, {name: 'Στεφανος Χίος',date: [20-3-2007]}] },
+    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1', submitions: [{ name: 'Αννιτα Πάνια', date: [23 - 2 - 2024] }, { name: 'Στεφανος Χίος', date: [20 - 3 - 2007] }] },
     { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Neo Hrakleio', date: 'June 4, 2024', type: 'Part-time', specialization: 'Customer Service', experience: '4', salary: '10.000', details: 'Some more info 2' },
 
   ];
@@ -78,6 +79,10 @@ export default function Epag_job_ad() {
     setCurrentPage(pageNumber);
   };
 
+  const handleSave = (updatedData) => {
+    
+  };
+
 
   return (
     <div>
@@ -96,7 +101,7 @@ export default function Epag_job_ad() {
         <div>
           {(selectedOption === 'Οι αγγελίες μου' && myselectedJob === null) &&
             <div className="job-split">
-              <div>
+              <div className="jobs-left-section">
 
                 <div className="job-display-selected">
                   <div className="job-display-title">
@@ -133,13 +138,14 @@ export default function Epag_job_ad() {
                   ))}
                 </div>
               </div>
-              <Job_create />
+              <div className="jobs-right-section">
+                <Job_create />
+              </div>
             </div>
           }
           {(selectedOption === 'Οι αγγελίες μου' && myselectedJob != null) &&
             <div className="job-split">
-              <div>
-
+              <div className="jobs-left-section">
                 <button className="job-display" onClick={() => HandleMyJobSelect(null)}>
                   <div className="job-display-title">
                     + Νέα Αγγελία
@@ -196,23 +202,25 @@ export default function Epag_job_ad() {
                   ))}
                 </div>
               </div>
-              <Job
-                id={myselectedJob.id}
-                title={myselectedJob.title}
-                company={myselectedJob.company}
-                location={myselectedJob.location}
-                date={myselectedJob.date}
-                type={myselectedJob.type}
-                speciality={myselectedJob.speciality}
-                experience={myselectedJob.experience}
-                salary={myselectedJob.salary}
-                detail={myselectedJob.detail}
-              />
+              <div className="jobs-right-section">
+                <MyJob
+                  id={myselectedJob.id}
+                  init_title={myselectedJob.title}
+                  init_company={myselectedJob.company}
+                  init_location={myselectedJob.location}
+                  init_type={myselectedJob.type}
+                  init_speciality={myselectedJob.specialization}
+                  init_experience={myselectedJob.experience}
+                  init_salary={myselectedJob.salary}
+                  init_detail={myselectedJob.details}
+                  onSave={handleSave}
+                />
+              </div>
             </div>
           }
           {selectedOption === 'Αγγελίες άλλων' &&
             <div className="job-split">
-              <div>
+              <div className="jobs-left-section">
                 {currentJobs.map((job, index) => (
                   <div>
                     {job.id === selectedJob.id ? (
