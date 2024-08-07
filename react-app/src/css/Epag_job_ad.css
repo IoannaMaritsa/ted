@@ -9,9 +9,8 @@
 
 .job-split {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 95%;
+    align-items: baseline;
+    justify-content: left;
     padding: 10px 20px;
 }
 .job-display{
@@ -67,8 +66,18 @@
     font-weight: 400;
 }
 
-.black-frame {
+.jobs-left-section {
+    flex: 0 0 20%;
+    padding: 10px;
+}
+
+.jobs-right-section {
     flex: 1;
-    background-color: var(--button-grey);
+    padding: 10px;
+}
+
+.black-frame {
+    background-color: #444;
     padding: 20px;
+    color: #fff;
 }

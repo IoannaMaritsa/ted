@@ -3,8 +3,8 @@ import './job_display.css';
 
 const Job = ({ id, title, company, location, date, type, speciality, experience, salary, detail }) => {
     return (
-        <div className="article">
-            <h2 className="article-title">{title}</h2>
+        <div className="black-frame">
+            <h2>{title}</h2>
             <div className="article-meta">
                 <div className="article-author">
                     <img src="/user.png" alt="User Icon" className="icon" />

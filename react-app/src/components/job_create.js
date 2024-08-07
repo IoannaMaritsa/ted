@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import './job_display.css';
+import './job_create.css';
 
 const Job_create = () => {
     const [title, setTitle] = useState('');
@@ -155,7 +155,7 @@ const Job_create = () => {
                         placeholder="Δώστε περισσότερες πληροφορίες"
                     />
                 </div>
-                <button className='button-primary' onClick={handleClick}>Καταχώριση</button>
+                <button className='jobs-create-button' onClick={handleClick}>Καταχώριση</button>
             </div>
         </div>
     );
