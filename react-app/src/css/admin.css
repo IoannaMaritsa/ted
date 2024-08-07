@@ -227,7 +227,7 @@
     color: var(--text-dark-grey);
     position: absolute;
     left: 90px;
-    top: 10s0px;
+    top: 10px;
     flex: 1;
     /* Allows the title to take available space */
     text-align: left;
@@ -235,6 +235,18 @@
     margin-bottom: 20px;
 }
 
+.ebutton-div{
+    display: flex;
+    flex-direction: column;
+    margin-right: 850px;
+    gap: 10px;
+}
+
+.export-select{
+    text-align: center;
+    width: 80px;
+    height: 20px;
+}
 .export-button {
 
     display: flex;

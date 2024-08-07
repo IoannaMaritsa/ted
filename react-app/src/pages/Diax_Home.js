@@ -1,18 +1,18 @@
-import React, { useState, useMemo , useEffect} from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import { useAppContext } from "../context/appContext";
 import '../css/admin.css';
-import { Link } from 'react-router-dom';
+import {exportData} from '../utils/exportUtils';
 import UserRow from "../components/UserRow";
 
 export default function Diax_Home() {
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'ascending' });
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-
-  const { setUserProfile} = useAppContext();
+  const [exportFormat, setExportFormat] = useState('json');
+  const {setUserProfile } = useAppContext();
 
   const itemsPerPage = 6;
 
@@ -68,42 +68,25 @@ export default function Diax_Home() {
     }
   };
 
+  const handleExport = () => {
+    const data = filteredUsers.map(user => ({
+      name: user.name,
+      email: user.email,
+      registrationDate: user.registrationDate
+    }));
+    exportData(data, exportFormat, 'export');
+  };
+
+
+
+
   const handleCheckboxChange = (e) => {
     const isChecked = e.target.checked;
     const updatedUsers = users.map(user => ({ ...user, isSelected: isChecked }));
     setUsers(updatedUsers);
   };
 
-  const handleExport = () => {
-    const selectedUsers = users.filter(user => user.isSelected);
-    const xml = generateXML(selectedUsers);
-    downloadXML(xml, 'selected_users.xml');
-  };
 
-  const generateXML = (selectedUsers) => {
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<users>\n';
-    selectedUsers.forEach(user => {
-      xml += `  <user>\n`;
-      xml += `    <id>${user.id}</id>\n`;
-      xml += `    <name>${user.name}</name>\n`;
-      xml += `    <email>${user.email}</email>\n`;
-      xml += `    <registrationDate>${user.registrationDate}</registrationDate>\n`;
-      xml += `  </user>\n`;
-    });
-    xml += '</users>';
-    return xml;
-  };
-
-  const downloadXML = (xml, filename) => {
-    const blob = new Blob([xml], { type: 'application/xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
 
   const handleProfileClick = (user) => {
     console.log(user);
@@ -118,20 +101,27 @@ export default function Diax_Home() {
     setSortConfig({ key, direction });
   };
 
+
+
   return (
     <div className="admin">
       <Header variant="admin" />
       <nav className="breadcrumbs">🏠︎/</nav>
       <main className="admin-main-div">
         <h2 className="title">Λίστα Χρηστών</h2>
-
         <div className="row1">
-
-          <button className="export-button" onClick={handleExport}>
-
-            <img src="export.png" alt="Export Icon" class="export-icon"></img>
-            Export
-          </button>
+          <div className="ebutton-div">
+            <select
+              value={exportFormat}
+              onChange={(e) => setExportFormat(e.target.value)}
+              className="export-select"
+            >
+              <option value="json">JSON</option>
+              <option value="xml">XML</option>
+            </select>
+            <button class="a-export-button" onClick={handleExport}> <img src="export.png" alt="Export Icon" class="export-icon"></img>
+              Export</button>
+          </div>
           <div className="search-container">
             <input
               type="text"
@@ -143,7 +133,6 @@ export default function Diax_Home() {
             <img src="search.png" alt="Search Icon" className="search-icon"></img>
           </div>
         </div>
-
         <table className="admin-box">
           <thead>
             <tr>
