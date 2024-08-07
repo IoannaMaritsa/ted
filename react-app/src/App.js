@@ -12,7 +12,7 @@ import Epag_article from "./pages/Epag_article.js";
 import Epag_job_ad from "./pages/Epag_job_ad.js";
 import Epag_messages from "./pages/Epag_messages.js";
 import Epag_network from "./pages/Epag_network.js";
-import Epag_network_search from "./pages/Epag_network_search.js";
+import Epag_network_profile from "./pages/Epag_network_profile.js";
 import Epag_notifications from "./pages/Epag_notifications.js";
 import Epag_pinformation from "./pages/Epag_pinformation.js";
 import Epag_profile from "./pages/Epag_profile.js";
@@ -47,7 +47,7 @@ export default function App() {
             <Route path="/epaggelmatias_aggelies" element={<Epag_job_ad />} />
             <Route path="/epaggelmatias_messages" element={<Epag_messages />} />
             <Route path="/epaggelmatias_network" element={<Epag_network />} />
-            <Route path="/epaggelmatias_network_serch" element={<Epag_network_search />} />
+            <Route path="/epaggelmatias_network_profile" element={<Epag_network_profile />} />
             <Route path="/epaggelmatias_notifications" element={<Epag_notifications />} />
             <Route path="/epaggelmatias_personal_info" element={<Epag_pinformation />} />
             <Route path="/epaggelmatias_profile" element={<Epag_profile />} />

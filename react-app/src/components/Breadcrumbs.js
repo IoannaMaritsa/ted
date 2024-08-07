@@ -15,6 +15,7 @@ const Breadcrumbs = () => {
     'contact': 'Contact',
     'admin_user': 'Προφίλ Χρήστη',
     'epaggelmatias_network': 'Δίκτυο',
+    'epaggelmatias_network_profile':'Προφίλ Χρήστη',
     // Add more mappings as needed
   };
 
