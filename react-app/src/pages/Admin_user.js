@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
@@ -95,7 +95,7 @@ export default function Diax_Home() {
                     <div className="inner-container">
                         <div class="a-container">
                             <div class="a-square-div">
-                                <div class="a-profile-pic"> <img src={userProfile.profilePic}></img></div>
+                                <div class="a-profile-pic"> <img src={userProfile.profilePic} alt ="Profile"></img></div>
                                 <div class="user-text">
                                     <div class="a-name">{userProfile.name}</div>
                                     <div class="a-profession">Software Engineer</div>

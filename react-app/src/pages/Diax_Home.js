@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
@@ -118,7 +118,7 @@ export default function Diax_Home() {
             >
               <option value="json">JSON</option>
               <option value="xml">XML</option>
-            </select>
+            </select> 
             <button class="a-export-button" onClick={handleExport}> <img src="export.png" alt="Export Icon" class="export-icon"></img>
               Export</button>
           </div>

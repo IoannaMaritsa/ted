@@ -61,6 +61,7 @@ const convertToXML2 = (data, rootElement) => {
             }
         }
     };
+
     // Adding titles for each section with valid XML tags
     xmlString += `<UserProfile>`;
     toXML(data.userProfile);
