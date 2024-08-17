@@ -4,11 +4,15 @@ import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Breadcrumbs from "../components/Breadcrumbs";
 import '../css/epag-network.css';
-import { useState, useMemo } from 'react';
+import { useAppContext } from "../context/appContext";
+import { useState, useMemo , useEffect} from 'react';
+import { ProfileButton } from "../components/other";
+import { useNavigate } from 'react-router-dom';
 
 export default function Epag_network() {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState();
+    const {setOtherProfile, otherProfile} = useAppContext();
 
     const itemsPerPage = 6;
     const users = [
@@ -17,57 +21,57 @@ export default function Epag_network() {
             profilePic: 'default-avatar.jpeg',
             name: 'Alice Johnson',
             profession: 'Software Engineer',
-            workplace: 'Tech Solutions Inc.'
+            workplace: 'Tech Solutions Inc.',
         },
         {
             id: 2,
             profilePic: 'default-avatar.jpeg',
             name: 'Bob Smith',
             profession: 'Graphic Designer',
-            workplace: 'Creative Studio Ltd.'
+            workplace: 'Creative Studio Ltd.',
         },
         {
             id: 3,
             profilePic: 'default-avatar.jpeg',
             name: 'Charlie Brown',
             profession: 'Product Manager',
-            workplace: 'Innovate Co.'
+            workplace: 'Innovate Co.',
         },
         {
             id: 4,
             profilePic: 'default-avatar.jpeg',
             name: 'David Wilson',
             profession: 'Marketing Specialist',
-            workplace: 'AdVantage Agency'
+            workplace: 'AdVantage Agency',
         },
         {
             id: 5,
             profilePic: 'default-avatar.jpeg',
             name: 'Eve Davis',
             profession: 'Data Analyst',
-            workplace: 'Data Insights Corp.'
+            workplace: 'Data Insights Corp.',
         },
         {
             id: 6,
             profilePic: 'default-avatar.jpeg',
             name: 'Frank Miller',
             profession: 'UX/UI Designer',
-            workplace: 'Design Dynamics LLC'
+            workplace: 'Design Dynamics LLC',
         },
         {
             id: 7,
             profilePic: 'default-avatar.jpeg',
             name: 'Grace Lee',
             profession: 'Financial Advisor',
-            workplace: 'Finance Solutions'
+            workplace: 'Finance Solutions',
         },
         {
             id: 8,
             profilePic: 'default-avatar.jpeg',
             name: 'Henry Walker',
             profession: 'HR Manager',
-            workplace: 'People First Inc.'
-        }
+            workplace: 'People First Inc.',
+        },
     ];
 
 
@@ -78,8 +82,8 @@ export default function Epag_network() {
             const profession = (user.profession || '').toLowerCase();
             const workplace = (user.workplace || '').toLowerCase();
             return name.includes(query) ||
-                   profession.includes(query) ||
-                   workplace.includes(query);
+                profession.includes(query) ||
+                workplace.includes(query);
         });
     }, [searchQuery, users]);
 
@@ -97,6 +101,20 @@ export default function Epag_network() {
         }
     };
 
+    const navigate = useNavigate();
+
+    const handleProfileClick = (user) => {
+        console.log(user);
+        setOtherProfile(user);
+       
+        // Navigate programmatically if needed
+        // e.g., using a history object from react-router-dom
+        navigate('/epaggelmatias_network/user_profile');
+    }
+
+    useEffect(() => {
+        console.log('Updated otherProfile:', otherProfile);
+    }, [otherProfile]);
 
     return (
         <div>
@@ -128,9 +146,16 @@ export default function Epag_network() {
                                         <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />
                                         <p className="e-workplace">{user.workplace}</p>
                                     </div>
-                                    
+
                                 </div>
-                                <button className="info-button">Προβολή Προφίλ</button>
+
+                                <button
+                                    className="info-button"
+                                    user = {user}
+                                    onClick={() => handleProfileClick(user)}
+                                >
+                                    Προβολή Προφίλ
+                                </button>
                             </div>
                         ))}
                     </div>
