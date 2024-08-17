@@ -13,6 +13,13 @@ import { Link } from 'react-router-dom';
 
 export default function Epag_job_ad() {
 
+  const locations = [
+    'Όλες',
+    'Athens',
+    'Peireus',
+    'Hrakleio',
+  ]; 
+
   const jobs = [
     { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1' },
     { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Neo Hrakleio', date: 'June 4, 2024', type: 'Part-time', specialization: 'Customer Service', experience: '4', salary: '10.000', details: 'Some more info 2' },
@@ -23,8 +30,8 @@ export default function Epag_job_ad() {
   ];
 
   const myjobs = [
-    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1', submitions: [{ name: 'Αννιτα Πάνια', date: [23 - 2 - 2024] }, { name: 'Στεφανος Χίος', date: [20 - 3 - 2007] }] },
-    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Neo Hrakleio', date: 'June 4, 2024', type: 'Part-time', specialization: 'Customer Service', experience: '4', salary: '10.000', details: 'Some more info 2' },
+    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1', submissions: [{ name: 'Αννιτα Πάνια', date: '23 / 2 / 2024' }, { name: 'Στεφανος Χίος', date: '20 / 2 / 2007' }] },
+    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Neo Hrakleio', date: 'June 4, 2024', type: 'Part-time', specialization: 'Customer Service', experience: '4', salary: '10.000', details: 'Some more info 2', submissions: [{ name: 'Αννιτα Πάνια', date: '23 / 2 / 2024' }] },
 
   ];
 
@@ -39,18 +46,18 @@ export default function Epag_job_ad() {
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
     setMyselectedJob(null); // Clear myselectedJob when switching options
-    setSelectedJob(null); // Clear selectedJob when switching options
-};
+    setSelectedJob(jobs[0]); // Clear selectedJob when switching options
+  };
 
   const HandleJobSelect = (job) => {
     setSelectedJob(job); // This will trigger a re-render with the new job's details
-};
+  };
 
-const HandleMyJobSelect = (job) => {
+  const HandleMyJobSelect = (job) => {
     setMyselectedJob(job); // This will trigger a re-render with the new job's details
-};
+  };
 
-  console.log(myselectedJob);
+  console.log(selectedJob);
 
   //pagination for my jobs
   const [mycurrentPage, setMyCurrentPage] = useState(1);
@@ -99,6 +106,11 @@ const HandleMyJobSelect = (job) => {
       <div className="main">
         <div className="job-options">
           <Dropdown options={['Οι αγγελίες μου', 'Αγγελίες άλλων']} onOptionSelect={handleOptionSelect} />
+          <Dropdown options={locations} />
+
+          {(selectedOption === 'Αγγελίες άλλων') &&
+            <Dropdown options={['Από Όλους τους Χρήστες', 'Συνδεδεμένους', 'Μη Συνδεδεμένους']} />
+          }
         </div>
         <div className="job-options">
           <Dropdown options={['Δημοσίευση Όλες', 'Την τελευταία εβδομάδα', 'Τον τελευταίο μήνα']} />
@@ -147,7 +159,7 @@ const HandleMyJobSelect = (job) => {
                 </div>
               </div>
               <div className="jobs-right-section">
-              <Job_create/>
+                <Job_create />
               </div>
             </div>
           }
@@ -221,6 +233,7 @@ const HandleMyJobSelect = (job) => {
                   init_experience={myselectedJob.experience}
                   init_salary={myselectedJob.salary}
                   init_detail={myselectedJob.details}
+                  init_submissions={myselectedJob.submissions}
                   onSave={handleSave}
                 />
               </div>
@@ -278,18 +291,20 @@ const HandleMyJobSelect = (job) => {
                   ))}
                 </div>
               </div>
-              <Job
-                id={selectedJob.id}
-                title={selectedJob.title}
-                company={selectedJob.company}
-                location={selectedJob.location}
-                date={selectedJob.date}
-                type={selectedJob.type}
-                speciality={selectedJob.speciality}
-                experience={selectedJob.experience}
-                salary={selectedJob.salary}
-                detail={selectedJob.detail}
-              />
+              <div className="jobs-right-section">
+                <Job
+                  id={selectedJob.id}
+                  title={selectedJob.title}
+                  company={selectedJob.company}
+                  location={selectedJob.location}
+                  date={selectedJob.date}
+                  type={selectedJob.type}
+                  speciality={selectedJob.specialization}
+                  experience={selectedJob.experience}
+                  salary={selectedJob.salary}
+                  detail={selectedJob.details}
+                />
+              </div>
             </div>
           }
 

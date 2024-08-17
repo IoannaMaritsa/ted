@@ -1,0 +1,21 @@
+.job-display-box {
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+}
+
+.job-display-sector {
+    border-bottom: 2.5px solid var(--text-dark-grey);
+}
+
+.job-display-date{
+    text-align: right;
+    font-size: medium;
+}
+
+.job-display-info{
+    display: flex;
+    align-items: baseline;
+    justify-content: left;
+    height: fit-content;
+}
