@@ -1,0 +1,86 @@
+.notifications-page {
+    padding: 20px;
+  }
+  
+  h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+  }
+  
+  .scrollable-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+  
+  .notification-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  .notification-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .notification-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .name {
+    font-weight: bold;
+  }
+  
+  .time {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .request-buttons {
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .accept-button,
+  .decline-button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .accept-button {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .decline-button {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .comment {
+    margin-top: 5px;
+    padding: 5px 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    font-style: italic;
+    color: #555;
+  }

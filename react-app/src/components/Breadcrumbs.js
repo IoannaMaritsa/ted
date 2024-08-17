@@ -16,6 +16,7 @@ const Breadcrumbs = () => {
     'admin_user': 'Προφίλ Χρήστη',
     'epaggelmatias_network': 'Δίκτυο',
     'epaggelmatias_network_profile':'Προφίλ Χρήστη',
+    'epaggelmatias_notifications':'Ειδοποιήσεις'
     // Add more mappings as needed
   };
 
