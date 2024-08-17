@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import './job_display.css';
 
-const MyJob = ({ index, init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail, onSave }) => {
+const MyJob = ({ index, init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail, init_submissions, onSave }) => {
     const [title, setTitle] = useState(init_title);
     const [company, setCompany] = useState(init_company);
     const [location, setLocation] = useState(init_location);
@@ -13,8 +13,8 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
     const [salary, setSalary] = useState(init_salary);
     const [detail, setDetail] = useState(init_detail);
 
-      // Effect to update state when props change
-      useEffect(() => {
+    // Effect to update state when props change
+    useEffect(() => {
         setTitle(init_title || '');
         setCompany(init_company || '');
         setLocation(init_location || '');
@@ -131,6 +131,25 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                 />
             </div>
             <button className='jobs-create-button' onClick={handleSave}>Αποθήκευση</button>
+            <div className='job_submitions'>
+                <h3>Αιτήσεις</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ονοματεπώνυμο</th>
+                            <th>Ημερομηνία Αίτησης</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {init_submissions.map((submission, idx) => (
+                            <tr key={idx}>
+                                <td>{submission.name}</td>
+                                <td>{submission.date}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };
