@@ -1,0 +1,263 @@
+/* messaging.css */
+.messaging-page {
+    display: flex;
+    background-color: var(--background-color);
+    flex-direction: column;
+    align-items: center; /* Center horizontally */   
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full viewport width */
+    padding: 20px; /* Padding around the container */
+    padding-top: 50px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.mess-header {
+    width: 900px; /* Match the width of the main content */
+    display: flex;
+    justify-content: left; /* Center the header horizontally */
+    margin-bottom: 20px; /* Space between title and main content */
+}
+
+.mess-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold; /* Make title bold */
+    color: #333; /* Dark color for the title */
+}
+
+.main-content-mess {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 900px; /* Fixed width for the main content */
+    height: 500px; /* Fixed height for the main content */
+    background-color: #f9f9f9; /* Background color for the main content */
+    border: 1px solid var(--border-color); /* Light border for the container */
+    border-radius: 8px; /* Rounded corners */
+}
+
+.message-container {
+    width: 100%; /* Full width of the main content */
+    height: 100%; /* Full height of the main content */
+    flex: 1;
+    background-color: #fff;
+    border-left: 1px solid var(--border-color);
+    border-top-right-radius: 8px;
+    position: relative; /* For absolute positioning of the footer */
+    border-bottom-right-radius: 8px;
+    display: flex;
+    flex-direction: column;
+   
+}
+
+.sidebar {
+    width: 270px;
+    height: 100%;
+    background-color: #f8f8f8;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.contact {
+    display: flex;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+    padding: 20px;
+    position: relative; /* For absolute positioning of name */
+    cursor: pointer;
+   
+}
+
+
+
+.contact:last-child {
+    border-bottom: none; /* Remove border from the last contact */
+}
+
+
+.contact-pic {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.contact-name {
+    font-size: 16px;
+    color: #333;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    margin: 0; /* Remove margin to align text close to image */
+    position: absolute; /* Position the text absolutely */
+    left: 110px; /* Adjust to align text starting point */
+    top: 35%; /* Center text vertically in the contact container */
+    transform: translateY(-50%); /* Center text vertically in the container */
+  
+}
+
+.contact.selected {
+    background-color: #fff4dc; /* Light yellow background for selected contact */
+}
+
+.last-message {
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 10px;
+    text-align: left; /* Align text to the left */
+    margin-left: 10px; /* Adjust margin to position relative to other elements */
+    flex-grow: 1; /* Allow last-message to grow and take available space */
+}
+
+
+.contact-time {
+    font-size: 12px;
+    color: #999;
+    position: absolute; /* Position relative to the contact */
+    right: 10px; /* Align to the right of the contact */
+    top: 20px;
+}
+
+.contact-read {
+    border-left: 4px solid transparent; /* No border for read messages */
+}
+
+.contact-unread {
+    border-left: 4px solid #d3d3d3; /* Thin grey border for unread messages */
+}
+
+
+
+.message-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #ffffff;
+}
+
+.header-profile-pic {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.header-contact-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 10px;
+}
+
+.messages {
+    flex: 1; /* Takes up available space */
+    padding: 10px;
+    overflow-y: auto; /* Scroll if content overflows */
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.message-footer {
+    width: 100%; /* Full width of the container */
+    padding: 10px;
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-bottom-right-radius: 8px;
+    align-items: center;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+
+.message-input {
+    flex-grow: 1;
+    max-width: 400px;
+    padding: 7px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #ebebeb;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    margin-right: 10px;
+    font-size: 16px;
+    transition: 0.3s ease;
+}
+
+.message-input:focus {
+    background-color: white;
+    border-color: #333;
+    box-shadow: 0px 2px 15px rgba(109, 109, 109, 0.2);
+}
+
+.send-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: flex-end;
+    border: none;
+}
+
+.message.contact {
+    justify-content: flex-start;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.message-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.message-content {
+    max-width: 60%;
+    padding: 15px;
+    font-family: var(--font-basic);
+    border-radius: 15px;
+    background-color: #ffffff;
+    text-align: left; 
+}
+
+
+.message.user .message-content {
+    background-color: #646464;
+    color: white;
+    margin-right: 20px;
+}
+
+.message.contact .message-content {
+    background-color: #f3f3f3;
+
+}
+
+.timestamp {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 2px;
+}
+.message.user .timestamp {
+    color: rgb(235, 235, 235);
+}
+
+
+
+
+
