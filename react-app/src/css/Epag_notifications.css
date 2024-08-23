@@ -1,5 +1,8 @@
 .notifications-page {
-    padding: 20px;
+    padding: 20px 20%;
+    background-color: var(--background-color);
+    text-align: left;
+    align-items: center;
   }
   
   h2 {
@@ -7,19 +10,20 @@
     font-size: 24px;
   }
   
-  .scrollable-list {
-    max-height: 200px;
+  .notifications-scrollable-list {
+    max-height: 300px;
+    padding: 5px 0px;
     overflow-y: auto;
     border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     border-radius: 8px;
+    background-color: #fff;
   }
   
   .notification-item {
     display: flex;
     align-items: center;
-    padding: 10px 0;
+    padding: 20px;
     border-bottom: 1px solid #eee;
   }
   
@@ -28,7 +32,7 @@
   }
 
   .notification-item:hover {
-    background-color: #f0f0f0;
+    background-color: #fff3d7;
   }
   
   .profile-pic {
@@ -39,6 +43,7 @@
   }
   
   .notification-text {
+    width: 100%;
     display: flex;
     flex-direction: column;
   }
@@ -48,6 +53,7 @@
   }
   
   .time {
+    text-align: right;
     font-size: 12px;
     color: #888;
   }
@@ -67,13 +73,21 @@
   }
   
   .accept-button {
-    background-color: #4caf50;
+    background-color: var(--button-yellow);
     color: white;
+  }
+
+  .accept-button:hover {
+    background-color: var(--button-hover-yellow);
   }
   
   .decline-button {
-    background-color: #f44336;
-    color: white;
+    background-color: var(--button-light-grey);
+    color: #555;
+  }
+
+  .decline-button:hover {
+    background-color: var(--button-hover-light-grey);
   }
 
   .comment {

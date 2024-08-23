@@ -18,7 +18,7 @@ const NotificationItem = ({ profilePic, name, time, action, comment, articleId }
     <div className="notification-item">
         <img src={profilePic} alt={`${name}'s profile`} className="profile-pic" />
         <div className="notification-text">
-
+            <div className="time">{time}</div>
             {action === 'sent you a request' ? (
                 <>
                     <span className="name">{name}</span>
@@ -36,7 +36,7 @@ const NotificationItem = ({ profilePic, name, time, action, comment, articleId }
                         </span>
                     ) : (
                         <span>
-                            άφησε ένα σχόλιο στην <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας.
+                            άφησε ένα σχόλιο στην <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας:
                             <div className="comment">
                                 {comment}
                             </div>
@@ -45,7 +45,7 @@ const NotificationItem = ({ profilePic, name, time, action, comment, articleId }
                 </span>
             )}
 
-            <div className="time">{time}</div>
+            
         </div>
     </div>
 );
@@ -71,7 +71,7 @@ const Epag_notifications = () => {
             <Breadcrumbs />
             <div className="notifications-page">
                 <h2>Αιτήματα Σύνδεσης</h2>
-                <div className="scrollable-list">
+                <div className="notifications-scrollable-list">
                     {requests.map((request, index) => (
                         <NotificationItem
                             key={index}
@@ -84,7 +84,7 @@ const Epag_notifications = () => {
                 </div>
 
                 <h2>Αντιδράσεις στις δημοσιεύσεις μου</h2>
-                <div className="scrollable-list">
+                <div className="notifications-scrollable-list">
                     {reactions.map((reaction, index) => (
                         <NotificationItem
                             key={index}
