@@ -1,0 +1,100 @@
+.notifications-page {
+    padding: 20px 20%;
+    background-color: var(--background-color);
+    text-align: left;
+    align-items: center;
+  }
+  
+  h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+  }
+  
+  .notifications-scrollable-list {
+    max-height: 300px;
+    padding: 5px 0px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  
+  .notification-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  .notification-item:hover {
+    background-color: #fff3d7;
+  }
+  
+  .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .notification-text {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .name {
+    font-weight: bold;
+  }
+  
+  .time {
+    text-align: right;
+    font-size: 12px;
+    color: #888;
+  }
+
+  .request-buttons {
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .accept-button,
+  .decline-button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .accept-button {
+    background-color: var(--button-yellow);
+    color: white;
+  }
+
+  .accept-button:hover {
+    background-color: var(--button-hover-yellow);
+  }
+  
+  .decline-button {
+    background-color: var(--button-light-grey);
+    color: #555;
+  }
+
+  .decline-button:hover {
+    background-color: var(--button-hover-light-grey);
+  }
+
+  .comment {
+    margin-top: 5px;
+    padding: 5px 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    font-style: italic;
+    color: #555;
+  }

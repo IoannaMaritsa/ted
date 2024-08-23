@@ -110,28 +110,28 @@ export default function Diax_Home() {
                                     <option value="json">JSON</option>
                                     <option value="xml">XML</option>
                                 </select>
-                                <button class="a-export-button" onClick={handleExport}> <img src="export.png" alt="Export Icon" class="export-icon"></img>
+                                <button class="a-export-button" onClick={handleExport}> <img src="/export.png" alt="Export Icon" className="export-icon"/> 
                                     Export</button>
                             </div>
                             <div class="a-square-div2">
                                 <div class="a-icon-text">
-                                    <img class="a-icon" src="work-icon.png" alt="Icon 1" />
+                                    <img class="a-icon" src="/work-icon.png" alt="Icon 1" />
                                     <span class="a-text">Google</span>
                                 </div>
                                 <div class="a-icon-text">
-                                    <img class="a-icon" src="location.png" alt="Icon 2" />
+                                    <img class="a-icon" src="/location.png" alt="Icon 2" />
                                     <span class="a-text" >Athens, Greece</span>
                                 </div>
                                 <div class="a-icon-text">
-                                    <img class="a-icon" src="birthday.png" alt="Icon 3" />
+                                    <img class="a-icon" src="/birthday.png" alt="Icon 3" />
                                     <span class="a-text">2002-12-12</span>
                                 </div>
                                 <div class="a-icon-text">
-                                    <img class="a-icon" src="regdate.png" alt="Icon 3" />
+                                    <img class="a-icon" src="/regdate.png" alt="Icon 3" />
                                     <span class="a-text">{otherProfile.registrationDate}</span>
                                 </div>
                                 <div class="a-icon-text">
-                                    <img class="a-icon" src="email.png" alt="Icon 3" />
+                                    <img class="a-icon" src="/email.png" alt="Icon 3" />
                                     <span class="a-text">{otherProfile.email}</span>
                                 </div>
                             </div>
