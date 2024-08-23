@@ -55,7 +55,7 @@ export default function Epag_messages() {
             profilePic: '/default-avatar.jpeg',
             lastMessage: '',
             timestamp: '2d',
-            read: false
+            read: true
         },
         {
             id: 2, // Unique ID
@@ -79,7 +79,7 @@ export default function Epag_messages() {
             profilePic: '/default-avatar.jpeg',
             lastMessage: '',
             timestamp: '1w',
-            read: true
+            read: false
         },
         {
             id: 5, // Unique ID
@@ -87,14 +87,14 @@ export default function Epag_messages() {
             profilePic: '/default-avatar.jpeg',
             lastMessage: '',
             timestamp: '3d',
-            read: false
+            read: true
         }
     ]);
 
 
     const formatRelativeTime = (date) => {
         const now = new Date();
-        const diff = now - new Date(date); // Difference in milliseconds
+        const diff = now - date; // Difference in milliseconds
         const diffInMinutes = Math.floor(diff / (1000 * 60));
         const diffInHours = Math.floor(diffInMinutes / 60);
         const diffInDays = Math.floor(diffInHours / 24);
@@ -117,36 +117,52 @@ export default function Epag_messages() {
     };
 
 
+
+    const parseTime = (timeString) => {
+        const [time, period] = timeString.split(' ');
+        const [hours, minutes] = time.split(':').map(Number);
+
+        const isPM = period === 'PM';
+        const adjustedHours = isPM ? (hours % 12) + 12 : hours % 12;
+
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate(), adjustedHours, minutes);
+    };
+
+
+
     useEffect(() => {
         setContacts(prevContacts =>
-            prevContacts.map(contact => {
-                const contactMessages = messages[contact.id] || [];
+            prevContacts.map(c => {
+                const contactMessages = messages[c.id] || [];
                 const latestMessage = contactMessages[contactMessages.length - 1]; // Get the most recent message
+
                 if (latestMessage) {
                     return {
-                        ...contact,
-                        lastMessage: latestMessage.text, // Update lastMessage with the latest message text
-                        timestamp: formatRelativeTime(latestMessage.timestamp), // Update timestamp with the formatted time
-                        read: false // Mark as unread
+                        ...c,
+                        lastMessage: latestMessage.text,
+
+                        timestamp: latestMessage ? formatRelativeTime(parseTime(latestMessage.timestamp)) : '', // Update contact's timestamp or leave empty
+                        read: c.read // Ensure `read` status is preserved
                     };
                 }
-                return contact;
+                return c;
             })
         );
     }, [messages]);
-    
 
 
 
 
     const sortedContacts = [...contacts].sort((a, b) => parseRelativeTime(a.timestamp) - parseRelativeTime(b.timestamp));
+    const [selectedContact, setSelectedContact] = useState(sortedContacts[1]);
 
-    const [selectedContact, setSelectedContact] = useState(sortedContacts[0]); // Default selected contact
+
 
     const handleContactClick = (contact) => {
         setSelectedContact(contact);
 
-        // Mark messages and contact as read
+        // Mark messages as read when a contact is selected
         setMessages(prevMessages => {
             const updatedMessages = { ...prevMessages };
             if (updatedMessages[contact.id]) {
@@ -158,6 +174,7 @@ export default function Epag_messages() {
             return updatedMessages;
         });
 
+        // Update contact as read
         setContacts(prevContacts =>
             prevContacts.map(c =>
                 c.id === contact.id ? { ...c, read: true } : c
@@ -165,30 +182,32 @@ export default function Epag_messages() {
         );
     };
 
+
     const formatTime = (date) => {
         const hours = date.getHours();
         const minutes = date.getMinutes();
         const isPM = hours >= 12;
-    
+
         // Convert hours from 24-hour to 12-hour format
         const displayHours = hours % 12 || 12; // Show 12 instead of 0 for midnight/noon
         const displayMinutes = minutes.toString().padStart(2, '0'); // Ensure two digits for minutes
-    
+
         // Format AM/PM
         const period = isPM ? 'PM' : 'AM';
-    
+
         return `${displayHours}:${displayMinutes} ${period}`;
     };
-    
+
 
     const handleNewMessage = (text) => {
         if (!selectedContact) return;
-    
+
         const now = new Date();
-        const formattedTimestamp = formatTime(now); // Use the formatted time
-    
+        const formattedTimestamp = formatTime(now); // Use the 11:11 AM format
+
         const newMessage = { fromUser: true, text, timestamp: formattedTimestamp };
-    
+
+        // Update messages with the new message
         setMessages(prevMessages => {
             const updatedMessages = { ...prevMessages };
             if (updatedMessages[selectedContact.id]) {
@@ -198,7 +217,7 @@ export default function Epag_messages() {
             }
             return updatedMessages;
         });
-    
+
         // Update contacts with the latest message
         setContacts(prevContacts =>
             prevContacts.map(c =>
@@ -206,14 +225,15 @@ export default function Epag_messages() {
                     ? {
                         ...c,
                         lastMessage: text,
-                        timestamp: formatRelativeTime(now), // Update contact's last message timestamp
-                        read: false
+                        timestamp: formatRelativeTime(parseTime(formattedTimestamp)), // Update contact's last message timestamp
+                        read: true // Set to unread if it’s the most recent message
                     }
                     : c
             )
         );
     };
-    
+
+
 
 
 
