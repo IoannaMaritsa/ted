@@ -104,13 +104,9 @@ export default function Epag_network() {
     const navigate = useNavigate();
 
     const handleProfileClick = (user) => {
-        console.log(user);
         setOtherProfile(user);
-       
-        // Navigate programmatically if needed
-        // e.g., using a history object from react-router-dom
-        navigate('/epaggelmatias_network/user_profile');
-    }
+        navigate('/epaggelmatias_network/user_profile', { state: { otherProfile: user } });
+    };
 
     useEffect(() => {
         console.log('Updated otherProfile:', otherProfile);

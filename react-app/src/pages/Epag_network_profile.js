@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useLocation } from 'react-router-dom';
 import MainBottom from '../components/MainBottom';
 import { useAppContext } from "../context/appContext";
 import '../css/admin.css';
@@ -8,7 +9,8 @@ import { exportDataProfile } from '../utils/exportUtils';
 import Breadcrumbs from "../components/Breadcrumbs";
 
 export default function Diax_Home() {
-    const { otherProfile } = useAppContext();
+    const location = useLocation();
+    const { otherProfile } = location.state || {}; // Use state if passed
     const [exportFormat, setExportFormat] = useState('json');
     const [loading, setLoading] = useState(true);
 
