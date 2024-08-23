@@ -35,7 +35,7 @@ const Header = ({ variant }) => {
         {variant === 'admin' && (
           <div className="header-button-container">
             <img 
-              src="default-avatar.jpeg" 
+              src="/default-avatar.jpeg" 
               className="profile-picture2" 
               alt="Profile" 
               onClick={handleProfileClick}
@@ -44,7 +44,7 @@ const Header = ({ variant }) => {
               <div className="dropdown">
                 <div className="dropdown-content">
                   <img 
-                    src="default-avatar.jpeg" 
+                    src="/default-avatar.jpeg" 
                     alt="Profile Picture" 
                     className="dropdown-profile-pic" 
                   />
@@ -57,7 +57,7 @@ const Header = ({ variant }) => {
                 <a href="/">
                   <button className="sign-out-button" onClick={handleSignOut}>
                     Sign Out
-                    <img src="logout.png" alt="Log Out Icon" className='logout-icon'></img>
+                    <img src="/logout.png" alt="Log Out Icon" className='logout-icon'></img>
                   </button>
                   </a>
                 </div>
