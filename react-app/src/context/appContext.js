@@ -6,6 +6,7 @@ const AppContext = createContext();
 // Context Provider Component
 export const ContextProvider = ({ children }) => {
     const [userProfile, setUserProfile] = useState(null);
+    const [otherProfile, setOtherProfile] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
 
     const value = {
@@ -13,6 +14,8 @@ export const ContextProvider = ({ children }) => {
         setUserProfile,
         isAdmin,
         setIsAdmin,
+        otherProfile,
+        setOtherProfile,
 
     };
 
