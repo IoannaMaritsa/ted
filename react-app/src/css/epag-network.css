@@ -150,3 +150,89 @@
     background-color: white;
     color: var(--button-grey);
   }
+
+
+.button-1-cont {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.connect-button {
+    padding: 7px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 120px;
+    border-radius: 10px;
+    border: 2px solid var(--button-yellow);
+    color: white;
+    background-color: var(--button-yellow);
+    font: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+}
+
+.connect-button:hover{
+    background-color: white;
+    color: var(--button-yellow);
+    cursor: pointer;
+}
+
+
+.message-button {
+    padding: 7px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 120px;
+    border-radius: 10px;
+    border: 2px solid var(--button-yellow);
+    color: var(--button-yellow);
+    background-color: white;
+    font: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+}
+
+.message-button:hover{
+    background-color: var(--button-yellow);
+    color: white;
+    cursor: pointer;
+}
+
+.pr-icon1 {
+    width: 30px;
+    transition: 0.3s ease;
+}
+
+.connect-button:hover .pr-icon1{
+    filter: sepia(2) saturate(1100%) hue-rotate(-50deg) brightness(0.9);
+}
+
+.pr-icon2 {
+    width: 30px;
+    transition: 0.3s ease;
+}
+
+.message-button:hover .pr-icon2{
+    filter: brightness(100);
+}
+
+
+.back-icon-container {
+    position: absolute;
+    top: 45px;
+    left: 260px;
+    z-index: 10; /* Make sure it's above other content */
+}
+
+.back-icon {
+    width: 30px; /* Adjust size as needed */
+    height: 30px;
+    cursor: pointer;
+}

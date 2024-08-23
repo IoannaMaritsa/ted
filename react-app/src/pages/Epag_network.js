@@ -18,56 +18,56 @@ export default function Epag_network() {
     const users = [
         {
             id: 1,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'Alice Johnson',
             profession: 'Software Engineer',
             workplace: 'Tech Solutions Inc.',
         },
         {
             id: 2,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'Bob Smith',
             profession: 'Graphic Designer',
             workplace: 'Creative Studio Ltd.',
         },
         {
             id: 3,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'Charlie Brown',
             profession: 'Product Manager',
             workplace: 'Innovate Co.',
         },
         {
             id: 4,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'David Wilson',
             profession: 'Marketing Specialist',
             workplace: 'AdVantage Agency',
         },
         {
             id: 5,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'Eve Davis',
             profession: 'Data Analyst',
             workplace: 'Data Insights Corp.',
         },
         {
             id: 6,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'Frank Miller',
             profession: 'UX/UI Designer',
             workplace: 'Design Dynamics LLC',
         },
         {
             id: 7,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'Grace Lee',
             profession: 'Financial Advisor',
             workplace: 'Finance Solutions',
         },
         {
             id: 8,
-            profilePic: 'default-avatar.jpeg',
+            profilePic: '/default-avatar.jpeg',
             name: 'Henry Walker',
             profession: 'HR Manager',
             workplace: 'People First Inc.',
@@ -104,13 +104,9 @@ export default function Epag_network() {
     const navigate = useNavigate();
 
     const handleProfileClick = (user) => {
-        console.log(user);
         setOtherProfile(user);
-       
-        // Navigate programmatically if needed
-        // e.g., using a history object from react-router-dom
-        navigate('/epaggelmatias_network/user_profile');
-    }
+        navigate('/epaggelmatias_network/user_profile', { state: { otherProfile: user } });
+    };
 
     useEffect(() => {
         console.log('Updated otherProfile:', otherProfile);

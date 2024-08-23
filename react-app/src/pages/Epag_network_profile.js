@@ -1,23 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useLocation, useNavigate} from 'react-router-dom';
 import MainBottom from '../components/MainBottom';
-import { useAppContext } from "../context/appContext";
 import '../css/admin.css';
-import { exportDataProfile } from '../utils/exportUtils';
 import Breadcrumbs from "../components/Breadcrumbs";
 
 export default function Diax_Home() {
-    const { otherProfile } = useAppContext();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { otherProfile } = location.state || {};
     const [exportFormat, setExportFormat] = useState('json');
-    const [loading, setLoading] = useState(true);
-
-   
-    useEffect(() => {
-        if (otherProfile) {
-            setLoading(false); // Profile is set, so stop loading
-        }
-    }, [otherProfile]);
 
     const [workExperience, setWorkExperience] = useState([
         { company: 'Google', role: 'Software Engineer', duration: 'Jan 2020 - Dec 2021' },
@@ -54,44 +47,27 @@ export default function Diax_Home() {
         // Add more entries as needed
     ]);
 
-    const [comments, setComments] = useState([
-        { name: "Η Σημασία της Ανάπτυξης Κώδικα με Σκεπτικό: Tips για Ενίσχυση της Κωδικοποίησης σας", comment: "Συμφωνώ απόλυτα με την σημασία του καθαρού κώδικα. Εφαρμόζουμε την τεχνική του Code Review για να εξασφαλίσουμε την ποιότητα και την αναγνωσιμότητα του κώδικα μας. Εξαιρετική ανάρτηση, ευχαριστούμε για τις χρήσιμες συμβουλές!", date: "20/01/2020" },
-        { name: "Η Ανάπτυξη Λογισμικού με Χρήση Agile Μεθόδων: Πώς να Αυξήσετε την Ευελιξία και την Αποτελεσματικότητα", comment: "Συμφωνώ απόλυτα με την σημασία του καθαρού κώδικα. Εφαρμόζουμε την τεχνική του Code Review για να εξασφαλίσουμε την ποιότητα και την αναγνωσιμότητα του κώδικα μας. Εξαιρετική ανάρτηση, ευχαριστούμε για τις χρήσιμες συμβουλές! Αυτό είναι κάτι που πρέπει να συζητήσουμε περαιτέρω, καθώς η συνεχής βελτίωση είναι το κλειδί για την επιτυχία...", date: "02/12/2019" },
-    ])
 
-    const [likes, setLikes] = useState([
-        { name: "Η Σημασία της Ανάπτυξης Κώδικα με Σκεπτικό: Tips για Ενίσχυση της Κωδικοποίησης σας", type: "Άρθρο", date: "20/01/2020" },
-        { name: "Η Σημασία της Συνεχούς Εκπαίδευσης στον Τομέα της Ανάπτυξης Λογισμικού", type: "Άρθρο", date: "23/09/2019" },
-        { name: "Τα Οφέλη της Χρήσης DevOps για Μικρές Ομάδες Ανάπτυξης", type: "Ανάρτηση", date: "20/08/2019" }
-
-        // Add more entries as needed
-    ]);
-
-    const handleExport = () => {
-        const data = {
-            otherProfile,
-            workExperience,
-            studies,
-            skills,
-            jobAds,
-            articles,
-            comments,
-            likes
-        };
-        exportDataProfile(data, exportFormat, 'export');
+    const handleBackClick = () => {
+       navigate(-1); // Navigate to the previous page
     };
 
-    if (loading) {
-        return <div>Loading...</div>; // You can customize this loading indicator
-    }
 
- 
+
     return (
         <div>
-            <Header variant="admin" />
+             <Header variant="professional" />
             <Breadcrumbs />
             <main className="adminu-main-div">
                 <div className="main-container">
+                    <div className="back-icon-container">
+                        <img
+                            src="/back-icon.png" // Replace with your icon path
+                            alt="Back"
+                            className="back-icon"
+                            onClick={handleBackClick}
+                        />
+                    </div>
                     <div className="inner-container">
                         <div class="a-container">
                             <div class="a-square-div">
@@ -100,16 +76,10 @@ export default function Diax_Home() {
                                     <div class="a-name">{otherProfile.name}</div>
                                     <div class="a-profession">Software Engineer</div>
                                 </div>
-                                <select
-                                    value={exportFormat}
-                                    onChange={(e) => setExportFormat(e.target.value)}
-                                    className="export-select"
-                                >
-                                    <option value="json">JSON</option>
-                                    <option value="xml">XML</option>
-                                </select>
-                                <button class="a-export-button" onClick={handleExport}> <img src="/export.png" alt="Export Icon" className="export-icon"/> 
-                                    Export</button>
+                                <div className="button-1-cont">
+                                    <button className="connect-button"> Σύνδεση <img src="/friend-req.png" alt="Friend Request" className="pr-icon1"></img></button>
+                                    <button className="message-button"> Μήνυμα <img src="/mess-icon.png" alt="Message" className="pr-icon2"></img></button>
+                                </div>
                             </div>
                             <div class="a-square-div2">
                                 <div class="a-icon-text">
@@ -210,42 +180,7 @@ export default function Diax_Home() {
                                 <p>No articles available</p>
                             )}
                         </div>
-                        <div class="a-container">
-                            <div class="a-square-div3">
-                                <div className="work-experience-row-title">
-                                    Σχόλια
-                                    <img src="comments.png" alt="Comments Icon"></img>
-                                </div>
-                                {comments.length > 0 ? (
-                                    comments.map((comment, index) => (
-                                        <div key={index} className="work-experience-row">
-                                            <div className="post-name">{comment.name}</div>
-                                            <div className="comment">"{comment.comment}"</div>
-                                            <div className="work-duration">{comment.date}</div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No comments available</p>
-                                )}
-                            </div>
-                            <div class="a-square-div4">
-                                <div className="work-experience-row-title">
-                                    Σημειώσεις Ενδιαφέροντος
-                                    <img src="heart.png" alt="Heart Icon"></img>
-                                </div>
-                                {likes.length > 0 ? (
-                                    likes.map((like, index) => (
-                                        <div key={index} className="work-experience-row">
-                                            <div className="post-name">{like.name}</div>
-                                            <div className="work-company">{like.type}</div>
-                                            <div className="work-duration">{like.date}</div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No likes available</p>
-                                )}
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </main>
