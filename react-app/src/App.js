@@ -49,6 +49,7 @@ export default function App() {
             <Route path="/epaggelmatias_network" element={<Epag_network />} />
             <Route path="/epaggelmatias_network/user_profile" element={<Epag_network_profile />} />
             <Route path="/epaggelmatias_notifications" element={<Epag_notifications />} />
+            <Route path="/epaggelmatias_notifications/user_profile" element={<Epag_network_profile />} />
             <Route path="/epaggelmatias_notifications/epaggelmatias_article/:id" element={<Epag_article />} />
             <Route path="/epaggelmatias_personal_info" element={<Epag_pinformation />} />
             <Route path="/epaggelmatias_profile" element={<Epag_profile />} />

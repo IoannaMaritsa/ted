@@ -49,7 +49,9 @@
   }
   
   .name {
+    width: fit-content;
     font-weight: bold;
+    cursor: pointer;
   }
   
   .time {

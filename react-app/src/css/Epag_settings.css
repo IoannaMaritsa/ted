@@ -147,3 +147,7 @@
   .modal-button-confirm:hover {
     background-color: var(--button-hover-yellow);
   }
+
+  .modal-input-error {
+    background-color: rgb(255, 197, 197);
+  }
