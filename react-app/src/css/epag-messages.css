@@ -259,5 +259,14 @@
 
 
 
+.message-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Adjust as needed */
+}
 
-
+.messages {
+    flex: 1;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px;
+}
