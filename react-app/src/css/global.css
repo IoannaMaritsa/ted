@@ -176,6 +176,13 @@
   font-weight: 200;
 }
 
+.article-image {
+  margin: 20px;
+  height: 40vh;
+  max-height: 40%;
+  width: auto;
+}
+
 .interest-button {
   display: flex;
   border: 1px solid var(--button-yellow);

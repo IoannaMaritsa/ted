@@ -12,10 +12,10 @@ const Epag_article = () => {
     const [body, setBody] = useState('');
 
     const articles = [
-        { id: 1, title: 'Sample Article Title 1', author: 'John Doe', date: 'July 25, 2024', content: 'This is a sample article content. It provides a brief overview of the article.', attachments: {images: ['businessleader.jpg', 'activist.jpg'],videos: [],audios: []} },
-        { id: 2, title: 'Sample Article Title 2', author: 'Jane Smith', date: 'July 24, 2024', content: 'This is another sample article content. It provides more details about the article.', attachments: {images: [],videos: [],audios: []} },
+        { id: 1, title: 'Sample Article Title 1', author: 'John Doe', date: 'July 25, 2024', content: 'This is a sample article content. It provides a brief overview of the article.', attachments: { images: ['businessleader.jpg', 'activist.jpg'], videos: [], audios: [] } },
+        { id: 2, title: 'Sample Article Title 2', author: 'Jane Smith', date: 'July 24, 2024', content: 'This is another sample article content. It provides more details about the article.', attachments: { images: [], videos: [], audios: [] } },
         // Add more articles as needed
-      ];
+    ];
 
     const { id } = useParams();
     const article = articles.find(article => article.id === parseInt(id));
@@ -26,15 +26,15 @@ const Epag_article = () => {
 
     const handleBodyChange = (e) => {
         setBody(e.target.value);
-      };
+    };
 
-      const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         // Handle the form submission logic here
         console.log('Article submitted:', { body });
         // Reset the form
         setBody('');
-      };
+    };
     return (
         <div>
             <Header variant="professional" />
@@ -57,10 +57,31 @@ const Epag_article = () => {
                     <p className="article-content">{article.content}</p>
                     {article.attachments.images.length > 0 && (
                         <div className="attachments">
-                            <h3>Images</h3>
-                            {article.attachments.images.map((image, index) => (
-                                <img key={index} src={`/${image}`} alt={`Attachment ${index + 1}`} />
-                            ))}
+                            {article.attachments.images.length !== 0 && (
+                                <>
+                                    <h3>Φωτογραφίες</h3>
+                                    {article.attachments.images.map((image, index) => (
+                                        <img key={index} src={`/${image}`} alt={`Attachment ${index + 1}`} className='article-image' />
+                                    ))}
+                                </>
+                            )}
+                            {article.attachments.videos.length !== 0 && (
+                                <>
+                                    <h3>Βίντεο</h3>
+                                    {article.attachments.videos.map((video, index) => (
+                                        <video key={index} src={`/${video}`} alt={`Attachment ${index + 1}`} className='article-image' />
+                                    ))}
+                                </>
+                            )}
+                            {article.attachments.audios.length !== 0 && (
+                                <>
+                                    <h3>Ήχοι</h3>
+                                    {article.attachments.audios.map((audio, index) => (
+                                        <audio key={index} src={`/${audio}`} alt={`Attachment ${index + 1}`} className='article-image' />
+                                    ))}
+                                </>
+                            )}
+
                         </div>
                     )}
 
