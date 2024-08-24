@@ -43,6 +43,7 @@ export default function App() {
             <Route path="/forgot_password" element={<ForgotPass />} />
             <Route path="/admin" element={<Diax_Home />} />
             <Route path="/epaggelmatias_homepage" element={<Epag_Home />} />
+            <Route path="/user_profile" element={<Epag_network_profile />} />
             <Route path="epaggelmatias_article/:id" element={<Epag_article />} />
             <Route path="/epaggelmatias_aggelies" element={<Epag_job_ad />} />
             <Route path="/epaggelmatias_messages" element={<Epag_messages />} />

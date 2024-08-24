@@ -3,7 +3,9 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppContext } from "../context/appContext";
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
@@ -84,6 +86,19 @@ export default function Epag_Home() {
             name: 'Charles White',
         },
     ];
+
+    const { setOtherProfile, otherProfile } = useAppContext();
+
+    const navigate = useNavigate();
+
+    const handleProfileClick = (user) => {
+        setOtherProfile(user);
+        navigate('/user_profile', { state: { otherProfile: user } });
+    };
+
+    useEffect(() => {
+        console.log('Updated otherProfile:', otherProfile);
+    }, [otherProfile]);
 
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
@@ -216,7 +231,7 @@ export default function Epag_Home() {
                         <div className="contacts-page">
                             <ul className="contacts-list">
                                 {contacts.map((contact, index) => (
-                                    <div className="contact">
+                                    <div className="contact" onClick={() => handleProfileClick(contact)}>
                                         <img src={contact.profilePic} alt="contact-pic" className="contact-icon" />
                                         <li key={index}>{contact.name} </li>
                                     </div>

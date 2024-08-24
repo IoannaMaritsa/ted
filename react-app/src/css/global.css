@@ -1,90 +1,94 @@
 :root {
-    --button-yellow: #f3c55a;
-    --button-hover-yellow: #ecb74d; 
-    --button-grey: #2C2C2C;
-    --button-light-grey: #eeeeee;
-    --button-hover-light-grey: #f9f6f1;
-    --text-white: #ffffff;
-    --text-dark-grey: #4b4b4b;
-    --text-dark-grey2: #6f6f6f;
-    --background-color: #FAF8F8;
-    --border-color: #DFDFDF;
-    --error-red: #e40c0c;
-    --font-basic: font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif;
+  --button-yellow: #f3c55a;
+  --button-hover-yellow: #ecb74d;
+  --button-grey: #2C2C2C;
+  --button-light-grey: #eeeeee;
+  --button-hover-light-grey: #f9f6f1;
+  --text-white: #ffffff;
+  --text-dark-grey: #4b4b4b;
+  --text-dark-grey2: #6f6f6f;
+  --background-color: #FAF8F8;
+  --border-color: #DFDFDF;
+  --error-red: #e40c0c;
+  --font-basic: font-family: -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Fira Sans, Ubuntu, Oxygen, Oxygen Sans, Cantarell, Droid Sans, Apple Color Emoji, Segoe UI Emoji, Segoe UI Emoji, Segoe UI Symbol, Lucida Grande, Helvetica, Arial, sans-serif;
 }
 
 .button-primary {
-    padding: 13px 20px;
-    border: none;
-    background-color: var(--button-yellow);
-    color: white;
-    font-weight: bold;
-    font-family: var(--font-basic);
-    cursor: pointer;
-    border-radius: 20px;
-    font-size: 16px;
-    border: 2px solid var(--button-yellow);
-    transition: background-color 0.3s ease;
-  }
-  
-  .button-primary:hover {
-    background-color: var(--button-hover-yellow);
-    border: 2px solid var(--button-hover-yellow);
-  }
+  padding: 13px 20px;
+  border: none;
+  background-color: var(--button-yellow);
+  color: white;
+  font-weight: bold;
+  font-family: var(--font-basic);
+  cursor: pointer;
+  border-radius: 20px;
+  font-size: 16px;
+  border: 2px solid var(--button-yellow);
+  transition: background-color 0.3s ease;
+}
 
-  .button-secondary {
-    padding: 13px 20px;
-    border: none;
-    background-color: white;
-    color: var(--text-dark-grey);
-    font-weight: bold;
-    font-family: var(--font-basic);
-    cursor: pointer;
-    border-radius: 20px;
-    font-size: 16px;
-    border: 2px solid var(--text-dark-grey);
-    transition: background-color 0.3s ease;
-  }
-  
-  .button-secondary:hover {
-    padding: 12.5px 19.5px;
-    background-color: var(--button-hover-light-grey);
-    border: 2.5px solid var(--text-dark-grey);
-  }
+.button-primary:hover {
+  background-color: var(--button-hover-yellow);
+  border: 2px solid var(--button-hover-yellow);
+}
 
-  .link {
-    text-decoration: none;
-    color: inherit;
+.button-secondary {
+  padding: 13px 20px;
+  border: none;
+  background-color: white;
+  color: var(--text-dark-grey);
+  font-weight: bold;
+  font-family: var(--font-basic);
+  cursor: pointer;
+  border-radius: 20px;
+  font-size: 16px;
+  border: 2px solid var(--text-dark-grey);
+  transition: background-color 0.3s ease;
+}
 
-  }
+.button-secondary:hover {
+  padding: 12.5px 19.5px;
+  background-color: var(--button-hover-light-grey);
+  border: 2.5px solid var(--text-dark-grey);
+}
 
-  .link:hover {
-    text-decoration: underline;
-    font-weight: 500;
-  }
+.link {
+  text-decoration: none;
+  color: inherit;
+
+}
+
+.link:hover {
+  text-decoration: underline;
+  font-weight: 500;
+}
 
 
 .signup-prompt {
-   font-family: var(--font-basic);
-    font-size: 1rem;
-    color: var(--text-dark-grey);
-    margin-top: 20px; /* Space between submit button and prompt */
+  font-family: var(--font-basic);
+  font-size: 1rem;
+  color: var(--text-dark-grey);
+  margin-top: 20px;
+  /* Space between submit button and prompt */
 }
 
 .signup-prompt a {
-    color: var(--primary-color); /* Adjust as needed */
-    text-decoration: none; /* Remove default underline */
+  color: var(--primary-color);
+  /* Adjust as needed */
+  text-decoration: none;
+  /* Remove default underline */
 }
 
 .signup-prompt a:hover {
-    text-decoration: underline; /* Underline text on hover */
+  text-decoration: underline;
+  /* Underline text on hover */
 }
 
 .split-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: fit-content; 
+  height: fit-content;
   padding-top: 2%;
   padding-bottom: 7%;
   padding-left: 5%;
@@ -102,11 +106,13 @@
   color: var(--text-dark-grey);
   font-weight: 200;
 }
+
 .text-section p {
   font-size: 28px;
   color: var(--text-dark-grey);
   font-weight: 200;
 }
+
 .image-section {
   flex: 1;
   display: flex;
@@ -121,9 +127,9 @@
 }
 
 .main {
-  width: 100%;
   background-color: var(--background-color);
   min-height: 70%;
+  padding: 50px 10px;
 }
 
 .small-icon {
@@ -135,8 +141,6 @@
 
 .article-container {
   margin-left: 10%;
-  margin-top: 5%;
-  margin-bottom: 5%;
   min-height: 80%;
   width: 80%;
   padding: 20px 20px;
@@ -145,7 +149,14 @@
   text-align: left;
 }
 
-.article-text{
+.article-author1 {
+  display: flex;
+  align-items: center;
+  height: fit-content;
+  cursor: pointer;
+}
+
+.article-text {
   flex: 1;
   background-color: #ffffff;
   text-align: left;
@@ -183,19 +194,59 @@
   width: auto;
 }
 
-.interest-button {
+.article-comment-section {
+  max-height: 300px;
+  padding: 5px 0px;
+  overflow-y: auto;
+  margin-bottom: 40px;
+}
+
+video {
+  width: 100%;
+  height: auto;
+  opacity: 1;
+  visibility: visible;
+  z-index: 1;
+  background-color: black;
+}
+
+.interest-box {
   display: flex;
+  align-items: center;
+  justify-content: right;
+  height: fit-content;
+}
+
+.interest-button {
+  margin: 2%;
+  margin-right: 5%;
   border: 1px solid var(--button-yellow);
   border-radius: 10px;
   color: var(--button-yellow);
   background-color: #fff;
-  justify-content: left;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  
+
 }
 
 .interest-button:hover {
   border-color: var(--button-hover-yellow);
   color: var(--button-hover-yellow);
+}
+
+.article-comment-button {
+  margin: 2%;
+  margin-right: 5%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-weight:600;
+  background-color: var(--button-yellow);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.article-comment-button:hover {
+  background-color: var(--button-hover-yellow);
 }
