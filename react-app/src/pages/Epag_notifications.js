@@ -27,10 +27,10 @@ const NotificationItem = ({ user, time, status, action, comment, articleId, onAc
         <div className="notification-item">
             <img src={user.profilePic} alt={`${user.name}'s profile`} className="profile-pic" />
             <div className="notification-text">
-                <div className="time">{time}</div>
+                <div className="notification-time">{time}</div>
                 {action === 'sent you a request' ? (
                     <>
-                        <span className="name" onClick={() => handleProfileClick(user)}>{user.name}</span>
+                        <span className="notification-name" onClick={() => handleProfileClick(user)}>{user.name}</span>
                         {status === 'pending' && (
                             <div className="request-buttons">
                                 <button className="accept-button" onClick={onAccept}>Αποδοχή</button>
@@ -41,7 +41,7 @@ const NotificationItem = ({ user, time, status, action, comment, articleId, onAc
                     </>
                 ) : (
                     <span>
-                        <span>Ο/Η χρήστης </span><span className="name" onClick={() => handleProfileClick(user)}>{user.name} </span>
+                        <span>Ο/Η χρήστης </span><span className="notification-name" onClick={() => handleProfileClick(user)}>{user.name} </span>
                         {action === 'likes your article' ? (
                             <span>
                                 δήλωσε ότι του/της αρέσει η <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας.
