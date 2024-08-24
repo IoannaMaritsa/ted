@@ -8,8 +8,11 @@ import '../css/Epag_settings.css';
 const Epag_settings = () => {
 
     const [showPassword, setShowPassword] = useState(false);
+
     const [isModal1Open, setIsModal1Open] = useState(false);
     const [isModal2Open, setIsModal2Open] = useState(false);
+    const [isModal3Open, setIsModal3Open] = useState(false);
+
     const [error1, setError1] = useState(false);
     const [error2, setError2] = useState(false);
     const [error3, setError3] = useState(false);
@@ -49,12 +52,7 @@ const Epag_settings = () => {
         setIsModal2Open(false);
     };
 
-    const handleModal1Click = (e) => {
-        // Prevent closing the modal when clicking inside the modal content
-        e.stopPropagation();
-    };
-
-    const handleModal2Click = (e) => {
+    const handleModalClick = (e) => {
         // Prevent closing the modal when clicking inside the modal content
         e.stopPropagation();
     };
@@ -78,7 +76,7 @@ const Epag_settings = () => {
         } else if (newpassword != confirmpassword) {
             setError3('Ο κωδικός επιβεβαίωσης δεν ταιριάζει με τον νέο κωδικό!')
         }
-        
+
     };
 
     const HandleSave = () => {
@@ -151,14 +149,14 @@ const Epag_settings = () => {
                 </div>
                 <div className='settings-button-area'>
                     <button className='settings-button-secondary' onClick={HandleDiscard}>Ακύρωση</button>
-                    <button className='settings-button-primary' onClick={HandleSave}>Αποθήκευση</button>
+                    <button className='settings-button-primary' onClick={() => setIsModal3Open(true)}>Αποθήκευση</button>
                 </div>
 
 
                 {/* Modals */}
                 {isModal1Open && (
                     <div className="modal-overlay" onClick={closeModal1}>
-                        <div className="modal-content" onClick={handleModal1Click}>
+                        <div className="modal-content" onClick={handleModalClick}>
                             <h2>Επεξεργασία Διεύθυνσης Ηλ. Αλληλογραφίας Επαγγελματία</h2>
                             <br></br>
                             <div className="job-input-group">
@@ -180,16 +178,26 @@ const Epag_settings = () => {
 
                 {isModal2Open && (
                     <div className="modal-overlay" onClick={closeModal2}>
-                        <div className="modal-content" onClick={handleModal2Click}>
+                        <div className="modal-content" onClick={handleModalClick}>
                             <h2>Επεξεργασία Κωδικού Εισόδου Επαγγελματία</h2>
                             <br></br>
                             <div className="job-input-group">
                                 <label htmlFor="password">Προηγούμενος Κωδικός</label>
-                                <input
-                                    type="text"
-                                    value={oldpassword}
-                                    onChange={(e) => setOldPassword(e.target.value)}
-                                />
+                                {error1 ? (
+                                    <input
+                                        type="text"
+                                        value={oldpassword}
+                                        onChange={(e) => setOldPassword(e.target.value)}
+                                        className='modal-input-error'
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={oldpassword}
+                                        onChange={(e) => setOldPassword(e.target.value)}
+                                    />
+                                )}
+
                             </div>
                             {error1 && (
                                 <div className='modal-error-message'>
@@ -198,11 +206,20 @@ const Epag_settings = () => {
                             )}
                             <div className="job-input-group">
                                 <label htmlFor="password">Νέος Κωδικός</label>
-                                <input
-                                    type="text"
-                                    value={newpassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                />
+                                {error2 ? (
+                                    <input
+                                        type="text"
+                                        value={newpassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className='modal-input-error'
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={newpassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                    />
+                                )}
                             </div>
                             {error2 && (
                                 <div className='modal-error-message'>
@@ -211,11 +228,20 @@ const Epag_settings = () => {
                             )}
                             <div className="job-input-group">
                                 <label htmlFor="password">Επιβεβαίωση κωδικού</label>
-                                <input
-                                    type="text"
-                                    value={confirmpassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                />
+                                {error3 ? (
+                                    <input
+                                        type="text"
+                                        value={confirmpassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className='modal-input-error'
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={confirmpassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                    />
+                                )}
                             </div>
                             {error3 && (
                                 <div className='modal-error-message'>
@@ -225,6 +251,20 @@ const Epag_settings = () => {
                             <div className='settings-button-area'>
                                 <button onClick={closeModal2} className='modal-button-close'>Κλείσιμο</button>
                                 <button onClick={handleSave2} className="modal-button-confirm">Επιβεβαίωση</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {isModal3Open && (
+                    <div className="modal-overlay" onClick={() => setIsModal3Open(false)}>
+                        <div className="modal-content" onClick={handleModalClick}>
+                            <h2>Είστε σίγουροι ότι θέλετε να προχωρήσετε;</h2>
+                            <h3>Η αλλαγές σας θα αποθηκευτούν οριστικά.</h3>
+                            <br></br>
+                            <div className='settings-button-area'>
+                                <button onClick={() => setIsModal3Open(false)} className='modal-button-close'>Όχι</button>
+                                <button onClick={HandleSave} className="modal-button-confirm">Ναι</button>
                             </div>
                         </div>
                     </div>

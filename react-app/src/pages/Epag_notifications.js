@@ -4,66 +4,151 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import '../css/Epag_notifications.css'
+import { useAppContext } from "../context/appContext";
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const onAccept = (e) => {
-    console.log('Request accepted')
-};
+const NotificationItem = ({ user, time, status, action, comment, articleId, onAccept, onDecline }) => {
+    const { setOtherProfile, otherProfile } = useAppContext();
 
-const onDecline = (e) => {
-    console.log('Request declined')
-};
+    const navigate = useNavigate();
 
-const NotificationItem = ({ profilePic, name, time, action, comment, articleId }) => (
-    <div className="notification-item">
-        <img src={profilePic} alt={`${name}'s profile`} className="profile-pic" />
-        <div className="notification-text">
-            <div className="time">{time}</div>
-            {action === 'sent you a request' ? (
-                <>
-                    <span className="name">{name}</span>
-                    <div className="request-buttons">
-                        <button className="accept-button" onClick={onAccept}>Αποδοχή</button>
-                        <button className="decline-button" onClick={onDecline}>Απόρριψη</button>
-                    </div>
-                </>
-            ) : (
-                <span>
-                    <span>Ο/Η χρήστης </span><span className="name">{name} </span>
-                    {action === 'likes your article' ? (
-                        <span>
-                            δήλωσε ότι του/της αρέσει η <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας.
-                        </span>
-                    ) : (
-                        <span>
-                            άφησε ένα σχόλιο στην <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας:
-                            <div className="comment">
-                                {comment}
+    const handleProfileClick = (user) => {
+        setOtherProfile(user);
+        navigate('/epaggelmatias_notifications/user_profile', { state: { otherProfile: user } });
+    };
+
+    useEffect(() => {
+        console.log('Updated otherProfile:', otherProfile);
+    }, [otherProfile]);
+
+    return (
+        <div className="notification-item">
+            <img src={user.profilePic} alt={`${user.name}'s profile`} className="profile-pic" />
+            <div className="notification-text">
+                <div className="time">{time}</div>
+                {action === 'sent you a request' ? (
+                    <>
+                        <span className="name" onClick={() => handleProfileClick(user)}>{user.name}</span>
+                        {status === 'pending' && (
+                            <div className="request-buttons">
+                                <button className="accept-button" onClick={onAccept}>Αποδοχή</button>
+                                <button className="decline-button" onClick={onDecline}>Απόρριψη</button>
                             </div>
-                        </span>
-                    )}
-                </span>
-            )}
-
-            
+                        )}
+                        {status === 'accepted' && <span>Το αίτημα έγινε αποδεχτό.</span>}
+                    </>
+                ) : (
+                    <span>
+                        <span>Ο/Η χρήστης </span><span className="name" onClick={() => handleProfileClick(user)}>{user.name} </span>
+                        {action === 'likes your article' ? (
+                            <span>
+                                δήλωσε ότι του/της αρέσει η <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας.
+                            </span>
+                        ) : (
+                            <span>
+                                άφησε ένα σχόλιο στην <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας:
+                                <div className="comment">
+                                    {comment}
+                                </div>
+                            </span>
+                        )}
+                    </span>
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
+};
+
+const convertTimeToSortableValue = (timeString) => {
+    const now = new Date();
+
+    if (timeString.includes('minutes ago')) {
+        const minutes = parseInt(timeString.split(' ')[0]);
+        return now.getTime() - minutes * 60 * 1000;
+    } else if (timeString.includes('hours ago')) {
+        const hours = parseInt(timeString.split(' ')[0]);
+        return now.getTime() - hours * 60 * 60 * 1000;
+    } else if (timeString.includes('day ago')) {
+        return now.getTime() - 24 * 60 * 60 * 1000;
+    } else if (timeString.includes('days ago')) {
+        const days = parseInt(timeString.split(' ')[0]);
+        return now.getTime() - days * 24 * 60 * 60 * 1000;
+    } else {
+        return now.getTime(); // If the format is unknown, treat as now
+    }
+};
 
 const Epag_notifications = () => {
 
-    const requests = [
-        { profilePic: '/images/user1.jpg', name: 'John Doe', time: '2 hours ago' },
-        { profilePic: '/images/user2.jpg', name: 'Jane Smith', time: '5 hours ago' },
-        { profilePic: '/images/user3.jpg', name: 'Alice Johnson', time: '1 day ago' },
-        // Add more requests as needed
+    const users = [
+        {
+            id: 1,
+            profilePic: '/default-avatar.jpeg',
+            name: 'Alice Johnson',
+            profession: 'Software Engineer',
+            workplace: 'Tech Solutions Inc.',
+        },
+        {
+            id: 2,
+            profilePic: '/default-avatar.jpeg',
+            name: 'Bob Smith',
+            profession: 'Graphic Designer',
+            workplace: 'Creative Studio Ltd.',
+        },
+        {
+            id: 3,
+            profilePic: '/default-avatar.jpeg',
+            name: 'Charlie Brown',
+            profession: 'Product Manager',
+            workplace: 'Innovate Co.',
+        },
+        {
+            id: 4,
+            profilePic: '/default-avatar.jpeg',
+            name: 'David Wilson',
+            profession: 'Marketing Specialist',
+            workplace: 'AdVantage Agency',
+        },
+        {
+            id: 5,
+            profilePic: '/default-avatar.jpeg',
+            name: 'Eve Davis',
+            profession: 'Data Analyst',
+            workplace: 'Data Insights Corp.',
+        }
     ];
 
+    const [requests, setRequests] = useState([
+        { user: users.find((person) => person.id === 1), time: '2 days ago', status: 'pending' },
+        { user: users.find((person) => person.id === 5), time: '5 hours ago', status: 'pending' },
+        { user: users.find((person) => person.id === 2), time: '1 minute ago', status: 'pending' },
+        // Add more requests as needed
+    ]);
+
+    const handleAccept = (index) => {
+        setRequests(prevRequests => {
+            const newRequests = [...prevRequests];
+            newRequests[index].status = 'accepted';
+            return newRequests;
+        });
+        console.log('Request accepted');
+    };
+
+    const handleDecline = (index) => {
+        setRequests(prevRequests => prevRequests.filter((_, i) => i !== index));
+        console.log('Request declined');
+    };
+
     const reactions = [
-        { profilePic: '/images/user4.jpg', name: 'Bob Brown', time: '10 minutes ago', action: 'likes your article', articleId: '1' },
-        { profilePic: '/images/user5.jpg', name: 'Tom White', time: '3 hours ago', action: 'left a comment on your article', comment: 'Great article! Really insightful.', articleId: '2' },
-        { profilePic: '/images/user6.jpg', name: 'Emily Green', time: '7 hours ago', action: 'likes your article', articleId: '3' },
+        { user: users.find((person) => person.id === 3), time: '10 days ago', action: 'likes your article', articleId: '1' },
+        { user: users.find((person) => person.id === 4), time: '3 hours ago', action: 'left a comment on your article', comment: 'Great article! Really insightful.', articleId: '2' },
+        { user: users.find((person) => person.id === 5), time: '7 hours ago', action: 'likes your article', articleId: '3' },
     ];
+
+    const sortedRequests = requests.sort((a, b) => convertTimeToSortableValue(b.time) - convertTimeToSortableValue(a.time));
+    const sortedReactions = reactions.sort((a, b) => convertTimeToSortableValue(b.time) - convertTimeToSortableValue(a.time));
 
     return (
         <div>
@@ -72,24 +157,32 @@ const Epag_notifications = () => {
             <div className="notifications-page">
                 <h2>Αιτήματα Σύνδεσης</h2>
                 <div className="notifications-scrollable-list">
-                    {requests.map((request, index) => (
-                        <NotificationItem
-                            key={index}
-                            profilePic={request.profilePic}
-                            name={request.name}
-                            time={request.time}
-                            action="sent you a request"
-                        />
-                    ))}
+                    {sortedRequests.length === 0 ? (
+                        <div className="notification-item">Δεν υπάρχουν διαθέσιμα αιτήματα</div>
+                    ) : (
+                        <>
+                            {requests.map((request, index) => (
+                                <NotificationItem
+                                    key={index}
+                                    user={request.user}
+                                    time={request.time}
+                                    status={request.status}
+                                    action="sent you a request"
+                                    onAccept={() => handleAccept(index)}
+                                    onDecline={() => handleDecline(index)}
+                                />
+                            ))}
+                        </>
+                    )}
+
                 </div>
 
                 <h2>Αντιδράσεις στις δημοσιεύσεις μου</h2>
                 <div className="notifications-scrollable-list">
-                    {reactions.map((reaction, index) => (
+                    {sortedReactions.map((reaction, index) => (
                         <NotificationItem
                             key={index}
-                            profilePic={reaction.profilePic}
-                            name={reaction.name}
+                            user={reaction.user}
                             time={reaction.time}
                             action={reaction.action}
                             comment={reaction.comment}
