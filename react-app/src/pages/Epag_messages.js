@@ -5,71 +5,60 @@ import MainBottom from '../components/MainBottom';
 import '../css/epag-messages.css';
 import Breadcrumbs from "../components/Breadcrumbs";
 import MessageContainer from "../components/MessageContainer";
-import {parseRelativeTime, formatRelativeTime, formatTime} from "../utils/timeUtils";
+import { parseRelativeTime, formatRelativeTime, formatTime } from "../utils/timeUtils";
 
 export default function Epag_messages() {
 
     const [messages, setMessages] = useState({
         1: [ // John's messages
-            { fromUser: false, text: 'Hi!', timestamp: '10:00 AM' },
-            { fromUser: true, text: 'Hello!', timestamp: '10:05 AM' },
-            { fromUser: true, text: 'Whats up?', timestamp: '10:05 AM' },
-            { fromUser: false, text: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Eros ultrices nec nunc suspendisse inceptos platea viverra. Facilisi placerat viverra, urna donec mauris duis quis vel. Iaculis nulla finibus malesuada scelerisque feugiat ex! Inceptos sociosqu dictumst rutrum facilisis integer; pretium mollis duis. Sed in montes amet hac himenaeos orci maecenas eros.', timestamp: '10:10 AM' },
+            { fromUser: false, text: 'Hi!', timestamp: new Date('2024-08-24T10:00:00') },
+            { fromUser: true, text: 'Hello!', timestamp: new Date('2024-08-24T10:05:00') },
+            { fromUser: true, text: 'Whats up?', timestamp: new Date('2024-08-24T10:05:00') },
+            { fromUser: false, text: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Eros ultrices nec nunc suspendisse inceptos platea viverra. Facilisi placerat viverra, urna donec mauris duis quis vel. Iaculis nulla finibus malesuada scelerisque feugiat ex! Inceptos sociosqu dictumst rutrum facilisis integer; pretium mollis duis. Sed in montes amet hac himenaeos orci maecenas eros.', timestamp: new Date('2024-08-24T10:10:00') },
         ],
         2: [ // Jane's messages
-            { fromUser: false, text: 'Good morning!', timestamp: '9:00 AM' },
-            { fromUser: true, text: 'Good morning!', timestamp: '9:10 AM' }
+            { fromUser: false, text: 'Good morning!', timestamp: new Date('2024-08-24T09:00:00') },
+            { fromUser: true, text: 'Good morning!', timestamp: new Date('2024-08-24T09:10:00') }
         ],
         3: [ // Alice's messages
-            { fromUser: true, text: 'Are you available?', timestamp: '8:00 AM' },
-            { fromUser: false, text: 'Yes, I am!', timestamp: '8:05 AM' }
+            { fromUser: true, text: 'Are you available?', timestamp: new Date('2024-08-24T08:00:00') },
+            { fromUser: false, text: 'Yes, I am!', timestamp: new Date('2024-08-24T08:05:00') }
         ]
     });
-
+    
 
     const [contacts, setContacts] = useState([
         {
-            id: 1, // Unique ID
+            id: 1,
             name: 'John Doe',
             profilePic: '/default-avatar.jpeg',
             lastMessage: '',
-            timestamp: '2d',
+            timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
         },
         {
-            id: 2, // Unique ID
+            id: 2,
             name: 'Jane Smith',
             profilePic: '/default-avatar.jpeg',
             lastMessage: '',
-            timestamp: '1h',
+            timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
         },
         {
-            id: 3, // Unique ID
+            id: 3,
             name: 'Alice Johnson',
             profilePic: '/default-avatar.jpeg',
             lastMessage: '',
-            timestamp: '5m',
+            timestamp: new Date(0), // 5 minutes ago
         },
-        {
-            id: 4, // Unique ID
-            name: 'Michael Brown',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: '1w',
-        },
-        {
-            id: 5, // Unique ID
-            name: 'Emily Davis',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: '3d',
-        }
+
     ]);
+    
+
 
 
 
     const sortedContacts = useMemo(() => {
         return [...contacts].sort(
-            (a, b) => parseRelativeTime(a.timestamp) - parseRelativeTime(b.timestamp)
+            (a, b) => b.timestamp - a.timestamp
         );
     }, [contacts]);
 
@@ -77,10 +66,11 @@ export default function Epag_messages() {
 
     // Update selected contact when sorted contacts change
     useEffect(() => {
+
         if (sortedContacts.length > 0) {
             setSelectedContact(sortedContacts[0]); // Set the first contact from the sorted list
         }
-    }, [sortedContacts]); 
+    }, [sortedContacts]);
 
 
     // Update contacts based on new messages
@@ -89,18 +79,18 @@ export default function Epag_messages() {
             prevContacts.map(c => {
                 const contactMessages = messages[c.id] || [];
                 const latestMessage = contactMessages[contactMessages.length - 1]; // Get the most recent message
-                
+                console.log("ayo", latestMessage.timestamp, c.name);
                 if (latestMessage) {
                     return {
                         ...c,
                         lastMessage: latestMessage.text,
-                        timestamp: formatRelativeTime(latestMessage.timestamp), // Update contact's timestamp
+                        timestamp: latestMessage.timestamp, // Update contact's timestamp
                     };
                 }
                 return {
                     ...c,
                     lastMessage: '',
-                    timestamp: '', // Display an empty string for contacts with no messages
+                    timestamp: new Date(0), // Display an empty string for contacts with no messages
                 };
             })
         );
@@ -116,10 +106,8 @@ export default function Epag_messages() {
     const handleNewMessage = (text) => {
         if (!selectedContact) return;
 
-        const now = new Date();
-        const formattedTimestamp = formatTime(now); 
-
-        const newMessage = { fromUser: true, text, timestamp: formattedTimestamp };
+        const now = new Date(); // Get the current date and time
+        const newMessage = { fromUser: true, text, timestamp: now }; // Store timestamp as a Date object
 
         // Update messages with the new message
         setMessages(prevMessages => {
@@ -139,7 +127,7 @@ export default function Epag_messages() {
                     ? {
                         ...c,
                         lastMessage: text,
-                        timestamp: formatRelativeTime(formattedTimestamp), // Update contact's last message timestamp
+                        timestamp: now, // Store timestamp as a Date object
                     }
                     : c
             )
@@ -168,7 +156,9 @@ export default function Epag_messages() {
                                 <img src={contact.profilePic} alt="Profile" className="contact-pic" />
                                 <div className="contact-name">{contact.name}</div>
                                 <div className="last-message">{contact.lastMessage}</div>
-                                <div className="contact-time">{contact.timestamp}</div>
+                                <div className="contact-time">
+                                    {formatRelativeTime(contact.timestamp)} 
+                                </div>
                             </div>
                         ))}
                     </div>

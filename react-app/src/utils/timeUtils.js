@@ -34,15 +34,15 @@ const parseTime = (timeString) => {
 
 // Formats a Date object into a relative time string (e.g. 1h, 1d, ...)
 const formatRelativeTime = (date) => {
-    date = parseTime(date);
     const now = new Date();
-    const diff = now - date; 
+    const diff = now - new Date(date); // Calculate the difference in milliseconds
     const diffInMinutes = Math.floor(diff / (1000 * 60));
     const diffInHours = Math.floor(diffInMinutes / 60);
     const diffInDays = Math.floor(diffInHours / 24);
     const diffInMonths = Math.floor(diffInDays / 30);
     const diffInYears = Math.floor(diffInDays / 365);
 
+    console.log(date, now, diff)
     if (diffInYears > 0) {
         return `${diffInYears}y`;
     } else if (diffInMonths > 0) {
@@ -57,6 +57,7 @@ const formatRelativeTime = (date) => {
         return 'now'; 
     }
 };
+
 
 
 // Formats a Date object into a time string (e.g. 10:00 AM)

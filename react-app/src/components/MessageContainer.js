@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../css/epag-messages.css'; 
+import { formatTime } from '../utils/timeUtils';
 
 const MessageContainer = ({ contact, messages = [], onSendMessage }) => {
     const [message, setMessage] = useState('');
@@ -54,12 +55,14 @@ const MessageContainer = ({ contact, messages = [], onSendMessage }) => {
                                 />
                             )}
                             <div className="message-content">
-                                <span className="timestamp">{msg.timestamp || ''}</span>
+                                <span className="timestamp">{formatTime(msg.timestamp)}</span> 
                                 <span className="msg-text">{msg.text || ''}</span>
                             </div>
                         </div>
                     ))
                 )}
+
+                
             </div>
             <div className="message-footer">
                 <input
