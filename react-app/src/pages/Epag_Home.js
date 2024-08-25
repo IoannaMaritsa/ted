@@ -31,10 +31,22 @@ export default function Epag_Home() {
             date: '2024-07-28',
             content: 'This is the content of the third article. It is a brief description of the article.'
         },
+        {
+            id: '4',
+            title: 'Article 4',
+            author: 'Λάκης Λαλάκης',
+            date: '2024-07-25',
+            content: 'This is the content of the second article. It is a brief description of the article.'
+        },
+        {
+            id: '5',
+            title: 'Article 5',
+            author: 'Λάκης Λαλάκης',
+            date: '2024-07-28',
+            content: 'This is the content of the third article. It is a brief description of the article.'
+        },
         // Add more articles as needed
     ];
-
-    const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const user_info = {
         profilePic: '/default-avatar.jpeg',
@@ -48,6 +60,10 @@ export default function Epag_Home() {
         studies: [{ university: 'Ekpa', degree: 'Undergraduate Degree, Software Engineering', date: '2016 - 2020' }, { university: 'Harvard', degree: 'Masters, Comp Sci', date: '2020 - 2024' }],
         skills: ['Customer Satisfaction', 'C++ Knowledge', 'Python Knowledge', 'React Framework']
     }
+
+    const sortedArticles = articles.filter((i, _) => i.author !== user_info.name).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const my_articles = articles.filter((i, _) => i.author === user_info.name).sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const contacts = [
         {
@@ -242,56 +258,78 @@ export default function Epag_Home() {
                 </div>
                 <div className="main-section">
                     <div className="article-creator">
-                        <h2>Δημιουργία νέου άρθρου</h2>
-                        {/* <form onSubmit={handleSubmit}> */}
-                        <div className="input-group">
-                            <label htmlFor="title">Τίτλος</label>
-                            <input
-                                type="text"
-                                id="title"
-                                value={title}
-                                onChange={handleTitleChange}
-                                placeholder="Δώστε έναν τίτλο στο άρθρο σας"
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label htmlFor="body">Κύριο Μέρος</label>
-                            <textarea
-                                id="body"
-                                value={body}
-                                onChange={handleBodyChange}
-                                placeholder="Περιγράψτε αναλυτικά το θέμα"
-                            />
-                        </div>
-                        <div className="icon-group">
-                            <p>Επισύναψη αρχείου:</p>
-                            <button onClick={() => handleFileUpload('image')}>
-                                <img src="/icons-image.png" alt="Attach Image" />
-                            </button>
-                            <button onClick={() => handleFileUpload('video')}>
-                                <img src="/video.png" alt="Attach Video" />
-                            </button>
-                            <button onClick={() => handleFileUpload('audio')}>
-                                <img src="/audiofile.png" alt="Attach Audio" />
-                            </button>
-                        </div>
-                        <div className="attached-files">
-                            {attachedFiles.map((file, index) => (
-                                <div key={index} className="attached-file">
-                                    {file.type === 'image' && <img src="/icons-image.png" alt="Image Icon" />}
-                                    {file.type === 'video' && <img src="/video.png" alt="Video Icon" />}
-                                    {file.type === 'audio' && <img src="/audiofile.png" alt="Audio Icon" />}
-                                    <span>{file.name}</span>
-                                    <button className="remove-button" onClick={() => handleRemoveFile(index)}>
-                                        <img src="/remove.png" alt="Image Icon" />
-                                    </button>
+                        <form onSubmit={handleSubmit}>
+                            <div className="article-creator-top">
+                                <h2>Δημιουργία νέου άρθρου</h2>
+                                <button type="submit" className="submit-button">Ανάρτηση</button>
+                            </div>
+
+
+                            <div className="input-group">
+                                <label htmlFor="title">Τίτλος</label>
+                                <input
+                                    type="text"
+                                    id="title"
+                                    value={title}
+                                    onChange={handleTitleChange}
+                                    placeholder="Δώστε έναν τίτλο στο άρθρο σας"
+                                    required
+                                />
+                            </div>
+                            <div className="input-group">
+                                <label htmlFor="body">Κύριο Μέρος</label>
+                                <textarea
+                                    id="body"
+                                    value={body}
+                                    onChange={handleBodyChange}
+                                    placeholder="Περιγράψτε αναλυτικά το θέμα"
+                                    required
+                                />
+                            </div>
+                            <div className="icon-group">
+                                <p>Επισύναψη αρχείου:</p>
+                                <button onClick={() => handleFileUpload('image')}>
+                                    <img src="/icons-image.png" alt="Attach Image" />
+                                </button>
+                                <button onClick={() => handleFileUpload('video')}>
+                                    <img src="/video.png" alt="Attach Video" />
+                                </button>
+                                <button onClick={() => handleFileUpload('audio')}>
+                                    <img src="/audiofile.png" alt="Attach Audio" />
+                                </button>
+                            </div>
+                            {attachedFiles.length > 0 && (
+                                <div className="attached-files">
+                                    {attachedFiles.map((file, index) => (
+                                        <div key={index} className="attached-file">
+                                            {file.type === 'image' && <img src="/icons-image.png" alt="Image Icon" />}
+                                            {file.type === 'video' && <img src="/video.png" alt="Video Icon" />}
+                                            {file.type === 'audio' && <img src="/audiofile.png" alt="Audio Icon" />}
+                                            <span>{file.name}</span>
+                                            <button className="remove-button" onClick={() => handleRemoveFile(index)}>
+                                                <img src="/remove.png" alt="Image Icon" />
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                        <button onClick={handleSubmit} className="submit-button">Ανάρτηση</button>
-                        {/* </form> */}
+                            )}
+                        </form>
                     </div>
                     <div className="articles-page">
+                        <h2>Τα άρθρα μου</h2>
+                        {my_articles.map((article, index) => (
+                            <Article
+                                key={index}
+                                id={article.id}
+                                title={article.title}
+                                author={article.author}
+                                date={article.date}
+                                content={article.content}
+                            />
+                        ))}
+                    </div>
+                    <div className="articles-page">
+                        <h2>Άρθρα άλλων επαγγελματιών</h2>
                         {sortedArticles.map((article, index) => (
                             <Article
                                 key={index}
