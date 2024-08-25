@@ -23,19 +23,20 @@ export default function Diax_Home() {
 
   // Initial users state
   const [users, setUsers] = useState([
-    { id: 1, name: 'Alice', email: 'alice@example.com', registrationDate: '2023-01-01', profilePic: 'default-avatar.jpeg' },
-    { id: 2, name: 'Bob', email: 'bob@example.com', registrationDate: '2023-02-01', profilePic: 'default-avatar.jpeg' },
-    { id: 3, name: 'Charlie', email: 'charlie@example.com', registrationDate: '2023-03-01', profilePic: 'default-avatar.jpeg' },
-    { id: 4, name: 'David', email: 'david@example.com', registrationDate: '2023-04-01', profilePic: 'default-avatar.jpeg' },
-    { id: 5, name: 'Eve', email: 'eve@example.com', registrationDate: '2023-05-01', profilePic: 'default-avatar.jpeg' },
-    { id: 6, name: 'Frank', email: 'frank@example.com', registrationDate: '2023-06-01', profilePic: 'default-avatar.jpeg' },
-    { id: 7, name: 'Grace', email: 'grace@example.com', registrationDate: '2023-07-01', profilePic: 'default-avatar.jpeg' },
-    { id: 8, name: 'Hannah', email: 'hannah@example.com', registrationDate: '2023-08-01', profilePic: 'default-avatar.jpeg' },
-    { id: 9, name: 'Ian', email: 'ian@example.com', registrationDate: '2023-09-01', profilePic: 'default-avatar.jpeg' },
-    { id: 10, name: 'Jack', email: 'jack@example.com', registrationDate: '2023-10-01', profilePic: 'default-avatar.jpeg' },
-    { id: 11, name: 'Kara', email: 'kara@example.com', registrationDate: '2023-11-01', profilePic: 'default-avatar.jpeg' },
-    { id: 12, name: 'Liam', email: 'liam@example.com', registrationDate: '2023-12-01', profilePic: 'default-avatar.jpeg' },
+    { id: 1, name: 'Alice', email: 'alice@example.com', registrationDate: '2023-01-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 2, name: 'Bob', email: 'bob@example.com', registrationDate: '2023-02-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 3, name: 'Charlie', email: 'charlie@example.com', registrationDate: '2023-03-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 4, name: 'David', email: 'david@example.com', registrationDate: '2023-04-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 5, name: 'Eve', email: 'eve@example.com', registrationDate: '2023-05-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 6, name: 'Frank', email: 'frank@example.com', registrationDate: '2023-06-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 7, name: 'Grace', email: 'grace@example.com', registrationDate: '2023-07-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 8, name: 'Hannah', email: 'hannah@example.com', registrationDate: '2023-08-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 9, name: 'Ian', email: 'ian@example.com', registrationDate: '2023-09-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 10, name: 'Jack', email: 'jack@example.com', registrationDate: '2023-10-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 11, name: 'Kara', email: 'kara@example.com', registrationDate: '2023-11-01', profilePic: 'default-avatar.jpeg', isSelected: false },
+    { id: 12, name: 'Liam', email: 'liam@example.com', registrationDate: '2023-12-01', profilePic: 'default-avatar.jpeg', isSelected: false },
   ]);
+  
 
   // Filter and sort users
   const filteredUsers = useMemo(() => {
@@ -74,22 +75,48 @@ export default function Diax_Home() {
   };
 
   const handleExport = () => {
-    const data = filteredUsers.map(user => ({
+    // Filter users to only include those that are selected
+    const selectedUsers = filteredUsers.filter(user => user.isSelected);
+  
+    // If no users are selected, do not proceed with the export
+    if (selectedUsers.length === 0) {
+      alert('Please select at least one user to export.');
+      return; 
+    }
+  
+    const data = selectedUsers.map(user => ({
       name: user.name,
       email: user.email,
       registrationDate: user.registrationDate
     }));
+  
+    // Export the selected users
     exportData(data, exportFormat, 'export');
   };
+  
+  
 
 
 
 
-  const handleCheckboxChange = (e) => {
-    const isChecked = e.target.checked;
-    const updatedUsers = users.map(user => ({ ...user, isSelected: isChecked }));
+  const handleCheckboxChange = (userId) => {
+    const updatedUsers = users.map(user => {
+      if (user.id === userId) {
+        return { ...user, isSelected: !user.isSelected };
+      }
+      return user;
+    });
     setUsers(updatedUsers);
   };
+
+  const handleSelectAllChange = (isChecked) => {
+    const updatedUsers = users.map(user => ({
+      ...user,
+      isSelected: isChecked,
+    }));
+    setUsers(updatedUsers);
+  };
+  
 
 
 
@@ -147,7 +174,7 @@ export default function Diax_Home() {
               <th style={{ width: '5%' }}>
                 <input
                   type="checkbox"
-                  onChange={(e) => handleCheckboxChange(e, 'all')}
+                  onChange={(e) =>handleSelectAllChange(e.target.checked)}
                 />
               </th>
               <th style={{ width: '15%' }}></th>

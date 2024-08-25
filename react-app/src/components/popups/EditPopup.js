@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "../css/popup.css"; // Adjust the path as needed
+import "../../css/popup.css"; 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns'; // Import format function for date formatting
@@ -11,7 +11,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
     const [workplace, setWorkplace] = useState(currentProfile.workplace || '');
     const [location, setLocation] = useState(currentProfile.location || '');
     const [birthday, setBirthday] = useState(currentProfile.birthday ? new Date(currentProfile.birthday) : null);
-    const [imageFile, setImageFile] = useState(null); // To manage selected image file
+    const [imageFile, setImageFile] = useState(null); 
 
 
     if (!isOpen) return null;
@@ -47,7 +47,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                     <div className="add-work-experience-modal-title">Επεξεργασία Προφίλ</div>
                     <img
                         className="add-work-experience-modal-close-btn"
-                        src="/close-icon.png" // Replace with your close icon path
+                        src="/close-icon.png" 
                         onClick={onClose}
                         alt="Close"
                     />
@@ -149,11 +149,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                                 showDayMonthYearPicker
                             />
                         </div>
-
                     </div>
-
-
-
                 </div>
                 <div className="add-work-experience-modal-footer">
                     <button onClick={handleSave} >Αποθήκευση</button>

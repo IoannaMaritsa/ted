@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useLocation, useNavigate } from 'react-router-dom';
 import MainBottom from '../components/MainBottom';
 import '../css/admin.css';
 import Breadcrumbs from "../components/Breadcrumbs";
-import PrivacyPopup from "../components/PrivacyPopup";
+import PrivacyPopup from "../components/popups/PrivacyPopup";
 import AddWorkExperiencePopup from "../components/AddWorkExperiencePopup";
-import AddStudiesPopup from "../components/AddStudiesPopup";
-import AddSkillsPopup from "../components/AddSkillsPopup";
-import EditPopup from "../components/EditPopup";
+import AddStudiesPopup from "../components/popups/AddStudiesPopup";
+import AddSkillsPopup from "../components/popups/AddSkillsPopup";
+import EditPopup from "../components/popups/EditPopup";
 
 export default function Epag_pinformation() {
     const [profile, setProfile] = useState({
         name: 'John Doe',
-        profilePic: '/default-avatar.jpeg', // Default profile picture URL
+        profilePic: '/default-avatar.jpeg', 
         profession: 'Software Developer',
         email: 'johndoe@gmail.com',
         birthday: '12/12/2002',
@@ -71,7 +70,7 @@ export default function Epag_pinformation() {
     
 
 
-    // State to manage modal visibility and current field being edited
+    // States to manage modal visibility
     const [isModalOpen, setModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [isAddExperienceModalOpen, setAddExperienceModalOpen] = useState(false);
@@ -79,25 +78,24 @@ export default function Epag_pinformation() {
     const [isAddSkillsModalOpen, setAddSkillsModalOpen] = useState(false);
     const [currentField, setCurrentField] = useState(null);
 
-    // Function to open modal and set current field
+
     const openPrivacyModal = (field) => {
         setCurrentField(field);
         setModalOpen(true);
     };
 
-    // Function to close modal
     const closePrivacyModal = () => {
         setModalOpen(false);
         setCurrentField(null);
     };
 
+    // Function to update privacy settings
     const changePrivacySetting = (newPrivacy) => {
         setPrivacySettings((prevSettings) => {
             const updatedSettings = {
                 ...prevSettings,
                 [currentField]: newPrivacy,
             };
-            console.log("Updated Privacy Settings:", updatedSettings); // Debugging
             return updatedSettings;
         });
         closePrivacyModal();
@@ -117,6 +115,7 @@ export default function Epag_pinformation() {
         }
     };
 
+    // Delete handlers
     const handleDeleteExperience = (indexToRemove) => {
         setWorkExperience((prevExperiences) =>
             prevExperiences.filter((_, index) => index !== indexToRemove)
@@ -135,24 +134,13 @@ export default function Epag_pinformation() {
         );
     };
 
+    // Functions for closing and opening the modals
     const openEditModal = () => {
         setEditModalOpen(true);
     };
 
     const closeEditModal = () => {
         setEditModalOpen(false);
-    };
-
-    const openAddExperienceModal = () => {
-        setAddExperienceModalOpen(true);
-    };
-
-    const closeAddExperienceModal = () => {
-        setAddExperienceModalOpen(false);
-    };
-
-    const handleAddExperience = (newExperience) => {
-        setWorkExperience([...workExperience, newExperience]);
     };
 
     const openAddStudiesModal = () => {
@@ -162,9 +150,12 @@ export default function Epag_pinformation() {
     const closeAddStudiesModal = () => {
         setAddStudiesModalOpen(false);
     };
+    const openAddExperienceModal = () => {
+        setAddExperienceModalOpen(true);
+    };
 
-    const handleAddStudies = (newStudy) => {
-        setStudies([...studies, newStudy]);
+    const closeAddExperienceModal = () => {
+        setAddExperienceModalOpen(false);
     };
 
     const openAddSkillsModal = () => {
@@ -175,10 +166,22 @@ export default function Epag_pinformation() {
         setAddSkillsModalOpen(false);
     };
 
+
+    // Functions to add new rows
+    const handleAddExperience = (newExperience) => {
+        setWorkExperience([...workExperience, newExperience]);
+    };
+
+    const handleAddStudies = (newStudy) => {
+        setStudies([...studies, newStudy]);
+    };
+
+
     const handleAddSkills = (newSkills) => {
         setSkills([...skills, newSkills]);
     };
     
+    // Function to update the profile
     const handleSaveProfile = (updatedProfile) => {
         setProfile(updatedProfile);
     };
@@ -253,9 +256,9 @@ export default function Epag_pinformation() {
                                 Επαγγελματική Εμπειρία
                                 <img
                                     className="work-experience-privacy-icon"
-                                    src={getPrivacyIcon(privacySettings.workExperience)}  // Use a privacy state specific to work experience
+                                    src={getPrivacyIcon(privacySettings.workExperience)}  
                                     alt="Privacy Icon"
-                                    onClick={() => openPrivacyModal("workExperience")}  // Pass 'workExperience' as the field
+                                    onClick={() => openPrivacyModal("workExperience")}  
                                 />
                             </div>
                             {workExperience.length > 0 ? (
@@ -268,9 +271,9 @@ export default function Epag_pinformation() {
                                         </div>
                                         <img
                                             className="delete-icon"
-                                            src="/trash.png"  // Replace with your delete icon path
+                                            src="/trash.png" 
                                             alt="Delete"
-                                            onClick={() => handleDeleteExperience(index)}  // Call the delete function with the index
+                                            onClick={() => handleDeleteExperience(index)}  
                                         />
                                     </div>
 
@@ -279,7 +282,7 @@ export default function Epag_pinformation() {
                                 <p></p>
                             )}
                             <div className="work-experience-footer" >
-                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddExperienceModal} /> {/* Replace with your icon path */}
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddExperienceModal} /> 
                                 <span className="footer-text" onClick={openAddExperienceModal}  >Προσθήκη Επαγγελματικών Εμπειριών</span>
                             </div>
                         </div>
@@ -288,9 +291,9 @@ export default function Epag_pinformation() {
                                 Σπουδές
                                 <img
                                     className="work-experience-privacy-icon2"
-                                    src={getPrivacyIcon(privacySettings.studies)}  // Use a privacy state specific to work experience
+                                    src={getPrivacyIcon(privacySettings.studies)}  
                                     alt="Privacy Icon"
-                                    onClick={() => openPrivacyModal("studies")}  // Pass 'workExperience' as the field
+                                    onClick={() => openPrivacyModal("studies")} 
                                 />
                             </div>
                             {studies.length > 0 ? (
@@ -303,9 +306,9 @@ export default function Epag_pinformation() {
                                         </div>
                                         <img
                                             className="delete-icon"
-                                            src="/trash.png"  // Replace with your delete icon path
+                                            src="/trash.png"  
                                             alt="Delete"
-                                            onClick={() => handleDeleteStudies(index)}  // Call the delete function with the index
+                                            onClick={() => handleDeleteStudies(index)}  
                                         />
                                     </div>
                                 ))
@@ -313,7 +316,7 @@ export default function Epag_pinformation() {
                                 <p></p>
                             )}
                             <div className="work-experience-footer" >
-                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddStudiesModal} /> {/* Replace with your icon path */}
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddStudiesModal} /> 
                                 <span className="footer-text" onClick={openAddStudiesModal}  >Προσθήκη Σπουδών</span>
                             </div>
                         </div>
@@ -322,9 +325,9 @@ export default function Epag_pinformation() {
                                 Δεξιότητες
                                 <img
                                     className="work-experience-privacy-icon3"
-                                    src={getPrivacyIcon(privacySettings.skills)}  // Use a privacy state specific to work experience
+                                    src={getPrivacyIcon(privacySettings.skills)}  
                                     alt="Privacy Icon"
-                                    onClick={() => openPrivacyModal("skills")}  // Pass 'workExperience' as the field
+                                    onClick={() => openPrivacyModal("skills")} 
                                 />
                             </div>
                             {skills.length > 0 ? (
@@ -335,9 +338,9 @@ export default function Epag_pinformation() {
                                         </div>
                                         <img
                                             className="delete-icon"
-                                            src="/trash.png"  // Replace with your delete icon path
+                                            src="/trash.png"  
                                             alt="Delete"
-                                            onClick={() => handleDeleteSkills(index)}  // Call the delete function with the index
+                                            onClick={() => handleDeleteSkills(index)}  
                                         />
                                     </div>
                                 ))
@@ -345,7 +348,7 @@ export default function Epag_pinformation() {
                                 <p></p>
                             )}
                              <div className="work-experience-footer" >
-                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddSkillsModal} /> {/* Replace with your icon path */}
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddSkillsModal} /> 
                                 <span className="footer-text" onClick={openAddSkillsModal}  >Προσθήκη Δεξιοτήτων</span>
                             </div>
                         </div>

@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import "../css/popup.css"; // Adjust the path as needed
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { format } from 'date-fns'; // Import format function for date formatting
+import "../../css/popup.css"; 
 
 const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
     const [name, setName] = useState('');
@@ -27,7 +24,7 @@ const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
                     <div className="add-work-experience-modal-title">Προσθήκη Δεξιοτήτων</div>
                     <img
                         className="add-work-experience-modal-close-btn"
-                        src="/close-icon.png" // Replace with your close icon path
+                        src="/close-icon.png" 
                         onClick={onClose}
                         alt="Close"
                     />

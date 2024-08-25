@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import "../css/popup.css";
+import "../../css/popup.css";
 
 const PrivacyModal = ({ isOpen, onClose, onChangePrivacySetting, currentPrivacy }) => {
     const [selectedPrivacy, setSelectedPrivacy] = useState(currentPrivacy);
@@ -20,7 +20,7 @@ const PrivacyModal = ({ isOpen, onClose, onChangePrivacySetting, currentPrivacy 
         <div className="privacy-modal-content">
             <div className="privacy-modal-header">
                 <div className="privacy-modal-title">Επεξεργασία Ιδιωτικότητας</div>
-                <img className="privacy-modal-close-btn" src="close-icon.png" onClick={onClose}>
+                <img className="privacy-modal-close-btn" alt="Close" src="close-icon.png" onClick={onClose}>
                 </img>
             </div>
 
