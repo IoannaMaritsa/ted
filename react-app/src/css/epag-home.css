@@ -7,7 +7,8 @@
     border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 20px 20px; */
-    width: 70%;
+    margin-right: 5%;
+    width:65%;
     text-align: left;
   }
 
@@ -15,8 +16,8 @@
     background-color: var(--background-color);
     width: 100%;
     display: flex;
-    align-items: baseline;
-    justify-content: center;
+    align-items:flex-start;
+    justify-content: space-evenly;
     height: fit-content;
     padding: 20px 0px;
     column-gap: 20px;
@@ -120,10 +121,17 @@
 
   .article-creator h2 {
     text-align: left;
-    margin-bottom: 20px;
     font-family: var(--font-basic);
     font-weight: 400;
     font-size: large;
+    
+  }
+
+  .article-creator-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
     padding: 10px;
     border-bottom: 1px solid #ccc;
   }
@@ -147,13 +155,13 @@
   }
 
   .input-group textarea {
-    resize: vertical;
-    height: 150px;
+    resize:none;
+    height: 100px;
   }
 
   .icon-group {
     display: flex;
-    justify-content: space-around;
+    justify-content: left;
     margin-top: 20px;
   }
 
@@ -205,7 +213,7 @@
 
   .submit-button {
     display: block;
-    width: 100%;
+    margin: 10px;
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -213,7 +221,6 @@
     color: var(--text-dark-grey);
     font-size: 16px;
     cursor: pointer;
-    margin-top: 20px;
   }
 
   .submit-button:hover {

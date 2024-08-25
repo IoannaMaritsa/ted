@@ -128,7 +128,7 @@
 
 .main {
   background-color: var(--background-color);
-  min-height: 70%;
+  min-height: 40vh;
   padding: 50px 10px;
 }
 
@@ -202,7 +202,7 @@
 }
 
 video {
-  width: 100%;
+  width: 50%;
   height: auto;
   opacity: 1;
   visibility: visible;

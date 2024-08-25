@@ -7,7 +7,9 @@ const Breadcrumbs = () => {
   const { isAdmin } = useAppContext();
 
   const location = useLocation();
-  const pathnames = location.pathname.split('/').filter((x) => x);
+  const modifiedPathname = location.pathname.replace(/\d+/g, '');
+  const pathnames = modifiedPathname.split('/').filter((x) => x);
+  console.log(modifiedPathname);
 
   const breadcrumbNameMap = {
     'epaggelmatias_article': 'Άρθρο',
@@ -18,7 +20,7 @@ const Breadcrumbs = () => {
     'user_profile':'Προφίλ Χρήστη',
     'epaggelmatias_notifications':'Ειδοποιήσεις',
     'epaggelmatias_settings' : 'Ρυθμίσεις',
-    'epaggelmatias_messages' : 'Μηνύματα'
+    'epaggelmatias_messages' : 'Μηνύματα',
     // Add more mappings as needed
   };
 

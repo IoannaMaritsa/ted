@@ -8,6 +8,34 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
+function DateTime(date, time) {
+    this.date = date; // Date in YYYY-MM-DD format
+    this.time = time; // Time in HH:MM:SS format
+}
+
+const getCurrentDate = () => {
+    const today = new Date();
+    
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+};
+
+const getCurrentTime = () => {
+    const today = new Date();
+    const hours = String(today.getHours()).padStart(2, '0');
+    const minutes = String(today.getMinutes()).padStart(2, '0');
+    
+    return `${hours}:${minutes}`;
+};
+
+const myuser = {
+    id: 189,
+    profilePic: '/default-avatar.jpeg',
+    name: 'Λάκης Λαλάκης',
+}
 const users = [
     {
         id: 1,
@@ -49,17 +77,25 @@ const Epag_article = () => {
         // Add more articles as needed
     ];
 
-    const all_comments = [
-        { article_id: 1, author: users.find((person) => person.id === 3), date: '1 minute ago', text:'Very useful!'},
-        { article_id: 2, author: users.find((person) => person.id === 3), date: '3 hours ago', text:'I find this very disturbing!'},
-        { article_id: 1, author: users.find((person) => person.id === 2), date: '2 days ago', text:'Good Job!'},
-    ];
+    const [all_comments, setAll_comments] = useState([
+        { article_id: 1, author: users.find((person) => person.id === 3), datetime: new DateTime('2024-08-25', '12:30'), text: 'Very useful!' },
+        { article_id: 2, author: users.find((person) => person.id === 3), datetime: new DateTime('2009-07-28', '08:15'), text: 'I find this very disturbing!' },
+        { article_id: 1, author: users.find((person) => person.id === 2), datetime: new DateTime('2017-01-01', '18:45'), text: 'Good Job!' },
+    ]);
 
     const { id } = useParams();
     const article = articles.find(article => article.id === parseInt(id));
 
     if (!article) {
-        return <div>Article not found</div>;
+        return (
+            <div>
+                <Header variant="professional" />
+                <Breadcrumbs />
+                <div className='main'>Article not found</div>
+                <MainBottom />
+                <Footer />
+            </div>
+        );
     }
 
     const handleBodyChange = (e) => {
@@ -68,13 +104,28 @@ const Epag_article = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Handle the form submission logic here
+        const currentDateTime = new DateTime(getCurrentDate(), getCurrentTime());
+
+        const newComment = {
+            article_id: parseInt(id),  // Example article ID
+            author: myuser,  // Example user
+            datetime: currentDateTime,  // Example date
+            text: body  // Example comment text
+        };
+        setAll_comments([...all_comments, newComment]);
+
         console.log('Article submitted:', { body });
         // Reset the form
         setBody('');
     };
 
-    const comments = all_comments.filter((i ,_) => i.article_id === parseInt(id))
+    const sortComments = (comments) => {
+        comments.sort((a, b) => new Date(`${b.datetime.date}T${b.datetime.time}:00`) - new Date(`${a.datetime.date}T${a.datetime.time}:00`));
+        
+        return comments;
+    }
+
+    const comments = sortComments(all_comments.filter((i, _) => i.article_id === parseInt(id)));
 
     return (
         <div>
@@ -82,6 +133,9 @@ const Epag_article = () => {
             <Breadcrumbs />
             <div className='main'>
                 <div className="article-container">
+                    <div className='interest-box'>
+                        <button className='interest-button'>Με ενδιαφέρει</button>
+                    </div>
                     <div className="article-text">
                         <h1>{article.title}</h1>
                     </div>
@@ -98,10 +152,10 @@ const Epag_article = () => {
                     <p className="article-content">{article.content}</p>
                     {article.attachments.images.length > 0 && (
                         <div className="attachments">
-                                    <h3>Φωτογραφίες</h3>
-                                    {article.attachments.images.map((image, index) => (
-                                        <img key={index} src={`/${image}`} alt={`Attachment ${index + 1}`} className='article-image' />
-                                    ))}
+                            <h3>Φωτογραφίες</h3>
+                            {article.attachments.images.map((image, index) => (
+                                <img key={index} src={`/${image}`} alt={`Attachment ${index + 1}`} className='article-image' />
+                            ))}
                         </div>
                     )}
 
@@ -128,9 +182,6 @@ const Epag_article = () => {
                             ))}
                         </div>
                     )}
-                    <div className='interest-box'>
-                        <button className='interest-button'>Με ενδιαφέρει</button>
-                    </div>
 
                     <div className='article-comment-section'>
                         <h3>Σχόλια</h3>
@@ -140,9 +191,14 @@ const Epag_article = () => {
                             <>
                                 {comments.map((comment, index) => (
                                     <div className='notification-item'>
-                                        <img src={comment.author.profilePic} alt={`${comment.author.name}'s profile`} className='profile-pic'/>
+                                        <img src={comment.author.profilePic} alt={`${comment.author.name}'s profile`} className='profile-pic' />
                                         <div className='notification-text'>
-                                            <div className="notification-time">{comment.date}</div>
+                                            {comment.datetime.date === getCurrentDate() ? (
+                                                <div className="notification-time">{comment.datetime.time}</div>
+                                            ) : (
+                                                <div className="notification-time">{comment.datetime.date}</div>
+                                            )}
+                                            
                                             <span className="notification-name" onClick={() => handleProfileClick(comment.author)}>{comment.author.name}</span>
                                             <span>{comment.text}</span>
                                         </div>
@@ -151,19 +207,22 @@ const Epag_article = () => {
                             </>
                         )}
                     </div>
-
+                    <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <textarea
                             id="body"
                             value={body}
                             onChange={handleBodyChange}
                             placeholder="Σχολιάστε"
+                            required
                         />
                     </div>
                     <div className='interest-box'>
-                        <button onClick={handleSubmit} className="article-comment-button">Ανάρτηση</button>
+                        <button type='submit' className="article-comment-button">Ανάρτηση</button>
                     </div>
+                    </form>
                 </div>
+                
             </div>
             <MainBottom />
             <Footer />
