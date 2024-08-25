@@ -291,7 +291,7 @@ export default function Epag_pinformation() {
                                 </div>
                                 <input type="radio" name="privacy" value="private" className="privacy-row-radio" />
                             </div>
-                            <button onClick={() => onChangePrivacySetting("public")}>Save</button>
+                            <button >Save</button>
                         </div>
                     </div>
                  
