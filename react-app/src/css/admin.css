@@ -567,6 +567,7 @@
     cursor: pointer;
 }
 
+
 .adminu-main-div {
     padding: 20px;
     background-color: var(--background-color);
@@ -594,6 +595,8 @@
     padding: 10px;
 }
 
+
+
 .work-experience-box {
     background-color: #ffffff;
     padding: 10px;
@@ -608,7 +611,7 @@
     border-bottom: 1px solid #ddd;
     text-align: left;
 }
-.work-experience-row-title {
+.work-experience-row-title , .work-experience-row-title2{
     display: flex;
     text-align: left;
     padding: 10px 10px;
@@ -617,6 +620,10 @@
 }
 
 .work-experience-row:last-child {
+    border-bottom: none;
+}
+
+.work-experience-row2:last-child {
     border-bottom: none;
 }
 
@@ -671,82 +678,70 @@
 }
 
 
-/* Basic styles for the modal overlay */
-.privacy-modal {
-    position: fixed; /* Fixed position to cover the entire viewport */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it appears above other content */
-}
 
-/* Styles for the modal content */
-.privacy-modal-content {
-    background: #fff; /* White background for the modal */
-    border-radius: 8px;
-    width: 80%;
-    height: 500px;
-    max-width: 850px;
-    text-align: center;
 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
 
-/* Close button styles */
-.privacy-modal-content .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
+.work-experience-privacy-icon {
+    margin-left: 490px; /* Space between the text and the right icon */
+    width: 24px; /* Adjust icon size as needed */
+    height: 24px; /* Adjust icon size as needed */
     cursor: pointer;
-    color: #333;
 }
 
-/* Styles for buttons inside the modal */
-.privacy-modal-content button {
-    background-color: #007bff; /* Blue background */
-    color: #fff; /* White text */
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    margin: 5px;
+.work-experience-privacy-icon2 {
+    margin-left: 639px; /* Space between the text and the right icon */
+    width: 24px; /* Adjust icon size as needed */
+    height: 24px; /* Adjust icon size as needed */
     cursor: pointer;
-    font-size: 16px;
 }
 
-.privacy-modal-content button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-}
-
-
-/* Styles for the modal header */
-.privacy-modal-header {
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd; /* Optional border below header */
-    padding-bottom: 10px;
-}
-
-/* Title styles in the header */
-.privacy-modal-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* Close button styles */
-.privacy-modal-close-btn {
-    width: 35px;
+.work-experience-privacy-icon3 {
+    margin-left: 617px; /* Space between the text and the right icon */
+    width: 24px; /* Adjust icon size as needed */
+    height: 24px; /* Adjust icon size as needed */
     cursor: pointer;
-    color: #333;
-    background: none;
-    border: none;
 }
+
+.work-experience-row2 {
+    display: flex; /* Use flexbox to control layout */
+    align-items: center; /* Vertically align items */
+    justify-content: space-between; /* Push delete icon to the right */
+    padding: 10px 0; /* Add padding for spacing */
+    border-bottom: 1px solid #ccc; /* Optional: adds a bottom border for each row */
+  }
+  
+  .work-experience-info {
+    text-align: left;
+    padding-left: 15px;
+    display: flex; /* Use flexbox to align text elements */
+    flex-direction: column; /* Stack text elements vertically */
+    flex-grow: 1; /* Allow this container to grow and push delete icon to the right */
+  }
+
+  .delete-icon {
+    width: 24px; /* Adjust size as needed */
+    height: 24px; /* Adjust size as needed */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    margin-right: 24px;
+  }
+
+  .work-experience-footer {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Vertically center items */
+    padding: 15px  /* Padding for spacing */
+  }
+  
+  .footer-icon {
+    width: 30px; /* Adjust size as needed */
+    height: 30px; /* Adjust size as needed */
+    margin-right: 8px; /* Space between icon and text */
+    cursor:pointer;
+  }
+  
+  .footer-text {
+    font-family: var(--font-basic);
+    cursor:pointer;
+    font-weight: bolder;
+    font-size: 16px; /* Adjust font size as needed */
+    color: #333; /* Adjust color as needed */
+  }
