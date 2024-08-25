@@ -7,29 +7,43 @@
     height: 100vh; /* Full viewport height */
     width: 100%; /* Full viewport width */
     padding: 20px; /* Padding around the container */
-    padding-top: 50px;
+    padding-top: 20px;
     box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
 
 .mess-header {
-    width: 900px; /* Match the width of the main content */
+    width: 950px;
     display: flex;
-    justify-content: left; /* Center the header horizontally */
-    margin-bottom: 20px; /* Space between title and main content */
+    justify-content: space-between;
+    align-items: center;
+   
+    padding: 0 20px; /* Padding for the header */
+    box-sizing: border-box;
 }
 
 .mess-header h1 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: bold; /* Make title bold */
-    color: #333; /* Dark color for the title */
+    font-size: 1.8rem;
+    color: var(--text-dark-grey);
+    /* Allows the title to take available space */
+    text-align: left;
+    /* Adjust color as needed */
+    margin-right: 500px;
 }
 
+.title2 {
+    font-size: 1.8rem;
+    color: var(--text-dark-grey);
+    /* Allows the title to take available space */
+    text-align: left;
+    /* Adjust color as needed */
+    margin-right: 500px;
+}
 .main-content-mess {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 900px; /* Fixed width for the main content */
+    width: 950px; /* Fixed width for the main content */
     height: 500px; /* Fixed height for the main content */
     background-color: #f9f9f9; /* Background color for the main content */
     border: 1px solid var(--border-color); /* Light border for the container */
@@ -47,6 +61,9 @@
     border-bottom-right-radius: 8px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto; /* Scroll only this area */
+    flex-grow: 1; /* Allow this area to grow and shrink as needed */
+    box-sizing: border-box; /* Include padding in width calculations */
    
 }
 
@@ -217,6 +234,8 @@
 
 .message.user {
     justify-content: flex-end;
+    align-self: flex-end; /* Align user's messages to the right */
+    text-align: right;
 }
 
 .message-pic {
@@ -227,7 +246,7 @@
 }
 
 .message-content {
-    max-width: 60%;
+    max-width: 65%;
     padding: 15px;
     font-family: var(--font-basic);
     border-radius: 15px;
@@ -240,6 +259,7 @@
     background-color: #646464;
     color: white;
     margin-right: 20px;
+    max-width: 70%;
 }
 
 .message.contact .message-content {
@@ -259,3 +279,11 @@
 
 
 
+
+.message {
+    max-width: 80%; /* Set a maximum width for the message bubble */
+    margin: 5px 0;
+    border-radius: 15px;
+    word-wrap: break-word; /* Ensure words break and wrap */
+    white-space: normal; /* Allow normal text wrapping */
+}

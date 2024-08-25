@@ -25,7 +25,7 @@ export default function Epag_messages() {
             { fromUser: false, text: 'Yes, I am!', timestamp: new Date('2024-08-24T08:05:00') }
         ]
     });
-    
+
 
     const [contacts, setContacts] = useState([
         {
@@ -47,20 +47,55 @@ export default function Epag_messages() {
             name: 'Alice Johnson',
             profilePic: '/default-avatar.jpeg',
             lastMessage: '',
-            timestamp: new Date(0), // 5 minutes ago
+            timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
         },
-
+        {
+            id: 4,
+            name: 'Michael Brown',
+            profilePic: '/default-avatar.jpeg',
+            lastMessage: '',
+            timestamp: new Date(0), // 1 week ago
+        },
+        {
+            id: 5,
+            name: 'Emily Davis',
+            profilePic: '/default-avatar.jpeg',
+            lastMessage: '',
+            timestamp: new Date(0), // 3 days ago
+        },
+        {
+            id: 6, // Contact with no messages
+            name: 'Lucas Taylor',
+            profilePic: '/default-avatar.jpeg',
+            lastMessage: '',
+            timestamp: new Date(0), // No messages timestamp
+        },
+        {
+            id: 7, // Another contact with no messages
+            name: 'Emma Wilson',
+            profilePic: '/default-avatar.jpeg',
+            lastMessage: '',
+            timestamp: new Date(0), // No messages timestamp
+        }
     ]);
-    
 
 
 
 
     const sortedContacts = useMemo(() => {
-        return [...contacts].sort(
-            (a, b) => b.timestamp - a.timestamp
-        );
-    }, [contacts]);
+        // Separate contacts with and without messages
+        const contactsWithMessages = contacts.filter(contact => messages[contact.id] && messages[contact.id].length > 0);
+        const contactsWithoutMessages = contacts.filter(contact => !messages[contact.id] || messages[contact.id].length === 0);
+
+        // Sort contacts with messages by timestamp (most recent first)
+        contactsWithMessages.sort((a, b) => b.timestamp - a.timestamp);
+
+        // Combine sorted contacts with messages and contacts without messages
+        return [...contactsWithMessages, ...contactsWithoutMessages];
+    }, [contacts, messages]);
+
+
+
 
     const [selectedContact, setSelectedContact] = useState(null);
 
@@ -79,7 +114,6 @@ export default function Epag_messages() {
             prevContacts.map(c => {
                 const contactMessages = messages[c.id] || [];
                 const latestMessage = contactMessages[contactMessages.length - 1]; // Get the most recent message
-                console.log("ayo", latestMessage.timestamp, c.name);
                 if (latestMessage) {
                     return {
                         ...c,
@@ -87,11 +121,7 @@ export default function Epag_messages() {
                         timestamp: latestMessage.timestamp, // Update contact's timestamp
                     };
                 }
-                return {
-                    ...c,
-                    lastMessage: '',
-                    timestamp: new Date(0), // Display an empty string for contacts with no messages
-                };
+                return c; // Return unchanged contact if no messages
             })
         );
     }, [messages]);
@@ -143,7 +173,7 @@ export default function Epag_messages() {
             <Breadcrumbs />
             <div className="messaging-page">
                 <header className="mess-header">
-                    <h1>Συζητήσεις</h1>
+                    <h1 className="title2">Συζητήσεις</h1>
                 </header>
                 <main className="main-content-mess">
                     <div className="sidebar">
@@ -157,7 +187,7 @@ export default function Epag_messages() {
                                 <div className="contact-name">{contact.name}</div>
                                 <div className="last-message">{contact.lastMessage}</div>
                                 <div className="contact-time">
-                                    {formatRelativeTime(contact.timestamp)} 
+                                    {contact.timestamp.getTime() !== 0 ? formatRelativeTime(contact.timestamp) : ''}
                                 </div>
                             </div>
                         ))}
@@ -169,7 +199,7 @@ export default function Epag_messages() {
                             onSendMessage={handleNewMessage}
                         />
                     ) : (
-                        <p>Select a contact to view messages.</p>
+                        <div></div>
                     )}
 
                 </main>

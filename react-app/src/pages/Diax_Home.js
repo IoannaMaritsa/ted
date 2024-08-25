@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo , useEffect} from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
@@ -15,6 +15,11 @@ export default function Diax_Home() {
   const {setUserProfile } = useAppContext();
 
   const itemsPerPage = 6;
+
+   // Reset currentPage to 1 whenever searchQuery changes
+   useEffect(() => {
+    setCurrentPage(1);
+}, [searchQuery]);
 
   // Initial users state
   const [users, setUsers] = useState([
@@ -106,9 +111,11 @@ export default function Diax_Home() {
   return (
     <div className="admin">
       <Header variant="admin" />
-      <nav className="breadcrumbs">🏠︎/</nav>
+      <nav className="breadcrumbs"> <img src="/home.png" className='home-icon' alt="Home"/> &nbsp; /</nav>
       <main className="admin-main-div">
-        <h2 className="title">Λίστα Χρηστών</h2>
+        <div className="box-header2">
+        <h1 className="title-admin">Λίστα Χρηστών</h1>
+        </div>
         <div className="row1">
           <div className="ebutton-div">
             <select
@@ -125,7 +132,7 @@ export default function Diax_Home() {
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Αναζήτηση Χρηστών"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
@@ -133,7 +140,8 @@ export default function Diax_Home() {
             <img src="search.png" alt="Search Icon" className="search-icon"></img>
           </div>
         </div>
-        <table className="admin-box">
+        <div className="admin-box">
+        <table>
           <thead>
             <tr>
               <th style={{ width: '5%' }}>
@@ -165,6 +173,7 @@ export default function Diax_Home() {
             ))}
           </tbody>
         </table>
+        </div>
         <div className="pagination">
           <button
             onClick={() => handlePageChange(currentPage - 1)}

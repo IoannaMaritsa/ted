@@ -74,6 +74,10 @@ export default function Epag_network() {
         },
     ];
 
+    // Reset currentPage to 1 whenever searchQuery changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     const filteredUsers = useMemo(() => {
         const query = (searchQuery || '').toLowerCase();

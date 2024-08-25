@@ -6,11 +6,10 @@ import MainBottom from '../components/MainBottom';
 import '../css/admin.css';
 import Breadcrumbs from "../components/Breadcrumbs";
 
-export default function Diax_Home() {
+export default function Epag_network_profile() {
     const location = useLocation();
     const navigate = useNavigate();
     const { otherProfile } = location.state || {};
-    const [exportFormat, setExportFormat] = useState('json');
 
     const [workExperience, setWorkExperience] = useState([
         { company: 'Google', role: 'Software Engineer', duration: 'Jan 2020 - Dec 2021' },
@@ -93,10 +92,6 @@ export default function Diax_Home() {
                                 <div class="a-icon-text">
                                     <img class="a-icon" src="/birthday.png" alt="Icon 3" />
                                     <span class="a-text">2002-12-12</span>
-                                </div>
-                                <div class="a-icon-text">
-                                    <img class="a-icon" src="/regdate.png" alt="Icon 3" />
-                                    <span class="a-text">{otherProfile.registrationDate}</span>
                                 </div>
                                 <div class="a-icon-text">
                                     <img class="a-icon" src="/email.png" alt="Icon 3" />

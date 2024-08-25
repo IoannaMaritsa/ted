@@ -24,7 +24,8 @@ const Breadcrumbs = () => {
 
   return (
     <nav className="breadcrumbs">
-      <Link to={isAdmin ? '/admin' : '/epaggelmatias_homepage'}>🏠︎</Link>
+      <Link to={isAdmin ? '/admin' : '/epaggelmatias_homepage'}>
+      <img src="/home.png" className='home-icon' alt="Home"></img></Link>
     
       {pathnames.map((value, index) => {
         const to = `/${pathnames.slice(0, index + 1).join('/')}`;

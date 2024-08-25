@@ -220,7 +220,7 @@ export default function Diax_Home() {
                                     comments.map((comment, index) => (
                                         <div key={index} className="work-experience-row">
                                             <div className="post-name">{comment.name}</div>
-                                            <div className="comment">"{comment.comment}"</div>
+                                            <div className="comment1">"{comment.comment}"</div>
                                             <div className="work-duration">{comment.date}</div>
                                         </div>
                                     ))
