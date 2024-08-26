@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useLocation, useNavigate } from 'react-router-dom';
 import MainBottom from '../components/MainBottom';
 import '../css/admin.css';
 import Breadcrumbs from "../components/Breadcrumbs";
+import PrivacyPopup from "../components/popups/PrivacyPopup";
+import AddWorkExperiencePopup from "../components/AddWorkExperiencePopup";
+import AddStudiesPopup from "../components/popups/AddStudiesPopup";
+import AddSkillsPopup from "../components/popups/AddSkillsPopup";
+import EditPopup from "../components/popups/EditPopup";
 
 export default function Epag_pinformation() {
-    const location = useLocation();
-    const navigate = useNavigate();
     const [profile, setProfile] = useState({
         name: 'John Doe',
-        profilePic: '/default-avatar.jpeg', // Default profile picture URL
-        email: 'johndoe@gmail.com'
+        profilePic: '/default-avatar.jpeg', 
+        profession: 'Software Developer',
+        email: 'johndoe@gmail.com',
+        birthday: '12/12/2002',
+        location: 'Athens, Greece',
+        workplace: 'Google',
+
     });
-    const [exportFormat, setExportFormat] = useState('json');
 
     const [workExperience, setWorkExperience] = useState([
         { company: 'Google', role: 'Software Engineer', duration: 'Jan 2020 - Dec 2021' },
@@ -52,41 +58,44 @@ export default function Epag_pinformation() {
     ]);
 
 
-    const handleBackClick = () => {
-        navigate(-1); // Navigate to the previous page
-    };
-
     const [privacySettings, setPrivacySettings] = useState({
         work: "private",
         location: "private",
         birthday: "private",
         email: "private",
+        workExperience: "private",
+        studies: "private",
+        skills: "private",
     });
+    
 
 
-    // State to manage modal visibility and current field being edited
+    // States to manage modal visibility
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [isAddExperienceModalOpen, setAddExperienceModalOpen] = useState(false);
+    const [isAddStudiesModalOpen, setAddStudiesModalOpen] = useState(false);
+    const [isAddSkillsModalOpen, setAddSkillsModalOpen] = useState(false);
     const [currentField, setCurrentField] = useState(null);
 
-    // Function to open modal and set current field
+
     const openPrivacyModal = (field) => {
         setCurrentField(field);
         setModalOpen(true);
     };
 
-    // Function to close modal
     const closePrivacyModal = () => {
         setModalOpen(false);
         setCurrentField(null);
     };
 
+    // Function to update privacy settings
     const changePrivacySetting = (newPrivacy) => {
         setPrivacySettings((prevSettings) => {
             const updatedSettings = {
                 ...prevSettings,
                 [currentField]: newPrivacy,
             };
-            console.log("Updated Privacy Settings:", updatedSettings); // Debugging
             return updatedSettings;
         });
         closePrivacyModal();
@@ -106,37 +115,100 @@ export default function Epag_pinformation() {
         }
     };
 
+    // Delete handlers
+    const handleDeleteExperience = (indexToRemove) => {
+        setWorkExperience((prevExperiences) =>
+            prevExperiences.filter((_, index) => index !== indexToRemove)
+        );
+    };
+
+    const handleDeleteStudies = (indexToRemove) => {
+        setStudies((prevStudies) =>
+            prevStudies.filter((_, index) => index !== indexToRemove)
+        );
+    };
+
+    const handleDeleteSkills = (indexToRemove) => {
+        setSkills((prevSkills) =>
+            prevSkills.filter((_, index) => index !== indexToRemove)
+        );
+    };
+
+    // Functions for closing and opening the modals
+    const openEditModal = () => {
+        setEditModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setEditModalOpen(false);
+    };
+
+    const openAddStudiesModal = () => {
+        setAddStudiesModalOpen(true);
+    };
+
+    const closeAddStudiesModal = () => {
+        setAddStudiesModalOpen(false);
+    };
+    const openAddExperienceModal = () => {
+        setAddExperienceModalOpen(true);
+    };
+
+    const closeAddExperienceModal = () => {
+        setAddExperienceModalOpen(false);
+    };
+
+    const openAddSkillsModal = () => {
+        setAddSkillsModalOpen(true);
+    };
+
+    const closeAddSkillsModal = () => {
+        setAddSkillsModalOpen(false);
+    };
+
+
+    // Functions to add new rows
+    const handleAddExperience = (newExperience) => {
+        setWorkExperience([...workExperience, newExperience]);
+    };
+
+    const handleAddStudies = (newStudy) => {
+        setStudies([...studies, newStudy]);
+    };
+
+
+    const handleAddSkills = (newSkills) => {
+        setSkills([...skills, newSkills]);
+    };
+    
+    // Function to update the profile
+    const handleSaveProfile = (updatedProfile) => {
+        setProfile(updatedProfile);
+    };
+
     return (
         <div>
             <Header variant="professional" />
             <Breadcrumbs />
             <main className="adminu-main-div">
                 <div className="main-container">
-                    <div className="back-icon-container">
-                        <img
-                            src="/back-icon.png" // Replace with your icon path
-                            alt="Back"
-                            className="back-icon"
-                            onClick={handleBackClick}
-                        />
-                    </div>
                     <div className="inner-container">
                         <div class="a-container">
                             <div class="a-square-div">
                                 <div class="a-profile-pic"> <img src={profile.profilePic} alt="Profile"></img></div>
                                 <div class="user-text">
                                     <div class="a-name">{profile.name}</div>
-                                    <div class="a-profession">Software Engineer</div>
+                                    <div class="a-profession">{profile.profession}</div>
                                 </div>
                                 <div className="button-1-cont">
 
-                                    <button className="edit-button"> Επεξεργασία Προφίλ <img src="/edit-yellow2.png" alt="Message" className="pr-icon3"></img></button>
+                                    <button className="edit-button" onClick={openEditModal}> Επεξεργασία Προφίλ <img src="/edit-yellow2.png" alt="Message" className="pr-icon3" ></img></button>
                                 </div>
                             </div>
                             <div class="a-square-div4">
                                 <div class="a-icon-text1">
                                     <img class="a-icon1" src="/work-icon.png" alt="Icon 1" />
-                                    <span class="a-text1">Google</span>
+                                    <span class="a-text1">{profile.workplace}</span>
                                     <img
                                         className="a-icon-right"
                                         src={getPrivacyIcon(privacySettings.work)}
@@ -146,7 +218,7 @@ export default function Epag_pinformation() {
                                 </div>
                                 <div class="a-icon-text1">
                                     <img class="a-icon1" src="/location.png" alt="Icon 2" />
-                                    <span class="a-text1">Athens, Greece</span>
+                                    <span class="a-text1">{profile.location}</span>
                                     <img
                                         className="a-icon-right"
                                         src={getPrivacyIcon(privacySettings.location)}
@@ -156,7 +228,7 @@ export default function Epag_pinformation() {
                                 </div>
                                 <div class="a-icon-text1">
                                     <img class="a-icon1" src="/birthday.png" alt="Icon 3" />
-                                    <span class="a-text1">2002-12-12</span>
+                                    <span class="a-text1">{profile.birthday}</span>
                                     <img
                                         className="a-icon-right"
                                         src={getPrivacyIcon(privacySettings.birthday)}
@@ -180,50 +252,105 @@ export default function Epag_pinformation() {
 
                         </div>
                         <div className="work-experience-container">
-                            <div className="work-experience-row-title">
+                            <div className="work-experience-row-title2">
                                 Επαγγελματική Εμπειρία
+                                <img
+                                    className="work-experience-privacy-icon"
+                                    src={getPrivacyIcon(privacySettings.workExperience)}  
+                                    alt="Privacy Icon"
+                                    onClick={() => openPrivacyModal("workExperience")}  
+                                />
                             </div>
                             {workExperience.length > 0 ? (
                                 workExperience.map((experience, index) => (
-                                    <div key={index} className="work-experience-row">
-                                        <div className="work-role">{experience.role}</div>
-                                        <div className="work-company">{experience.company}</div>
-                                        <div className="work-duration">{experience.duration}</div>
+                                    <div key={index} className="work-experience-row2">
+                                        <div className="work-experience-info">
+                                            <div className="work-role">{experience.role}</div>
+                                            <div className="work-company">{experience.company}</div>
+                                            <div className="work-duration">{experience.duration}</div>
+                                        </div>
+                                        <img
+                                            className="delete-icon"
+                                            src="/trash.png" 
+                                            alt="Delete"
+                                            onClick={() => handleDeleteExperience(index)}  
+                                        />
                                     </div>
+
                                 ))
                             ) : (
-                                <p>No work experience available</p>
+                                <p></p>
                             )}
+                            <div className="work-experience-footer" >
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddExperienceModal} /> 
+                                <span className="footer-text" onClick={openAddExperienceModal}  >Προσθήκη Επαγγελματικών Εμπειριών</span>
+                            </div>
                         </div>
                         <div className="work-experience-container">
-                            <div className="work-experience-row-title">
+                            <div className="work-experience-row-title2">
                                 Σπουδές
+                                <img
+                                    className="work-experience-privacy-icon2"
+                                    src={getPrivacyIcon(privacySettings.studies)}  
+                                    alt="Privacy Icon"
+                                    onClick={() => openPrivacyModal("studies")} 
+                                />
                             </div>
                             {studies.length > 0 ? (
                                 studies.map((study, index) => (
-                                    <div key={index} className="work-experience-row">
-                                        <div className="work-role">{study.school}</div>
-                                        <div className="work-company">{study.degree}, {study.major}</div>
-                                        <div className="work-duration">{study.duration}</div>
+                                    <div key={index} className="work-experience-row2">
+                                        <div className="work-experience-info">
+                                            <div className="work-role">{study.school}</div>
+                                            <div className="work-company">{study.degree}, {study.major}</div>
+                                            <div className="work-duration">{study.duration}</div>
+                                        </div>
+                                        <img
+                                            className="delete-icon"
+                                            src="/trash.png"  
+                                            alt="Delete"
+                                            onClick={() => handleDeleteStudies(index)}  
+                                        />
                                     </div>
                                 ))
                             ) : (
-                                <p>No studies available</p>
+                                <p></p>
                             )}
+                            <div className="work-experience-footer" >
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddStudiesModal} /> 
+                                <span className="footer-text" onClick={openAddStudiesModal}  >Προσθήκη Σπουδών</span>
+                            </div>
                         </div>
                         <div className="work-experience-container">
-                            <div className="work-experience-row-title">
+                            <div className="work-experience-row-title2">
                                 Δεξιότητες
+                                <img
+                                    className="work-experience-privacy-icon3"
+                                    src={getPrivacyIcon(privacySettings.skills)}  
+                                    alt="Privacy Icon"
+                                    onClick={() => openPrivacyModal("skills")} 
+                                />
                             </div>
                             {skills.length > 0 ? (
                                 skills.map((skill, index) => (
-                                    <div key={index} className="work-experience-row">
+                                    <div key={index} className="work-experience-row2">
+                                        <div className="work-experience-info">
                                         <div className="work-role">{skill.name}</div>
+                                        </div>
+                                        <img
+                                            className="delete-icon"
+                                            src="/trash.png"  
+                                            alt="Delete"
+                                            onClick={() => handleDeleteSkills(index)}  
+                                        />
                                     </div>
                                 ))
                             ) : (
-                                <p>No skills available</p>
+                                <p></p>
                             )}
+                             <div className="work-experience-footer" >
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddSkillsModal} /> 
+                                <span className="footer-text" onClick={openAddSkillsModal}  >Προσθήκη Δεξιοτήτων</span>
+                            </div>
                         </div>
                         <div className="work-experience-container">
                             <div className="work-experience-row-title">
@@ -259,44 +386,22 @@ export default function Epag_pinformation() {
                     </div>
                 </div>
                 {isModalOpen && (
-                    <div className="privacy-modal">
-                        <div className="privacy-modal-content">
-                            <div className="privacy-modal-header">
-                                <div className="privacy-modal-title">Επεξεργασία Ιδιωτικότητας</div>
-                                <img className="privacy-modal-close-btn" src="close-icon.png" onClick={closePrivacyModal}>
-                                </img>
-                            </div>
-
-                            <div className="privacy-row">
-                                <img className="privacy-row-icon" src="/icon1.png" alt="Icon 1" />
-                                <div className="privacy-row-text">
-                                    <span className="bold">Public</span>
-                                    <span className="regular">Visible to everyone</span>
-                                </div>
-                                <input type="radio" name="privacy" value="public" className="privacy-row-radio" />
-                            </div>
-                            <div className="privacy-row">
-                                <img className="privacy-row-icon" src="/icon2.png" alt="Icon 2" />
-                                <div className="privacy-row-text">
-                                    <span className="bold">Friends Only</span>
-                                    <span className="regular">Visible to friends only</span>
-                                </div>
-                                <input type="radio" name="privacy" value="friends" className="privacy-row-radio" />
-                            </div>
-                            <div className="privacy-row">
-                                <img className="privacy-row-icon" src="/icon3.png" alt="Icon 3" />
-                                <div className="privacy-row-text">
-                                    <span className="bold">Private</span>
-                                    <span className="regular">Visible only to you</span>
-                                </div>
-                                <input type="radio" name="privacy" value="private" className="privacy-row-radio" />
-                            </div>
-                            <button >Save</button>
-                        </div>
-                    </div>
-                 
-    )
-}
+                    <PrivacyPopup isOpen={isModalOpen} onClose={closePrivacyModal} onChangePrivacySetting={changePrivacySetting} currentPrivacy={privacySettings[currentField]} />
+                )
+                }
+                {isEditModalOpen && (
+                    <EditPopup isOpen={isEditModalOpen} onClose={closeEditModal} currentProfile={profile} onSave={handleSaveProfile} />
+                )
+                }
+                {isAddExperienceModalOpen && (
+                    <AddWorkExperiencePopup isOpen={isAddExperienceModalOpen} onClose={closeAddExperienceModal} onAddExperience={handleAddExperience} />
+                )}
+                 {isAddStudiesModalOpen && (
+                    <AddStudiesPopup isOpen={isAddStudiesModalOpen} onClose={closeAddStudiesModal} onAddStudies={handleAddStudies} />
+                )}
+                {isAddSkillsModalOpen && (
+                    <AddSkillsPopup isOpen={isAddSkillsModalOpen} onClose={closeAddSkillsModal} onAddSkills={handleAddSkills} />
+                )}
             </main >
             <MainBottom />
             <Footer />
