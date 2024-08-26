@@ -1,28 +1,32 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState , useEffect} from 'react';
 import './job_create.css';
 
-const Job_create = () => {
+const Job_create = ({ id, onSave }) => {
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
     const [speciality, setSpeciality] = useState('');
-    const [location, setLocation] = useState('');
-    const [type, setType] = useState('');
+    const [location, setLocation] = useState('Αθήνα - Κέντρο');
+    const [type, setType] = useState('Πλήρης');
     const [experience, setExperience] = useState('');
     const [salary, setSalary] = useState('');
-    const [date, setDate] = useState('');
     const [detail, setDetail] = useState('');
 
     const locations = [
-        'Athens',
-        'Peireus',
-        'Hrakleio',
-    ];
+        'Αθήνα - Κέντρο',
+        'Πειραιάς',
+        'Ηράκλειο Κρήτης',
+        'Άνω Πατήσια',
+        'Νέο Ηράκλειο',
+        'Ζωγράφου',
+        'Κάτω Πατήσια',
+        'Κυψέλη'
+      ];
 
     const types = [
         'Πλήρης',
         'Μερική',
-        'Εθελοντισμός',
+        'Εθελοντική',
     ];
 
     const handleTitleChange = (e) => {
@@ -64,7 +68,22 @@ const Job_create = () => {
         const month = today.getMonth() + 1;
         const year = today.getFullYear();
         const formattedDate = `${year}-${month}-${date}`;
-        setDate(formattedDate)
+
+        const job = {
+            id: id, 
+            title: title, 
+            company: company, 
+            location: location, 
+            date: formattedDate, 
+            type: type, 
+            specialization: speciality, 
+            experience: experience, 
+            salary: salary, 
+            details: detail, 
+            submissions: [],
+            creator_id: 999
+        }
+        onSave(job)
         // Reset the form
         setTitle('');
         setCompany('');
@@ -75,6 +94,12 @@ const Job_create = () => {
         setSpeciality('');
         setType('');
     };
+
+    useEffect(() => {
+        if (type === 'Εθελοντική') {
+            setSalary(0);
+        }        
+    }, [type]);
     return (
         <div>
             <div className="black-frame">
@@ -121,8 +146,8 @@ const Job_create = () => {
                         </select>
                     </div>
                     <div className="job-input-group">
-                        <label htmlFor="location">Απασχόληση</label>
-                        <select id="location" value={type} onChange={handleTypeChange}>
+                        <label htmlFor="type">Απασχόληση</label>
+                        <select id="type" value={type} onChange={handleTypeChange}>
                             {types.map((option, index) => (
                                 <option key={index} value={option}>
                                     {option}
@@ -139,6 +164,7 @@ const Job_create = () => {
                             value={experience}
                             onChange={handleExperienceChange}
                             required
+                            min={0}
                         />
                     </div>
                     <div className="job-input-group">
@@ -146,9 +172,11 @@ const Job_create = () => {
                         <input
                             type="number"
                             id="salary"
-                            value={salary}
+                            value={type === 'Εθελοντική' ? 0 : salary}
                             onChange={handleSalaryChange}
+                            disabled={type === 'Εθελοντική'}
                             required
+                            min={0}
                         />
                     </div>
                     <div className="job-input-group">

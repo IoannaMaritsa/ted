@@ -1,17 +1,20 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppContext } from "../context/appContext";
 import './job_display.css';
 
-const MyJob = ({ index, init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail, init_submissions, onSave }) => {
+const MyJob = ({ id, init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail, init_submissions, onSave }) => {
     const [title, setTitle] = useState(init_title);
     const [company, setCompany] = useState(init_company);
     const [location, setLocation] = useState(init_location);
-    const [date, setDate] = useState();
     const [type, setType] = useState(init_type);
     const [speciality, setSpeciality] = useState(init_speciality);
     const [experience, setExperience] = useState(init_experience);
     const [salary, setSalary] = useState(init_salary);
     const [detail, setDetail] = useState(init_detail);
+
+    const submissions = init_submissions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     // Effect to update state when props change
     useEffect(() => {
@@ -25,40 +28,70 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
         setDetail(init_detail || '');
     }, [init_title, init_company, init_location, init_type, init_speciality, init_experience, init_salary, init_detail]);
 
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
+
         const today = new Date();
         const day = today.getDate();
         const month = today.getMonth() + 1;
         const year = today.getFullYear();
         const formattedDate = `${year}-${month}-${day}`;
-        setDate(formattedDate)
-        onSave({ index, title, company, location, date, type, speciality, experience, salary, detail });
+        
+        const job = {
+            id: id, 
+            title: title, 
+            company: company, 
+            location: location, 
+            date: formattedDate, 
+            type: type, 
+            specialization: speciality, 
+            experience: experience, 
+            salary: salary, 
+            details: detail, 
+            submissions: [],
+            creator_id: 999
+        }
 
-        // Reset the form
-        setTitle('');
-        setCompany('');
-        setDetail('');
-        setExperience('');
-        setLocation('');
-        setSalary('');
-        setSpeciality('');
-        setType('');
+        onSave({ job });
+
     };
 
+    useEffect(() => {
+        if (type === 'Εθελοντική') {
+            setSalary(0);
+        }        
+    }, [type]);
+
     const locations = [
-        init_location,
-        'Athens',
-        'Peireus',
-        'Hrakleio',
+        'Αθήνα - Κέντρο',
+        'Πειραιάς',
+        'Ηράκλειο Κρήτης',
+        'Άνω Πατήσια',
+        'Νέο Ηράκλειο',
+        'Ζωγράφου',
+        'Κάτω Πατήσια',
+        'Κυψέλη'
     ];
 
     const types = [
-        init_type,
         'Πλήρης',
         'Μερική',
-        'Εθελοντισμός',
+        'Εθελοντική',
     ];
-    console.log(init_speciality);
+    
+    const { setOtherProfile, otherProfile } = useAppContext();
+
+    const navigate = useNavigate();
+
+    const handleProfileClick = (user) => {
+        setOtherProfile(user);
+        navigate('/epaggelmatias_aggelies/user_profile', { state: { otherProfile: user } });
+    };
+
+    useEffect(() => {
+
+    }, [otherProfile]);
+
     return (
         <div className="black-frame">
             <form onSubmit={handleSave}>
@@ -131,9 +164,10 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                 <input
                     type="number"
                     id="salary"
-                    value={salary}
+                    value={type === 'Εθελοντική' ? 0 : salary}
                     placeholder={init_salary}
                     onChange={(e) => setSalary(e.target.value)}
+                    disabled={type === 'Εθελοντική'}
                     required
                 />
             </div>
@@ -160,9 +194,9 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                         </tr>
                     </thead>
                     <tbody>
-                        {init_submissions.map((submission, idx) => (
-                            <tr key={idx}>
-                                <td>{submission.name}</td>
+                        {submissions.map((submission, idx) => (
+                            <tr key={idx} >
+                                <td onClick={() => handleProfileClick(submission.user)} className='clickable-td'>{submission.user.name}</td>
                                 <td>{submission.date}</td>
                             </tr>
                         ))}

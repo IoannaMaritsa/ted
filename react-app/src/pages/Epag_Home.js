@@ -49,6 +49,7 @@ export default function Epag_Home() {
     ];
 
     const user_info = {
+        id : 999,
         profilePic: '/default-avatar.jpeg',
         name: 'Λάκης Λαλάκης',
         profession: 'Πολιτικός Μηχανικός',
