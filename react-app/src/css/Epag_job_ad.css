@@ -9,14 +9,11 @@
 
 .job-split {
     display: flex;
-    align-items: baseline;
-    justify-content: left;
+    align-items: flex-start;
+    justify-content: space-evenly;
     padding: 10px 20px;
 }
 .job-display{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     margin: 10px;
     height: fit-content;
     padding: 10px 10px;
@@ -28,9 +25,6 @@
     cursor: pointer;
 }
 .job-display-selected{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     margin: 10px;
     height: fit-content;
     padding: 10px 10px;
@@ -46,12 +40,23 @@
 }
 
 .job-display-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+    text-align: left;
     font-size: large;
     font-weight: bold;
     column-gap: 20%;
+}
+
+.job-display-company {
+    text-align: left;
+    font-size: medium;
+    margin: 0;
+    font-weight: 500;
+}
+
+.job-display-salary {
+    text-align: right;
+    font-size: large;
+    font-weight: bold;
 }
 
 .job-display h5 {
@@ -67,8 +72,9 @@
 }
 
 .jobs-left-section {
-    flex: 0 0 20%;
+    flex: 0 0 30%;
     padding: 10px;
+    margin-right: 5%;
 }
 
 .jobs-right-section {
@@ -80,6 +86,7 @@
     background-color: #444;
     padding: 20px;
     color: #fff;
+    border-radius: 3%;
 }
 
 table {
@@ -100,4 +107,10 @@ table {
   
   th {
     background-color: #f2f2f2;
+  }
+
+  .job-display-date {
+    text-align: right;
+    font-size: 12px;
+    color: #555555;
   }

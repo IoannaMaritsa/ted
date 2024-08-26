@@ -63,7 +63,7 @@ const Job_create = () => {
         const date = today.getDate();
         const month = today.getMonth() + 1;
         const year = today.getFullYear();
-        const formattedDate = `${month}/${date}/${year}`;
+        const formattedDate = `${year}-${month}-${date}`;
         setDate(formattedDate)
         // Reset the form
         setTitle('');
@@ -78,85 +78,92 @@ const Job_create = () => {
     return (
         <div>
             <div className="black-frame">
+                <form onSubmit={handleClick}>
+                    <h2>Δημιουργία Νέας Αγγελίας</h2>
+                    <div className="job-input-group">
+                        <label htmlFor="title">Τίτλος</label>
+                        <input
+                            type="text"
+                            id="title"
+                            value={title}
+                            onChange={handleTitleChange}
+                            required
+                        />
+                    </div>
+                    <div className="job-input-group">
+                        <label htmlFor="company">Επαγγελματικός φορέας</label>
+                        <input
+                            type="text"
+                            id="company"
+                            value={company}
+                            onChange={handleCompanyChange}
+                            required
+                        />
+                    </div>
+                    <div className="job-input-group">
+                        <label htmlFor="speciality">Ειδικότητα</label>
+                        <input
+                            type="text"
+                            id="speciality"
+                            value={speciality}
+                            onChange={handleSpecialityChange}
+                            required
+                        />
+                    </div>
+                    <div className="job-input-group">
+                        <label htmlFor="location">Περιοχή</label>
+                        <select id="location" value={location} onChange={handleLocationChange}>
+                            {locations.map((option, index) => (
+                                <option key={index} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="job-input-group">
+                        <label htmlFor="location">Απασχόληση</label>
+                        <select id="location" value={type} onChange={handleTypeChange}>
+                            {types.map((option, index) => (
+                                <option key={index} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-                <h2>Δημιουργία Νέας Αγγελίας</h2>
-                <div className="job-input-group">
-                    <label htmlFor="title">Τίτλος</label>
-                    <input
-                        type="text"
-                        id="title"
-                        value={title}
-                        onChange={handleTitleChange}
-                    />
-                </div>
-                <div className="job-input-group">
-                    <label htmlFor="company">Επαγγελματικός φορέας</label>
-                    <input
-                        type="text"
-                        id="company"
-                        value={company}
-                        onChange={handleCompanyChange}
-                    />
-                </div>
-                <div className="job-input-group">
-                    <label htmlFor="speciality">Ειδικότητα</label>
-                    <input
-                        type="text"
-                        id="speciality"
-                        value={speciality}
-                        onChange={handleSpecialityChange}
-                    />
-                </div>
-                <div className="job-input-group">
-                    <label htmlFor="location">Περιοχή</label>
-                    <select id="location" value={location} onChange={handleLocationChange}>
-                        {locations.map((option, index) => (
-                            <option key={index} value={option}>
-                                {option}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="job-input-group">
-                    <label htmlFor="location">Απασχόληση</label>
-                    <select id="location" value={type} onChange={handleTypeChange}>
-                        {types.map((option, index) => (
-                            <option key={index} value={option}>
-                                {option}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="job-input-group">
-                    <label htmlFor="experience">Εμπειρία</label>
-                    <input
-                        type="number"
-                        id="experience"
-                        value={experience}
-                        onChange={handleExperienceChange}
-                    />
-                </div>
-                <div className="job-input-group">
-                    <label htmlFor="salary">Ετήσιος Μισθός</label>
-                    <input
-                        type="number"
-                        id="salary"
-                        value={salary}
-                        onChange={handleSalaryChange}
-                    />
-                </div>
-                <div className="job-input-group">
-                    <label htmlFor="detail">Επιπλέον Σχόλια</label>
-                    <textarea
-                        id="detail"
-                        value={detail}
-                        onChange={handleDetailChange}
-                        placeholder="Δώστε περισσότερες πληροφορίες"
-                    />
-                </div>
-                <button className='jobs-create-button' onClick={handleClick}>Καταχώριση</button>
+                    <div className="job-input-group">
+                        <label htmlFor="experience">Προαπαιτούμενη Εμπειρία σε Έτη</label>
+                        <input
+                            type="number"
+                            id="experience"
+                            value={experience}
+                            onChange={handleExperienceChange}
+                            required
+                        />
+                    </div>
+                    <div className="job-input-group">
+                        <label htmlFor="salary">Ετήσιος Μισθός</label>
+                        <input
+                            type="number"
+                            id="salary"
+                            value={salary}
+                            onChange={handleSalaryChange}
+                            required
+                        />
+                    </div>
+                    <div className="job-input-group">
+                        <label htmlFor="detail">Επιπλέον Σχόλια</label>
+                        <textarea
+                            id="detail"
+                            value={detail}
+                            onChange={handleDetailChange}
+                            placeholder="Δώστε περισσότερες πληροφορίες"
+                        />
+                    </div>
+                    <button className='jobs-create-button' type='submit'>Καταχώριση</button>
+                </form>
             </div>
+
         </div>
     );
 };

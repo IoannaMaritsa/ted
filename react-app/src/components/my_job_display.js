@@ -30,9 +30,19 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
         const day = today.getDate();
         const month = today.getMonth() + 1;
         const year = today.getFullYear();
-        const formattedDate = `${month}/${day}/${year}`;
+        const formattedDate = `${year}-${month}-${day}`;
         setDate(formattedDate)
         onSave({ index, title, company, location, date, type, speciality, experience, salary, detail });
+
+        // Reset the form
+        setTitle('');
+        setCompany('');
+        setDetail('');
+        setExperience('');
+        setLocation('');
+        setSalary('');
+        setSpeciality('');
+        setType('');
     };
 
     const locations = [
@@ -51,6 +61,7 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
     console.log(init_speciality);
     return (
         <div className="black-frame">
+            <form onSubmit={handleSave}>
             <div className="job-input-group">
                 <label htmlFor="title">Τίτλος</label>
                 <input
@@ -58,6 +69,7 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                     value={title}
                     placeholder={init_title}
                     onChange={(e) => setTitle(e.target.value)}
+                    required
                 />
             </div>
             <div className="job-input-group">
@@ -68,6 +80,7 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                     value={company}
                     placeholder={init_company}
                     onChange={(e) => setCompany(e.target.value)}
+                    required
                 />
             </div>
             <div className="job-input-group">
@@ -78,6 +91,7 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                     value={speciality}
                     placeholder={init_speciality}
                     onChange={(e) => setSpeciality(e.target.value)}
+                    required
                 />
             </div>
             <div className="job-input-group">
@@ -109,6 +123,7 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                     value={experience}
                     placeholder={init_experience}
                     onChange={(e) => setExperience(e.target.value)}
+                    required
                 />
             </div>
             <div className="job-input-group">
@@ -119,6 +134,7 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                     value={salary}
                     placeholder={init_salary}
                     onChange={(e) => setSalary(e.target.value)}
+                    required
                 />
             </div>
             <div className="job-input-group">
@@ -130,7 +146,10 @@ const MyJob = ({ index, init_title, init_company, init_location, init_type, init
                     placeholder={init_detail}
                 />
             </div>
-            <button className='jobs-create-button' onClick={handleSave}>Αποθήκευση</button>
+            <button className='jobs-create-button' type='submit'>Αποθήκευση</button>
+            </form>
+
+
             <div className='job_submitions'>
                 <h3>Αιτήσεις</h3>
                 <table>

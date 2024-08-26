@@ -8,23 +8,25 @@ const Job = ({ id, title, company, location, date, type, speciality, experience,
 
                 <div className='job-display-sector'>
 
-                    <div className='job-display-date'>
+                    <div className='job-display-time'>
                         <h5>{date}</h5>
                     </div>
                     <div className='job-display-info'>
                         <h2>{title}</h2>
                     </div>
-                    <div className='job-display-info'>
-                        <img src="/work-icon.png" alt="User Icon" className="icon" />
-                        <h4>{company}</h4>
-                    </div>
-                    <div className='job-display-info'>
-                        <img src="/location.png" alt="User Icon" className="icon" />
-                        <h4>{location}</h4>
-                    </div>
-                    <div className='job-display-info'>
-                        <img src="/user.png" alt="User Icon" className="icon" />
-                        <h4>{speciality}</h4>
+                    <div className='job-display-info-group'>
+                        <div className='job-display-info'>
+                            <img src="/work-icon.png" alt="User Icon" className="icon" />
+                            <h4>{company}</h4>
+                        </div>
+                        <div className='job-display-info'>
+                            <img src="/location.png" alt="User Icon" className="icon" />
+                            <h4>{location}</h4>
+                        </div>
+                        <div className='job-display-info'>
+                            <img src="/user.png" alt="User Icon" className="icon" />
+                            <h4>{speciality}</h4>
+                        </div>
                     </div>
                 </div>
                 <div className='job-display-sector'>
@@ -51,8 +53,10 @@ const Job = ({ id, title, company, location, date, type, speciality, experience,
                     </div>
                 </div>
             </div>
-            <button className='interest-button'>Με ενδιαφέρει</button>
-            <button className='button-primary'>Apply</button>
+            <div className='job-display-buttons'>
+                <button className='job-interest-button'>Με ενδιαφέρει</button>
+                <button className='button-primary'>Αίτηση</button>
+            </div>
         </div>
     );
 };

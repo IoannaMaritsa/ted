@@ -14,30 +14,41 @@ import { Link } from 'react-router-dom';
 export default function Epag_job_ad() {
 
   const locations = [
-    'Όλες',
-    'Athens',
-    'Peireus',
-    'Hrakleio',
-  ]; 
+    'Περιοχές Όλες',
+    'Αθήνα - Κέντρο',
+    'Πειραιάς',
+    'Ηράκλειο Κρήτης',
+    'Άνω Πατήσια',
+    'Νέο Ηράκλειο',
+    'Ζωγράφου',
+    'Κάτω Πατήσια',
+    'Κυψέλη'
+  ];
 
   const jobs = [
-    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1' },
-    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Neo Hrakleio', date: 'June 4, 2024', type: 'Part-time', specialization: 'Customer Service', experience: '4', salary: '10.000', details: 'Some more info 2' },
-    { id: 3, title: 'Sample Job Title 3', company: 'Ekdoseis Tziola', location: 'Zografou', date: 'March 12, 2024', type: 'Full-time', specialization: 'Delivery', experience: 'practice', salary: '25.000', details: 'Some more info 3' },
-    { id: 4, title: 'Sample Job Title 4', company: 'Something1', location: 'Kato Patisia', date: 'April 30, 2024', type: 'Part-time', specialization: 'Engineer', experience: '8', salary: '100.000', details: 'Some more info 4' },
-    { id: 5, title: 'Sample Job Title 5', company: 'something 2', location: 'Kypseli', date: 'November 2, 2024', type: 'Full-time', specialization: 'Cleaning', experience: '0', salary: '15.000', details: 'Some more info 5' },
+    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Άνω Πατήσια', date: '2024-07-27', type: 'Πλήρης', specialization: 'Software Engineer', experience: 2, salary: 80000, details: 'Some more info 1' },
+    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Νέο Ηράκλειο', date: '2024-04-06', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 50000, details: 'Some more info 2' },
+    { id: 3, title: 'Sample Job Title 3', company: 'Ekdoseis Tziola', location: 'Ζωγράφου', date: '2024-08-20', type: 'Πλήρης', specialization: 'Delivery', experience: 0, salary: 25000, details: 'Some more info 3' },
+    { id: 4, title: 'Sample Job Title 4', company: 'Something1', location: 'Κάτω Πατήσια', date: '2024-04-30', type: 'Εθελοντική', specialization: 'Engineer', experience: 8, salary: 0, details: 'Some more info 4' },
+    { id: 5, title: 'Sample Job Title 5', company: 'something 2', location: 'Κυψέλη', date: '2019-09-15', type: 'Πλήρης', specialization: 'Cleaning', experience: 0, salary: 150000, details: 'Some more info 5' },
     // Add more articles as needed
   ];
 
   const myjobs = [
-    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Ano Patisia', date: 'July 25, 2024', type: 'Full-time', specialization: 'Software Engineer', experience: '2', salary: '30.000', details: 'Some more info 1', submissions: [{ name: 'Αννιτα Πάνια', date: '23 / 2 / 2024' }, { name: 'Στεφανος Χίος', date: '20 / 2 / 2007' }] },
-    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Neo Hrakleio', date: 'June 4, 2024', type: 'Part-time', specialization: 'Customer Service', experience: '4', salary: '10.000', details: 'Some more info 2', submissions: [{ name: 'Αννιτα Πάνια', date: '23 / 2 / 2024' }] },
+    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Άνω Πατήσια', date: '2024-12-01', type: 'Εθελοντική', specialization: 'Software Engineer', experience: 2, salary: 0, details: 'Some more info 1', submissions: [{ name: 'Αννιτα Πάνια', date: '23 / 2 / 2024' }, { name: 'Στεφανος Χίος', date: '20 / 2 / 2007' }] },
+    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Νέο Ηράκλειο', date: '2024-10-25', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 100000, details: 'Some more info 2', submissions: [{ name: 'Αννιτα Πάνια', date: '23 / 2 / 2024' }] },
 
   ];
 
   const [data, setData] = useState(myjobs);
 
   const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
+  const [selectedDateFilter, setSelectedDateFilter] = useState('Δημοσίευση Όλες');
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState('Απασχόληση Όλες');
+  const [selectedExperienceFilter, setSelectedExperienceFilter] = useState('Εμπειρία Όλες');
+  const [selectedSalaryFilter, setSelectedSalaryFilter] = useState('Μισθός Όλες');
+  const [selectedLocation, setSelectedLocation] = useState('Περιοχές Όλες');
+
   const [myselectedJob, setMyselectedJob] = useState(null);
   const [selectedJob, setSelectedJob] = useState(jobs[0]);
 
@@ -49,6 +60,26 @@ export default function Epag_job_ad() {
     setSelectedJob(jobs[0]); // Clear selectedJob when switching options
   };
 
+  const handleDateFilterChange = (option) => {
+    setSelectedDateFilter(option);
+  };
+
+  const handleTypeFilterChange = (option) => {
+    setSelectedTypeFilter(option);
+  };
+
+  const handleExperienceFilterChange = (option) => {
+    setSelectedExperienceFilter(option);
+  };
+
+  const handleSalaryFilterChange = (option) => {
+    setSelectedSalaryFilter(option);
+  };
+
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+};
+
   const HandleJobSelect = (job) => {
     setSelectedJob(job); // This will trigger a re-render with the new job's details
   };
@@ -58,6 +89,54 @@ export default function Epag_job_ad() {
   };
 
   console.log(selectedJob);
+  const filterJobs = (jobArray) => {
+    return jobArray.filter(job => {
+        let isMatch = true;
+
+        // Filter by Date
+        if (selectedDateFilter !== 'Δημοσίευση Όλες') {
+            const jobDate = new Date(job.date);
+            const now = new Date();
+            if (selectedDateFilter === 'Την τελευταία εβδομάδα') {
+                const lastWeek = new Date();
+                lastWeek.setDate(now.getDate() - 7);
+                if (jobDate < lastWeek) isMatch = false;
+            } else if (selectedDateFilter === 'Τον τελευταίο μήνα') {
+                const lastMonth = new Date();
+                lastMonth.setMonth(now.getMonth() - 1);
+                if (jobDate < lastMonth) isMatch = false;
+            }
+        }
+
+        // Filter by Type
+        if (selectedTypeFilter !== 'Απασχόληση Όλες' && job.type !== selectedTypeFilter) {
+            isMatch = false;
+        }
+
+        // Filter by Experience
+        if (selectedExperienceFilter !== 'Εμπειρία Όλες') {
+            if (selectedExperienceFilter === '0-2 Έτη' && job.experience > 2) isMatch = false;
+            else if (selectedExperienceFilter === '2+ Έτη' && job.experience < 2) isMatch = false;
+            else if (selectedExperienceFilter === '8+ Έτη' && job.experience < 8) isMatch = false;
+        }
+
+        // Filter by Salary
+        if (selectedSalaryFilter !== 'Μισθός Όλες') {
+            const salaryFilterValue = parseInt(selectedSalaryFilter.replace(/[^\d]/g, ''));
+            if (job.salary < salaryFilterValue) isMatch = false;
+        }
+
+        if (selectedLocation !== 'Περιοχές Όλες') {
+          if (job.location !== selectedLocation) isMatch = false;
+        }
+
+        return isMatch;
+    });
+};
+
+const filteredJobs = filterJobs(jobs);
+const myfilteredJobs = filterJobs(myjobs);
+
 
   //pagination for my jobs
   const [mycurrentPage, setMyCurrentPage] = useState(1);
@@ -69,7 +148,7 @@ export default function Epag_job_ad() {
   // Get current contacts
   const myindexOfLastJob = mycurrentPage * myjobsPerPage;
   const myindexOfFirstJob = myindexOfLastJob - myjobsPerPage;
-  const mycurrentJobs = myjobs.slice(myindexOfFirstJob, myindexOfLastJob);
+  const mycurrentJobs = myfilteredJobs.slice(myindexOfFirstJob, myindexOfLastJob);
 
   // Handle page change
   const myhandleClick = (pageNumber) => {
@@ -86,7 +165,7 @@ export default function Epag_job_ad() {
   // Get current contacts
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
 
   // Handle page change
   const handleClick = (pageNumber) => {
@@ -106,17 +185,16 @@ export default function Epag_job_ad() {
       <div className="main">
         <div className="job-options">
           <Dropdown options={['Οι αγγελίες μου', 'Αγγελίες άλλων']} onOptionSelect={handleOptionSelect} />
-          <Dropdown options={locations} />
-
           {(selectedOption === 'Αγγελίες άλλων') &&
             <Dropdown options={['Από Όλους τους Χρήστες', 'Συνδεδεμένους', 'Μη Συνδεδεμένους']} />
           }
-        </div>
-        <div className="job-options">
-          <Dropdown options={['Δημοσίευση Όλες', 'Την τελευταία εβδομάδα', 'Τον τελευταίο μήνα']} />
-          <Dropdown options={['Απασχόληση Όλες', 'Πλήρης', 'Μερική', 'Εθελοντισμός']} />
-          <Dropdown options={['Εμπειρία Όλες', 'Πρακτική', '2+ Έτη', '10+ Έτη']} />
-          <Dropdown options={['Μισθός Όλες', '40.000+', '80.000+', '120.000+']} />
+
+          <Dropdown options={locations} onOptionSelect={handleLocationSelect}/>
+
+          <Dropdown options={['Δημοσίευση Όλες', 'Την τελευταία εβδομάδα', 'Τον τελευταίο μήνα']} onOptionSelect={handleDateFilterChange} />
+          <Dropdown options={['Απασχόληση Όλες', 'Πλήρης', 'Μερική', 'Εθελοντική']} onOptionSelect={handleTypeFilterChange} />
+          <Dropdown options={['Εμπειρία Όλες', '0-2 Έτη', '2+ Έτη', '8+ Έτη']} onOptionSelect={handleExperienceFilterChange} />
+          <Dropdown options={['Μισθός Όλες', '40.000+', '80.000+', '120.000+']} onOptionSelect={handleSalaryFilterChange} />
         </div>
         <div>
           {(selectedOption === 'Οι αγγελίες μου' && myselectedJob === null) &&
@@ -130,21 +208,14 @@ export default function Epag_job_ad() {
                 </div>
 
                 {mycurrentJobs.map((job, index) => (
-                  <button className="job-display" onClick={() => HandleMyJobSelect(job)}>
-                    <div key={index}>
-                      <div className="job-display-title">
-                        <p>{job.title}</p>
-                        <p>{job.date}</p>
-                      </div>
-                      <h5>{job.company}</h5>
-                      <h6>Ζητείται {job.specialization}</h6>
-                      <div className="job-display-title">
-                        <p>{job.type}</p>
-                        <p>{job.salary}</p>
-                      </div>
-
-                    </div>
-                  </button>
+                  <div className="job-display" onClick={() => HandleMyJobSelect(job)}>
+                    <div className="job-display-date"> {job.date} </div>
+                    <div className="job-display-title">{job.title}</div>
+                    <div className="job-display-company">{job.company}</div>
+                    <div className="job-display-company">{job.specialization}</div>
+                    <div className="job-display-company">{job.type} Απασχόληση</div>
+                    <div className="job-display-salary">{job.salary} €</div>
+                  </div>
                 ))}
                 <div className="network-pagination">
                   {[...Array(mytotalPages)].map((_, index) => (
@@ -166,46 +237,32 @@ export default function Epag_job_ad() {
           {(selectedOption === 'Οι αγγελίες μου' && myselectedJob != null) &&
             <div className="job-split">
               <div className="jobs-left-section">
-                <button className="job-display" onClick={() => HandleMyJobSelect(null)}>
+                <div className="job-display" onClick={() => HandleMyJobSelect(null)}>
                   <div className="job-display-title">
                     + Νέα Αγγελία
                   </div>
-                </button>
+                </div>
 
                 {mycurrentJobs.map((job, index) => (
                   <div>
                     {job.id === myselectedJob.id ? (
-                      <button className="job-display-selected" onClick={() => HandleMyJobSelect(job)}>
-                        <div key={index}>
-                          <div className="job-display-title">
-                            <p>{job.title}</p>
-                            <p>{job.date}</p>
-                          </div>
-                          <h5>{job.company}</h5>
-                          <h6>Ζητείται {job.specialization}</h6>
-                          <div className="job-display-title">
-                            <p>{job.type}</p>
-                            <p>{job.salary}</p>
-                          </div>
-
-                        </div>
-                      </button>
+                      <div className="job-display-selected" onClick={() => HandleMyJobSelect(job)}>
+                        <div className="job-display-date"> {job.date} </div>
+                        <div className="job-display-title">{job.title}</div>
+                        <div className="job-display-company">{job.company}</div>
+                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-salary">{job.salary} €</div>
+                      </div>
                     ) : (
-                      <button className="job-display" onClick={() => HandleMyJobSelect(job)}>
-                        <div key={index}>
-                          <div className="job-display-title">
-                            <p>{job.title}</p>
-                            <p>{job.date}</p>
-                          </div>
-                          <h5>{job.company}</h5>
-                          <h6>Ζητείται {job.specialization}</h6>
-                          <div className="job-display-title">
-                            <p>{job.type}</p>
-                            <p>{job.salary}</p>
-                          </div>
-
-                        </div>
-                      </button>
+                      <div className="job-display" onClick={() => HandleMyJobSelect(job)}>
+                        <div className="job-display-date"> {job.date} </div>
+                        <div className="job-display-title">{job.title}</div>
+                        <div className="job-display-company">{job.company}</div>
+                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-salary">{job.salary} €</div>
+                      </div>
                     )}
 
                   </div>
@@ -245,36 +302,23 @@ export default function Epag_job_ad() {
                 {currentJobs.map((job, index) => (
                   <div>
                     {job.id === selectedJob.id ? (
-                      <button className="job-display-selected" onClick={() => HandleJobSelect(job)}>
-                        <div key={index}>
-                          <div className="job-display-title">
-                            <p>{job.title}</p>
-                            <p>{job.date}</p>
-                          </div>
-                          <h5>{job.company}</h5>
-                          <h6>Ζητείται {job.specialization}</h6>
-                          <div className="job-display-title">
-                            <p>{job.type}</p>
-                            <p>{job.salary}</p>
-                          </div>
-
-                        </div>
-                      </button>
+                      <div className="job-display-selected" onClick={() => HandleJobSelect(job)}>
+                        <div className="job-display-date"> {job.date} </div>
+                        <div className="job-display-title">{job.title}</div>
+                        <div className="job-display-company">{job.company}</div>
+                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-salary">{job.salary} €</div>
+                      </div>
                     ) : (
-                      <button className="job-display" onClick={() => HandleJobSelect(job)}>
-                        <div key={index}>
-                          <div className="job-display-title">
-                            <p>{job.title}</p>
-                            <p>{job.date}</p>
-                          </div>
-                          <h5>{job.company}</h5>
-                          <h6>Ζητείται {job.specialization}</h6>
-                          <div className="job-display-title">
-                            <p>{job.type}</p>
-                            <p>{job.salary}</p>
-                          </div>
-                        </div>
-                      </button>
+                      <div className="job-display" onClick={() => HandleJobSelect(job)}>
+                        <div className="job-display-date"> {job.date} </div>
+                        <div className="job-display-title">{job.title}</div>
+                        <div className="job-display-company">{job.company}</div>
+                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-salary">{job.salary} €</div>
+                      </div>
                     )}
 
                   </div>
