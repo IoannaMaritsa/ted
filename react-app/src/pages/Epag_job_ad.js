@@ -26,7 +26,7 @@ export default function Epag_job_ad() {
   ];
 
   const user_info = {
-    id : 999,
+    id: 999,
     profilePic: '/default-avatar.jpeg',
     name: 'Λάκης Λαλάκης',
     profession: 'Πολιτικός Μηχανικός',
@@ -37,7 +37,7 @@ export default function Epag_job_ad() {
     experiences: [{ profession: 'Software Engineer', workplace: 'Google', date: 'Jan 2020 - Dec 2021' }, { profession: 'Frontend Developer', workplace: 'Microsoft', date: 'Jan 2019 - Dec 2019' }],
     studies: [{ university: 'Ekpa', degree: 'Undergraduate Degree, Software Engineering', date: '2016 - 2020' }, { university: 'Harvard', degree: 'Masters, Comp Sci', date: '2020 - 2024' }],
     skills: ['Customer Satisfaction', 'C++ Knowledge', 'Python Knowledge', 'React Framework']
-}
+  }
 
   const users = [
     {
@@ -56,18 +56,18 @@ export default function Epag_job_ad() {
       name: 'Will Smith',
     },
     {
-      
+
     }
   ];
 
   const [jobs, setJobs] = useState([
-    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Άνω Πατήσια', date: '2024-07-27', type: 'Πλήρης', specialization: 'Software Engineer', experience: 2, salary: 80000, details: 'Some more info 1', submissions: [] , creator_id : 234},
-    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Νέο Ηράκλειο', date: '2024-04-06', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 50000, details: 'Some more info 2', submissions: [] , creator_id : 700},
-    { id: 3, title: 'Sample Job Title 3', company: 'Ekdoseis Tziola', location: 'Ζωγράφου', date: '2024-08-20', type: 'Πλήρης', specialization: 'Delivery', experience: 0, salary: 25000, details: 'Some more info 3', submissions: [] , creator_id : 509},
-    { id: 4, title: 'Sample Job Title 4', company: 'Something1', location: 'Κάτω Πατήσια', date: '2024-04-30', type: 'Εθελοντική', specialization: 'Engineer', experience: 8, salary: 0, details: 'Some more info 4', submissions: [] , creator_id : 700},
-    { id: 5, title: 'Sample Job Title 5', company: 'something 2', location: 'Κυψέλη', date: '2019-09-15', type: 'Πλήρης', specialization: 'Cleaning', experience: 0, salary: 150000, details: 'Some more info 5', submissions: [] , creator_id : 234},
-    { id: 6, title: 'Sample Job Title 6', company: 'Electroholic', location: 'Άνω Πατήσια', date: '2024-08-17', type: 'Εθελοντική', specialization: 'Software Engineer', experience: 2, salary: 0, details: 'Some more info 6', submissions: [{ user: users.find((person) => person.id === 234), date: '2017-02-12' }, { user: users.find((person) => person.id === 509), date: '2021-04-25' }] , creator_id: 999},
-    { id: 7, title: 'Sample Job Title 7', company: 'Vodafone', location: 'Νέο Ηράκλειο', date: '2019-03-15', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 100000, details: 'Some more info 7', submissions: [{ user: users.find((person) => person.id === 700), date: '23 / 2 / 2024' }], creator_id : 999 },
+    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Άνω Πατήσια', date: '2024-07-27', type: 'Πλήρης', specialization: 'Software Engineer', experience: 2, salary: 80000, details: 'Some more info 1', submissions: [], creator_id: 234 },
+    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Νέο Ηράκλειο', date: '2024-04-06', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 50000, details: 'Some more info 2', submissions: [], creator_id: 700 },
+    { id: 3, title: 'Sample Job Title 3', company: 'Ekdoseis Tziola', location: 'Ζωγράφου', date: '2024-08-20', type: 'Πλήρης', specialization: 'Delivery', experience: 0, salary: 25000, details: 'Some more info 3', submissions: [], creator_id: 509 },
+    { id: 4, title: 'Sample Job Title 4', company: 'Something1', location: 'Κάτω Πατήσια', date: '2024-04-30', type: 'Εθελοντική', specialization: 'Engineer', experience: 8, salary: 0, details: 'Some more info 4', submissions: [], creator_id: 700 },
+    { id: 5, title: 'Sample Job Title 5', company: 'something 2', location: 'Κυψέλη', date: '2019-09-15', type: 'Πλήρης', specialization: 'Cleaning', experience: 0, salary: 150000, details: 'Some more info 5', submissions: [], creator_id: 234 },
+    { id: 6, title: 'Sample Job Title 6', company: 'Electroholic', location: 'Άνω Πατήσια', date: '2024-08-17', type: 'Εθελοντική', specialization: 'Software Engineer', experience: 2, salary: 0, details: 'Some more info 6', submissions: [{ user: users.find((person) => person.id === 234), date: '2017-02-12' }, { user: users.find((person) => person.id === 509), date: '2021-04-25' }], creator_id: 999 },
+    { id: 7, title: 'Sample Job Title 7', company: 'Vodafone', location: 'Νέο Ηράκλειο', date: '2019-03-15', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 100000, details: 'Some more info 7', submissions: [{ user: users.find((person) => person.id === 700), date: '23 / 2 / 2024' }], creator_id: 999 },
     // Add more articles as needed
   ]);
 
@@ -216,8 +216,7 @@ export default function Epag_job_ad() {
   };
 
   const handleSave = (updatedJob) => {
-    console.log(jobs);
-    console.log(updatedJob);
+
     setJobs(prevJobs =>
       prevJobs.map(job =>
         job.id === updatedJob.id ? updatedJob : job
@@ -253,11 +252,15 @@ export default function Epag_job_ad() {
     if (currentJobs.length > 0) {
       setSelectedJob(currentJobs[0]);
     }
-  }, [selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedSalaryFilter, selectedTypeFilter, searchQuery, mysearchQuery]);
+  }, [selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedSalaryFilter, selectedTypeFilter, searchQuery, mysearchQuery, jobs]);
 
   useEffect(() => {
     setMyjobs(jobs.filter((i, _) => i.creator_id === user_info.id))
   }, [jobs]);
+
+  const handleDeleteClick = (jobid) => {
+    setJobs(jobs.filter(job => job.id !== jobid));
+  };
 
   return (
     <div>
@@ -302,6 +305,7 @@ export default function Epag_job_ad() {
 
                 {mycurrentJobs.map((job, index) => (
                   <div className="job-display" onClick={() => HandleMyJobSelect(job)}>
+                    <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={() => handleDeleteClick(job.id)} />
                     <div className="job-display-date"> {job.date} </div>
                     <div className="job-display-title">{job.title}</div>
                     <div className="job-display-company">{job.company}</div>
@@ -331,7 +335,7 @@ export default function Epag_job_ad() {
                 )}
               </div>
               <div className="jobs-right-section">
-                <Job_create id={jobs.length + 1} onSave={AddJob}/>
+                <Job_create id={jobs.length + 1} onSave={AddJob} />
               </div>
             </div>
           }
@@ -348,6 +352,7 @@ export default function Epag_job_ad() {
                   <div>
                     {job.id === myselectedJob.id ? (
                       <div className="job-display-selected" onClick={() => HandleMyJobSelect(job)}>
+                        <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={handleDeleteClick} />
                         <div className="job-display-date"> {job.date} </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>

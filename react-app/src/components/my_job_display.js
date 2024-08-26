@@ -48,11 +48,11 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_sp
             experience: experience, 
             salary: salary, 
             details: detail, 
-            submissions: [],
+            submissions: init_submissions,
             creator_id: 999
         }
 
-        onSave({ job });
+        onSave(job);
 
     };
 
