@@ -1,21 +1,50 @@
 .job-display-box {
     align-items: center;
     justify-content: center;
-    padding: 50px;
+    padding: 20px;
 }
 
 .job-display-sector {
     border-bottom: 2.5px solid var(--text-dark-grey);
 }
 
-.job-display-date{
+.job-display-time {
     text-align: right;
     font-size: medium;
 }
 
-.job-display-info{
+.job-display-info {
     display: flex;
     align-items: baseline;
     justify-content: left;
     height: fit-content;
 }
+
+.job-display-info-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    height: fit-content;
+}
+
+.job-display-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.job-interest-button {
+    margin: 2%;
+    margin-right: 5%;
+    border: 1px solid var(--button-yellow);
+    border-radius: 10px;
+    color: var(--button-yellow);
+    background-color: #444;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.job-interest-button:hover {
+    border-color: var(--button-hover-yellow);
+    color: var(--button-hover-yellow);
+  }

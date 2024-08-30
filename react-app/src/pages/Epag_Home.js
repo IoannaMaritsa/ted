@@ -9,46 +9,47 @@ import { useAppContext } from "../context/appContext";
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
-    const articles = [
+    const [articles, setArticles] = useState([
         {
             id: '1',
             title: 'Article 1',
-            author: 'John Doe',
+            author_id: 1,
             date: '2024-07-26',
             content: 'This is the content of the first article. It is a brief description of the article.'
         },
         {
             id: '2',
             title: 'Article 2',
-            author: 'Jane Smith',
+            author_id: 2,
             date: '2024-07-25',
             content: 'This is the content of the second article. It is a brief description of the article.'
         },
         {
             id: '3',
             title: 'Article 3',
-            author: 'Jojo Siwa',
+            author_id: 3,
             date: '2024-07-28',
             content: 'This is the content of the third article. It is a brief description of the article.'
         },
         {
             id: '4',
             title: 'Article 4',
-            author: 'Λάκης Λαλάκης',
+            author_id: 999,
             date: '2024-07-25',
             content: 'This is the content of the second article. It is a brief description of the article.'
         },
         {
             id: '5',
             title: 'Article 5',
-            author: 'Λάκης Λαλάκης',
+            author_id: 999,
             date: '2024-07-28',
             content: 'This is the content of the third article. It is a brief description of the article.'
         },
         // Add more articles as needed
-    ];
+    ]);
 
     const user_info = {
+        id : 999,
         profilePic: '/default-avatar.jpeg',
         name: 'Λάκης Λαλάκης',
         profession: 'Πολιτικός Μηχανικός',
@@ -61,9 +62,17 @@ export default function Epag_Home() {
         skills: ['Customer Satisfaction', 'C++ Knowledge', 'Python Knowledge', 'React Framework']
     }
 
-    const sortedArticles = articles.filter((i, _) => i.author !== user_info.name).sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sortedArticles = articles.filter((i, _) => i.author_id !== user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const my_articles = articles.filter((i, _) => i.author === user_info.name).sort((a, b) => new Date(b.date) - new Date(a.date));
+    const [my_articles, setMy_articles] = useState(articles.filter((i, _) => i.author_id === user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
+
+    useEffect(() => {
+        setMy_articles(articles.filter((i, _) => i.author_id === user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
+    }, [my_articles]);
+
+    const handleDeleteArticle = (articleId) => {
+        setArticles(articles.filter(article => article.id !== articleId));
+    };
 
     const contacts = [
         {
@@ -161,9 +170,22 @@ export default function Epag_Home() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const today = new Date();
+        const date = today.getDate();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const formattedDate = `${year}-${month}-${date}`;
         // Handle the form submission logic here
-        console.log('Article submitted:', { title, body, attachedFiles });
+        const article  = {
+            id : articles.length + 1,
+            title: title,
+            author_id: user_info.id,
+            date: formattedDate,
+            content: body.substring(0, 50)
+        }
         // Reset the form
+        setArticles([...articles, article]);
+
         setTitle('');
         setBody('');
         setAttachedFiles([]);
@@ -319,13 +341,14 @@ export default function Epag_Home() {
                         <h2>Τα άρθρα μου</h2>
                         {my_articles.map((article, index) => (
                             <Article
-                                key={index}
-                                id={article.id}
-                                title={article.title}
-                                author={article.author}
-                                date={article.date}
-                                content={article.content}
-                            />
+                            key={article.id}
+                            id={article.id}
+                            title={article.title}
+                            author_id={article.author_id}
+                            date={article.date}
+                            content={article.content}
+                            onDelete={handleDeleteArticle}
+                        />
                         ))}
                     </div>
                     <div className="articles-page">
@@ -335,7 +358,7 @@ export default function Epag_Home() {
                                 key={index}
                                 id={article.id}
                                 title={article.title}
-                                author={article.author}
+                                author_id={article.author_id}
                                 date={article.date}
                                 content={article.content}
                             />

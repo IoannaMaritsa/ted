@@ -250,3 +250,7 @@ video {
 .article-comment-button:hover {
   background-color: var(--button-hover-yellow);
 }
+
+.clickable-td {
+  cursor: pointer;
+}

@@ -9,7 +9,6 @@ const Breadcrumbs = () => {
   const location = useLocation();
   const modifiedPathname = location.pathname.replace(/\d+/g, '');
   const pathnames = modifiedPathname.split('/').filter((x) => x);
-  console.log(modifiedPathname);
 
   const breadcrumbNameMap = {
     'epaggelmatias_article': 'Άρθρο',
