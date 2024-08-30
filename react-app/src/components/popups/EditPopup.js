@@ -142,6 +142,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                             </div>
                             <DatePicker
                                 id="birthday"
+                                className ="datepicker1"
                                 selected={birthday}
                                 onChange={(date) => setBirthday(date)}
                                 dateFormat="yyyy-MM-dd"
