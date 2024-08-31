@@ -5,7 +5,7 @@ const pool = new Pool({
     port: 5432,        // or the port you chose during installation
     user: 'postgres',  // default user or any other user you have configured
     password: '212002', // password you set during installation
-    database: 'tedDatabase'  // the database you want to connect to
+    database: 'tedDatabase'  // the database you want to connect 
 });
 
 pool.connect()
