@@ -30,11 +30,16 @@ const getSubmissionsForJob = async (jobId) => {
     try {
         const res = await pool.query(query, values);
         console.log('Submissions:', res.rows);
+        return res.rows;
     } catch (err) {
         console.error('Error fetching submissions:', err);
     }
 };
 
+module.exports = {
+    addSubmission,
+    getSubmissionsForJob
+};
 // Example usage
 // addSubmission(1, 2, '2024-08-10');
-// getSubmissionsForJob(1);
+//getSubmissionsForJob(1);

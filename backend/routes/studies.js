@@ -26,12 +26,33 @@ const getStudiesByUserId = async (userId) => {
     }
 };
 
-// Uncomment to run examples
+//Function to delete study
+const deleteUserStudy = async (userId, studyId) => {
+    try {
+        const result = await pool.query(
+            'DELETE FROM studies WHERE id = $1 AND user_id = $2 RETURNING *',
+            [studyId, userId]
+        );
 
+        if (result.rowCount === 0) {
+            console.log(`Study with ID ${studyId} not found for user ID ${userId}.`);
+            return { success: false, message: 'Study not found' };
+        }
+
+        console.log(`Study with ID ${studyId} deleted for user ID ${userId}.`);
+        return { success: true, message: 'Study deleted successfully' };
+    } catch (err) {
+        console.error('Error deleting study:', err);
+        return { success: false, message: 'Error deleting study' };
+    } finally {
+        pool.release();
+    }
+};
+// Uncomment to run examples
+// addStudies(1, 'National and Kapodistrian University of Athens', 'Software Engineer', '2020', '2026');
 
 module.exports = {
     addStudies,
-    getStudiesByUserId
+    getStudiesByUserId,
+    deleteUserStudy
 };
-
-// addStudies(1, 'National and Kapodistrian University of Athens', 'Software Engineer', '2020', '2026');

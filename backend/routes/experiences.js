@@ -25,12 +25,35 @@ const getExperiencesByUserId = async (userId) => {
     }
 };
 
-// Uncomment to run examples
+//Function to delete experience
+const deleteUserExperience = async (userId, experienceId) => {
+    try {
+        const result = await pool.query(
+            'DELETE FROM experiences WHERE id = $1 AND user_id = $2 RETURNING *',
+            [experienceId, userId]
+        );
 
+        if (result.rowCount === 0) {
+            console.log(`Experience with ID ${experienceId} not found for user ID ${userId}.`);
+            return { success: false, message: 'Experience not found' };
+        }
+
+        console.log(`Experience with ID ${experienceId} deleted for user ID ${userId}.`);
+        return { success: true, message: 'Experience deleted successfully' };
+    } catch (err) {
+        console.error('Error deleting experience:', err);
+        return { success: false, message: 'Error deleting experience' };
+    } finally {
+        pool.release();
+    }
+};
+
+// Uncomment to run examples
+// addExperience(1, 'Software Engineer', 'Blue Ground', '2023-04-5', '2024-08-20');
 
 module.exports = {
     addExperience,
-    getExperiencesByUserId
+    getExperiencesByUserId,
+    deleteUserExperience
 };
 
-// addExperience(1, 'Software Engineer', 'Blue Ground', '2023-04-5', '2024-08-20');

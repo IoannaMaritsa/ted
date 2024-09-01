@@ -28,6 +28,7 @@ const getAttachments = async (articleId) => {
     try {
         const res = await pool.query(query, values);
         console.log('Attachments:', res.rows);
+        return res.rows;
     } catch (err) {
         console.error('Error fetching attachments:', err);
     }
@@ -36,3 +37,8 @@ const getAttachments = async (articleId) => {
 // Example usage
 // addAttachment(1, 'image', '/path/to/image1.jpg');
 // getAttachments(1);
+
+module.exports = {
+    addAttachment,
+    getAttachments
+};
