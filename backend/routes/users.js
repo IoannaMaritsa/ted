@@ -23,11 +23,11 @@ const getUserById = async (id) => {
 };
 
 // Add a new user
-const addUser = async (name, profilePic, profession, workplace, location, dob, email) => {
+const addUser = async (name, profilePic, profession, workplace, location, dob, email, password) => {
     try {
         const result = await pool.query(
-            'INSERT INTO users (name, profilePic, profession, workplace, location, dob, email) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [name, profilePic, profession, workplace, location, dob, email]
+            'INSERT INTO users (name, profilePic, profession, workplace, location, dob, email, password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [name, profilePic, profession, workplace, location, dob, email, password]
         );
         return result.rows[0];
     } catch (err) {
@@ -92,7 +92,7 @@ const deleteUser = async (id) => {
     }
 };
 
-//addUser('Charles Brown','/path/to/profile-pic.jpg','Product Management','Jumbo A.E','Λάρισα','1989-06-09','charles@example.com');
+//addUser('Charles Brown','/path/to/profile-pic.jpg','Product Management','Jumbo A.E','Λάρισα','1989-06-09','charles@example.com', '1234');
 
 module.exports = {
     getAllUsers,
