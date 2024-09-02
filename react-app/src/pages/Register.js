@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import '../css/register.css'
-import Flatpickr from 'react-flatpickr';
-import 'flatpickr/dist/flatpickr.min.css'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns'; // Import format function from date-fns
+import { addUser } from '../api'; // Adjust the import path as needed
 
 export default function Register() {
 
@@ -11,7 +13,7 @@ export default function Register() {
         email: '',
         password: '',
         confirmPassword: '',
-        phone: '',
+        location: '',
         dob: '',
         profilePhoto: null,
     });
@@ -20,31 +22,32 @@ export default function Register() {
         passwordMismatch: false,
         emailInvalid: false,
         passwordInvalid: false,
-        phoneInvalid: false,
+        locationInvalid: false,
         dobInvalid: false
     });
 
     const fileInputRef = useRef(null);
 
-    const handleDateChange = (dates) => {
-        const selectedDate = dates[0];
-        setFormData({ ...formData, dob: selectedDate });
-
+    const handleDateChange = (date) => {
+        setFormData({ ...formData, dob: date });
         const today = new Date();
         const minAge = 18; // Minimum age requirement
-        const age = today.getFullYear() - selectedDate.getFullYear();
-        const monthDiff = today.getMonth() - selectedDate.getMonth();
-        const dayDiff = today.getDate() - selectedDate.getDate();
+        const age = today.getFullYear() - date.getFullYear();
+        const monthDiff = today.getMonth() - date.getMonth();
+        const dayDiff = today.getDate() - date.getDate();
 
         if (age < minAge || (age === minAge && monthDiff < 0) || (age === minAge && monthDiff === 0 && dayDiff < 0)) {
             setErrors({ ...errors, dobInvalid: true });
         } else {
             setErrors({ ...errors, dobInvalid: false });
         }
-    }; 
+    };
 
     const handleReset = () => {
-        setFormData({ ...formData, profilePhoto: null });
+        setFormData(prevData => ({
+            ...prevData,
+            profilePhoto: null
+        }));
         if (fileInputRef.current) {
             fileInputRef.current.value = ''; // Reset file input value
         }
@@ -53,7 +56,10 @@ export default function Register() {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFormData({ ...formData, profilePhoto: file });
+            setFormData(prevData => ({
+                ...prevData,
+                profilePhoto: file
+            }));
         }
     };
 
@@ -80,50 +86,69 @@ export default function Register() {
             setErrors({ ...errors, passwordInvalid: !isPasswordValid });
         }
 
-        if (name === 'phone') {
-            // Validate phone number on change
-            const phoneRegex = /^[0-9]{10}$/;
-            const isPhoneValid = phoneRegex.test(value);
-            setErrors({ ...errors, phoneInvalid: !isPhoneValid });
-        }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate email on submit
+        // Validate fields
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isEmailValid = emailRegex.test(formData.email);
 
         if (!isEmailValid) {
-            setErrors({ ...errors, emailInvalid: true });
+            setErrors(prevErrors => ({ ...prevErrors, emailInvalid: true }));
             return;
-        } else {
-            setErrors({ ...errors, emailInvalid: false });
         }
+        setErrors(prevErrors => ({ ...prevErrors, emailInvalid: false }));
 
         if (formData.password !== formData.confirmPassword) {
-            setErrors({ ...errors, passwordMismatch: true });
+            setErrors(prevErrors => ({ ...prevErrors, passwordMismatch: true }));
             return;
         }
-        setErrors({ ...errors, passwordMismatch: false });
+        setErrors(prevErrors => ({ ...prevErrors, passwordMismatch: false }));
 
-        // Handle form submission, including file upload
-        const formDataToSubmit = new FormData();
-        Object.keys(formData).forEach(key => {
-            formDataToSubmit.append(key, formData[key]);
-        });
 
-        // Example form submission logic
-        console.log('Form data to submit:', formDataToSubmit);
+        // Format the date to DD-MM-YYYY
+        const formattedDob = formData.dob ? format(formData.dob, "yyyy-MM-dd") : '';
+        console.log(formattedDob);
+        // Access the input fields by their IDs
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
 
-        // Perform submission here, e.g., using fetch or axios
+        // Get the values from the input fields
+        const firstNameValue = firstNameInput.value;
+        const lastNameValue = lastNameInput.value;
+
+        // Concatenate first and last name
+        const fullName = `${firstNameValue} ${lastNameValue}`;
+
+        // Combine form data with other fields
+        const userData = {
+            name: fullName,
+            email: formData.email,
+            password: formData.password,
+            location: formData.location,
+            dob: formattedDob,
+            profilePhoto: formData.profilePhoto,
+        };
+
+        console.log(userData)
+
+
+        try {
+            // Submit form data
+            const response = await addUser(userData);
+            console.log('User registered successfully:', response);
+            // Redirect or show success message
+        } catch (error) {
+            console.error('Error registering user:', error);
+            // Show error message
+        }
     };
 
 
     return (
         <div className="register">
-
             <main className="register-main-div">
                 <div className="logo-container">
                     <a href='/'>
@@ -141,12 +166,12 @@ export default function Register() {
                             className="profile-picture"
                         />
                         <div className="file-upload-container">
-                            <label htmlFor="profile-photo" className="file-upload-label">
+                            <label htmlFor="profilePhoto" className="file-upload-label">
                                 {formData.profilePhoto ? formData.profilePhoto.name : 'Επιλέξτε Εικόνα Προφίλ'}
                             </label>
                             <input
                                 type="file"
-                                id="profile-photo"
+                                id="profilePhoto"
                                 name="profilePhoto"
                                 accept="image/*"
                                 onChange={handleFileChange}
@@ -166,9 +191,11 @@ export default function Register() {
                                 <div className="input-container">
                                     <input
                                         type="text"
-                                        id="first-name"
-                                        name="first-name"
+                                        id="firstName"
+                                        name="firstName"
                                         placeholder="Όνομα"
+                                        value={formData.firstName} // Bind to state
+                                        onChange={handleChange2} // Call handleChange2 on change
                                         required
                                     />
                                 </div>
@@ -178,9 +205,11 @@ export default function Register() {
                                 <div className="input-container">
                                     <input
                                         type="text"
-                                        id="last-name"
-                                        name="last-name"
+                                        id="lastName"
+                                        name="lastName"
                                         placeholder="Επώνυμο"
+                                        value={formData.lastName} // Bind to state
+                                        onChange={handleChange2} // Call handleChange2 on change
                                         required
                                     />
                                 </div>
@@ -233,13 +262,13 @@ export default function Register() {
                             <div className="error-message-div"> <span className="error-message">Εισάγετε έγκυρο αριθμό τηλεφώνου</span> </div>
                         )}
                         <div className={`form-group ${errors.phoneInvalid ? 'error' : ''}`}>
-                            <img src="phone.png" alt="Phone Icon" className="input-icon" />
+                            <img src="location.png" alt="Location Icon" className="input-icon" />
                             <input
                                 type="text"
-                                id="phone"
-                                name="phone"
-                                placeholder="Τηλέφωνο Επικοινωνίας"
-                                value={formData.phone}
+                                id="location"
+                                name="location"
+                                placeholder="Μόνιμη Κατοικία"
+                                value={formData.location}
                                 onChange={handleChange2}
                                 required
                             />
@@ -250,19 +279,17 @@ export default function Register() {
                         )}
                         <div className={`form-group ${errors.dobInvalid ? 'error' : ''}`}>
                             <img src="calendar.png" alt="Calendar Icon" className="input-icon" />
-                            <Flatpickr
-                                data-enable-time
+                            <DatePicker
+
+                                selected={formData.dob}
+                                onChange={handleDateChange}
+                                dateFormat="dd-MM-yyyy"
+                                placeholderText="Ημερομηνία Γέννησης"
+                                className="date-input"
                                 id="dob"
                                 name="dob"
-                                value={dob}
-                                onChange={handleDateChange}
-                                placeholder="Ημερομηνία Γέννησης"
-                                className="date-input"
-                                options={{
-                                    dateFormat: "Y-m-d", // Only date format, no time
-                                    enableTime: false // Disable time picker
-                                }}
-                                required
+
+
                             />
 
                         </div>
