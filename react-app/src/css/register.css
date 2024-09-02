@@ -47,6 +47,7 @@ input:focus {
 input[type="date"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+    padding-left: none;
 }
 
 
@@ -67,6 +68,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     pointer-events: none;
 }
 
+.input-icon2 {
+    width: 20px;
+    height: 20px;
+    margin: 10px;
+    pointer-events: none;
+}
+
+
+
 .register-title {
     font-size: 1.8rem;
     color: var(--text-dark-grey);
@@ -76,6 +86,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     margin: 0px;
 }
 
+
+
+/* Additional styling for the input field itself */
+input#dob{
+    color: #000; /* Customize the text color inside the input */
+    background-color: transparent;
+    padding: none;
+    margin-left: none;
+}
 
 .register-title-box {
     width: 100%;

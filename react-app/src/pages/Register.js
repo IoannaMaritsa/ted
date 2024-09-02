@@ -262,7 +262,7 @@ export default function Register() {
                             <div className="error-message-div"> <span className="error-message">Εισάγετε έγκυρο αριθμό τηλεφώνου</span> </div>
                         )}
                         <div className={`form-group ${errors.phoneInvalid ? 'error' : ''}`}>
-                            <img src="location.png" alt="Location Icon" className="input-icon" />
+                            <img src="location2.png" alt="Location Icon" className="input-icon" />
                             <input
                                 type="text"
                                 id="location"
@@ -280,15 +280,13 @@ export default function Register() {
                         <div className={`form-group ${errors.dobInvalid ? 'error' : ''}`}>
                             <img src="calendar.png" alt="Calendar Icon" className="input-icon" />
                             <DatePicker
-
                                 selected={formData.dob}
                                 onChange={handleDateChange}
                                 dateFormat="dd-MM-yyyy"
                                 placeholderText="Ημερομηνία Γέννησης"
-                                className="date-input"
+                                class="date-input react-datepicker-ignore-onclickoutside"
                                 id="dob"
                                 name="dob"
-
 
                             />
 
