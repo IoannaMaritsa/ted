@@ -14,7 +14,7 @@ export const getAllUsers = async () => {
     }
 };
 
-// Get a user by ID
+// Get a user by email
 export const getUser= async (email) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/users/${email}`);
@@ -25,30 +25,24 @@ export const getUser= async (email) => {
     }
 };
 
-
-
+// Create a new user
 export const addUser = async (userData) => {
     try {
         const formData = new FormData();
-
         Object.keys(userData).forEach(key => {
             formData.append(key, userData[key]);
         });
-
         const response = await axios.post(`${API_BASE_URL}/users`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
-
         return response.data;
     } catch (error) {
         console.error('Error adding user:', error);
         throw error;
     }
 };
-
-
 
 // Update a user
 export const updateUser = async (email, updateData) => {

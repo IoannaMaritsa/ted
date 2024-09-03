@@ -129,7 +129,7 @@ export default function Register() {
             password: formData.password,
             location: formData.location,
             dob: formattedDob,
-            profilePhoto: formData.profilePhoto,
+            profilepic: formData.profilePhoto,
         };
 
         console.log(userData)

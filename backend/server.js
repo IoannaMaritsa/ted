@@ -4,36 +4,23 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 
-const usersModel = require('./routes/users'); // Adjust the path as necessary
+const usersModel = require('./models/users'); // Adjust the path as necessary
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware to parse JSON
 app.use(express.json());
 
+// Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Ensure the uploads directory exists
-const uploadDir = path.join(__dirname, 'uploads/profile-pics');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
+// Initialize Multer for handling file uploads
+const storage = multer.memoryStorage(); // Use memoryStorage if you are directly uploading to Supabase
 const upload = multer({ storage });
 
-
+// ---------- USER ROUTES -----------
 // Get all users
 app.get('/users', async (req, res) => {
     try {
@@ -61,13 +48,20 @@ app.get('/users/:email', async (req, res) => {
     }
 });
 
+
 // Handle form submissions
-app.post('/users', upload.single('profilePhoto'), async (req, res) => {
+app.post('/users', upload.single('profilepic'), async (req, res) => {
     try {
         const { name, email, password, location, dob } = req.body;
-        const profilePic = req.file ? req.file.path : 'uploads/profile-pics/default-avatar.jpeg';
+        
+        // Buffer if uploading to Supabase
+        const profilepic = req.file;
 
-        const newUser = await usersModel.addUser(name, email, password, location, dob, profilePic);
+        console.log('Incoming user data:', {
+            name, email, password, location, dob, profilepic
+        });
+
+        const newUser = await usersModel.addUser(name, email, password, location, dob, profilepic); 
         res.status(201).json({ message: 'User created successfully', data: newUser });
     } catch (err) {
         console.error('Error adding user:', err);
@@ -78,36 +72,16 @@ app.post('/users', upload.single('profilePhoto'), async (req, res) => {
 // Delete a user by email
 app.delete('/users/:email', upload.none(), async (req, res) => {
     const { email } = req.params;
-
     try {
         const result = await usersModel.deleteUser(email);
-
-        if (result.success) {
-            res.json({ message: 'User deleted successfully' });
-        } else {
-            res.status(404).json({ error: result.message });
-        }
+        res.json({ message: 'User deleted successfully' });
+        res.status(201).json({ message: 'User deleted successfully'});
     } catch (err) {
         console.error('Error deleting user:', err);
         res.status(500).json({ error: 'Failed to delete user' });
     }
 });
 
-
-// Delete all users
-app.delete('/users', async (req, res) => {
-    try {
-        const result = await usersModel.deleteAllUsers();
-        if (result.success) {
-            res.json({ message: 'All users deleted successfully' });
-        } else {
-            res.status(500).json({ error: 'Failed to delete all users' });
-        }
-    } catch (err) {
-        console.error('Error deleting all users:', err);
-        res.status(500).json({ error: 'Failed to delete all users' });
-    }
-});
 
 // Update user information
 app.put('/users/:email', async (req, res) => {
@@ -125,7 +99,6 @@ app.put('/users/:email', async (req, res) => {
         res.status(500).json({ error: 'Failed to update user' });
     }
 });
-
 
 
 // Start server
