@@ -58,7 +58,7 @@ const uploadProfilePic = async (buffer, originalname) => {
     const { data, error } = await supabase
         .storage
         .from('profilepics') // Adjust the bucket name as necessary
-        .upload(`${originalname}`, buffer, {
+        .upload(`${Date.now()}_${originalname}`, buffer, {
             contentType: contentType,
         });
     if (error) {
