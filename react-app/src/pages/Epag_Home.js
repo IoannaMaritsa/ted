@@ -65,8 +65,6 @@ export default function Epag_Home() {
         skills: ['Customer Satisfaction', 'C++ Knowledge', 'Python Knowledge', 'React Framework']
     }
 
-    const sortedArticles = articles.filter((i, _) => i.author_id !== user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date));
-
 
     useEffect(() => {
         console.log('the id is:',user_info);
