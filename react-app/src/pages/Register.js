@@ -157,7 +157,8 @@ export default function Register() {
 
             // Register the user
             const response = await addUser(userData);
-            if (response.status === 409) {
+            console.log(response.status)
+            if (response.status === 500 || response.status === 409) {
                 setErrors({ ...errors, emailInUse: true });
             }
             else if (response.status === 201) {

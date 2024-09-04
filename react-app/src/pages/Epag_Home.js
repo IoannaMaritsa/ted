@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext, user } from "../context/appContext";
 import { addArticle, getArticle, deleteArticle, getOtherUsersArticles } from '../api';
@@ -33,7 +33,25 @@ export default function Epag_Home() {
     };
 
     const [articles, setArticles] = useState([]); // Initialize with an empty array
-    const [my_articles, setMy_articles] = useState([]); // Initialize with an empty array
+    const [my_articles, setMy_articles] = useState([]);
+    
+    
+
+    // Base URL and bucket name
+    const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
+    const bucketName = 'profilepics';
+
+    // Original URL (saved in the profilepic field)
+    const originalProfilePicUrl = user?.profilepic;
+
+    // Add '/public/' to the URL path if necessary
+    const profileImageUrl = originalProfilePicUrl
+        ? originalProfilePicUrl.replace(
+            `${baseURL}/storage/v1/object/${bucketName}/`,
+            `${baseURL}/storage/v1/object/public/${bucketName}/`
+        )
+        : `${baseURL}/storage/v1/object/public/${bucketName}/default-avatar.jpeg`;
+
 
     useEffect(() => {
         getArticles(user_info.id);
@@ -105,6 +123,11 @@ export default function Epag_Home() {
     const [body, setBody] = useState('');
     const [attachedFiles, setAttachedFiles] = useState([]);
 
+
+    useEffect(() => {
+        console.log(attachedFiles)
+    }, [attachedFiles]);
+
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
     };
@@ -113,36 +136,33 @@ export default function Epag_Home() {
         setBody(e.target.value);
     };
 
-    const handleFileUpload = (type) => {
-        const input = document.createElement('input');
-        input.type = 'file';
+    const fileInputRef = useRef(null);
 
-        if (type === 'image') {
-            input.accept = 'image/*';
-        } else if (type === 'video') {
-            input.accept = 'video/*';
-        } else if (type === 'audio') {
-            input.accept = 'audio/*';
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const type = e.target.accept.includes('image') ? 'image' :
+                e.target.accept.includes('video') ? 'video' :
+                    'audio';
+
+            setAttachedFiles((prevFiles) => [
+                ...prevFiles,
+                { type, name: file.name }
+            ]);
+            console.log(`Attached ${type}:`, file);
         }
+    };
 
-        input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                setAttachedFiles((prevFiles) => [
-                    ...prevFiles,
-                    { type, name: file.name }
-                ]);
-                console.log(`Attached ${type}:`, file);
-                // You can add additional logic here to handle the file, such as uploading it to a server
-            }
-        };
-
-        input.click();
+    const handleFileUpload = (type) => {
+        if (fileInputRef.current) {
+            fileInputRef.current.accept = type === 'image' ? 'image/*' : type === 'video' ? 'video/*' : 'audio/*';
+            fileInputRef.current.click();
+        }
     };
 
     const handleRemoveFile = (index) => {
         setAttachedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-    };
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -176,30 +196,31 @@ export default function Epag_Home() {
                     <div className="side-bar-section">
                         <div className="side-bar-part">
                             <div className="split-page">
-                                <img src="/user.png" alt="avatar" className="profile_image" />
-                                <div className="text-section">
-                                    <h4>{user_info.name}</h4>
-                                    <h5>{user_info.profession}</h5>
+                                <img src={profileImageUrl} alt="avatar" className="profile_image" />
+                                <div className="text-section2">
+                                    <span className="profile-sect-name">{user_info.name}</span>
+                                    <span className="profile-sect-prof">{user_info.profession}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="side-bar-part">
-                            <h5>Επαγγελματικός Φορέας</h5>
-                            <h6>{user_info.workplace}</h6>
-                            <h5>Τοποθεσία</h5>
-                            <h6>{user_info.location}</h6>
-                            <h5>Ημ.Γέννησης</h5>
-                            <h6>{user_info.birthday}</h6>
-                            <h5>Email</h5>
-                            <h6>{user_info.email}</h6>
+                            <span className="profile-sect-headhead">Πληροφορίες</span>
+                            <span className="profile-sect-head">Επαγγελματικός Φορέας</span>
+                            <span className="profile-sect-bot">{user_info.workplace}</span>
+                            <span className="profile-sect-head">Τοποθεσία</span>
+                            <span className="profile-sect-bot">{user_info.location}</span>
+                            <span className="profile-sect-head">Ημ.Γέννησης</span>
+                            <span className="profile-sect-bot">{user_info.birthday}</span>
+                            <span className="profile-sect-head">Email</span>
+                            <span className="profile-sect-bot">{user_info.email}</span>
                         </div>
                         <div className="side-bar-part">
-                            <h4>Επαγγελματική εμπειρία</h4>
-                            {/* {user_info.experiences.map((experience, index) => (
+                            <span className="profile-sect-headhead">Επαγγελματική εμπειρία</span>
+                            {user_info.experiences.map((experience, index) => (
                                 <div className="home-user-info">
-                                    <p className="home-user-info-h3">
+                                    <span className="home-user-info-h3">
                                         {experience.profession}
-                                    </p>
+                                    </span>
                                     <p className="home-user-info-h4">
                                         {experience.workplace}
                                     </p>
@@ -207,16 +228,16 @@ export default function Epag_Home() {
                                         {experience.date}
                                     </p>
                                 </div>
-                            ))} */}
+                            ))} 
 
                         </div>
                         <div className="side-bar-part">
-                            <h4>Σπουδές</h4>
-                            {/* {user_info.studies.map((study, index) => (
+                            <span className="profile-sect-headhead">Σπουδές</span>
+                            {user_info.studies.map((study, index) => (
                                 <div className="home-user-info">
-                                    <p className="home-user-info-h3">
+                                    <span className="home-user-info-h3">
                                         {study.university}
-                                    </p>
+                                    </span>
                                     <p className="home-user-info-h4">
                                         {study.degree}
                                     </p>
@@ -224,30 +245,30 @@ export default function Epag_Home() {
                                         {study.date}
                                     </p>
                                 </div>
-                            ))} */}
+                            ))} 
                         </div>
                         <div className="side-bar-part">
-                            <h4>Δεξιότητες</h4>
-                            {/* {user_info.skills.map((skill, index) => (
+                            <span className="profile-sect-headhead">Δεξιότητες</span>
+                            {user_info.skills.map((skill, index) => (
                                 <ul className="home-user-info-ul">
                                     <li>
                                         {skill}
                                     </li>
                                 </ul>
-                            ))} */}
+                            ))} 
                         </div>
                     </div>
                     <div className="side-bar-section">
                         <div className="network-title">
                             <img src="/community.png" alt="avatar" className="network-icon" />
-                            <span>Δίκτυο</span>
+                            <span className="profile-sect-headhead">Δίκτυο</span>
                         </div>
                         <div className="contacts-page">
                             <ul className="contacts-list">
                                 {contacts.map((contact, index) => (
                                     <div className="contact" onClick={() => handleProfileClick(contact)}>
                                         <img src={contact.profilePic} alt="contact-pic" className="contact-icon" />
-                                        <li key={index}>{contact.name} </li>
+                                        <li className="profile-sect-contact" key={index}>{contact.name} </li>
                                     </div>
                                 ))}
                             </ul>
@@ -258,7 +279,7 @@ export default function Epag_Home() {
                     <div className="article-creator">
                         <form onSubmit={handleSubmit}>
                             <div className="article-creator-top">
-                                <h2>Δημιουργία νέου άρθρου</h2>
+                                <span className="article-creator-ttitle">Δημιουργία νέου άρθρου</span>
                                 <button type="submit" className="submit-button">Ανάρτηση</button>
                             </div>
 
@@ -286,29 +307,34 @@ export default function Epag_Home() {
                             </div>
                             <div className="icon-group">
                                 <p>Επισύναψη αρχείου:</p>
-                                <button onClick={() => handleFileUpload('image')}>
-                                    <img src="/icons-image.png" alt="Attach Image" />
+                                <button onClick={() => handleFileUpload('image')} >
+                                    <img src="/photo-icon.png" alt="Attach Image" className="photicon" />
                                 </button>
                                 <button onClick={() => handleFileUpload('video')}>
-                                    <img src="/video.png" alt="Attach Video" />
+                                    <img src="/video-icon.png" alt="Attach Video" className="vidicon" />
                                 </button>
                                 <button onClick={() => handleFileUpload('audio')}>
-                                    <img src="/audiofile.png" alt="Attach Audio" />
+                                    <img src="/audio-icon.png" alt="Attach Audio" className="audicon" />
                                 </button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
                             </div>
                             {attachedFiles.length > 0 && (
                                 <div className="attached-files">
-                                    {attachedFiles.map((file, index) => (
-                                        <div key={index} className="attached-file">
-                                            {file.type === 'image' && <img src="/icons-image.png" alt="Image Icon" />}
-                                            {file.type === 'video' && <img src="/video.png" alt="Video Icon" />}
-                                            {file.type === 'audio' && <img src="/audiofile.png" alt="Audio Icon" />}
-                                            <span>{file.name}</span>
-                                            <button className="remove-button" onClick={() => handleRemoveFile(index)}>
-                                                <img src="/remove.png" alt="Image Icon" />
-                                            </button>
-                                        </div>
-                                    ))}
+                                    <span className="attach-title">Επισυναπτόμενα αρχεία:</span>
+                                    <ul>
+                                        {attachedFiles.map((file, index) => (
+                                            <li className="attach-li"key={index}>
+                                                <span className="attach-type" > {file.type.toUpperCase()}: </span>
+                                                <span className="attach-name"> {file.name} </span>
+                                                <img className="yellow-trash" type="button" src="/yellow-trash.png" alt="delete" onClick={() => handleRemoveFile(index)} />
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
                             )}
                         </form>

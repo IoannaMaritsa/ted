@@ -12,6 +12,13 @@
     text-align: left;
   }
 
+  .attach-li{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+  }
+
   .split-epag {
     background-color: var(--background-color);
     width: 100%;
@@ -23,6 +30,98 @@
     column-gap: 20px;
   }
 
+  .profile_image {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+  }
+
+  .split-page{
+    padding: 5px;
+    padding-bottom: 10px;
+  }
+
+  .text-section2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color:#444;
+    margin-left: 5px;
+    padding: 7px;
+  }
+
+  .home-user-info-h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color:#4f4f4f;
+    margin-top: 7px;
+    font-family: var(--font-basic);
+  }
+
+  .home-user-info-h4 {
+    font-size: small;
+    font-weight: 400;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .home-user-info-h5 {
+    font-size: smaller;
+    font-weight: 200;
+    margin-top: 0;
+  }
+  .profile-sect-contact {
+    font-size: 14px;
+    font-weight:500;
+    color:#000000;
+    text-align: center;
+    font-family: var(--font-basic);
+  }
+  .profile-sect-name {
+    font-size: 16px;
+    font-weight:600;
+    color:#4f4f4f;
+    text-align: center;
+    font-family: var(--font-basic);
+  }
+
+  .profile-sect-prof {
+    font-size: 14px;
+    font-weight: 500;
+    color:#777777;
+    text-align: center;
+    font-family: var(--font-basic);
+    margin-top: 3px;
+
+  } 
+
+  .profile-sect-headhead {
+    font-size: 15px;
+    font-weight: 700;
+    color:#000000;
+    font-family: var(--font-basic);
+    margin-top: 7px;
+    padding: 5px;
+  }
+
+  .profile-sect-head {
+    font-size: 14px;
+    font-weight: 600;
+    color:#4f4f4f;
+    font-family: var(--font-basic);
+    margin-top: 7px;
+    padding: 5px;
+  }
+
+.profile-sect-bot {
+  font-size: 14px;
+    font-weight: 300;
+    color:#000000;
+    font-family: var(--font-basic);
+    padding: 5px;
+    padding-top: 0px;
+}
   .side-bar-section {
     margin-bottom: 20px;
     background-color: #ffff;
@@ -32,9 +131,12 @@
   }
 
   .side-bar-part {
+    display: flex;
+    flex-direction: column;
     border-bottom: 3px solid var(--border-color);
     text-align: left;
     font-family: var(--font-basic);
+    padding-bottom: 7px;;
   }
 
   .side-bar-part:last-child {
@@ -63,40 +165,36 @@
 
   .home-user-info {
     border-bottom: 1px solid var(--border-color);
+    padding: 5px;
   }
 
-  .home-user-info-h3 {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 0;
+
+  .home-user-info:last-child {
+    border:none;
   }
 
-  .home-user-info-h4 {
-    font-size: small;
-    font-weight: 400;
-    margin-top: 0;
-    margin-bottom: 0;
-  }
 
-  .home-user-info-h5 {
-    font-size: smaller;
-    font-weight: 200;
-    margin-top: 0;
-  }
 
   .home-user-info-ul {
-    font-size: medium;
+    font-size: 14px;
     font-weight: 300;
+    font-family: var(--font-basic);
+    margin: 2px;
+    margin-left: 0px;
   }
 
+  .home-user-info-ul:first-child {
+    margin-top: 7px;
+  }
   .side-bar-section h3 {
     font-size: larger;
     font-weight: 500;
   }
 
   .network-icon {
-    max-width: 40px;
-    max-height: 40px;
+    max-width: 30px;
+    max-height: 30px;
+    margin-right: 10px;
   }
 
   .side-bar-contact {
@@ -119,13 +217,13 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
-  .article-creator h2 {
-    text-align: left;
+  .article-creator-ttitle {
+    font-size: 18px;
+    font-weight: 500;
     font-family: var(--font-basic);
-    font-weight: 400;
-    font-size: large;
-    
+
   }
+  
 
   .article-creator-top {
     display: flex;
@@ -133,17 +231,20 @@
     justify-content: space-between;
     margin-bottom: 20px;
     padding: 10px;
+    padding-left: 0px;
     border-bottom: 1px solid #ccc;
   }
 
   .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
 
   .input-group label {
     display: block;
-    font-weight: 300;
-    margin-bottom: 5px;
+    margin-bottom: 7px;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: var(--font-basic);
   }
 
   .input-group input,
@@ -152,6 +253,9 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: var(--font-basic)
   }
 
   .input-group textarea {
@@ -161,25 +265,76 @@
 
   .icon-group {
     display: flex;
+    flex-direction: row;
     justify-content: left;
-    margin-top: 20px;
+    align-items: center;
+    gap: 5px;
+    margin-top: 15px;
   }
 
+  .icon-group p {
+    font-weight: 400;
+    font-size: 16px;
+    font-family: var(--font-basic)
+
+  }
+
+  .yellow-trash {
+    width: 25px;
+    height: 25px;
+    margin-left: 10px;
+  }
+
+  .attach-title{
+    font-weight: 400;
+    font-size: 16px;
+    font-family: var(--font-basic);
+    margin-top:15px;
+  }
+
+  .attach-type {
+    font-weight: 600;
+    font-size: 16px;
+    font-family: var(--font-basic);
+  }
+
+  .attach-name {
+    font-weight: 400;
+    font-size: 14px;
+    font-family: var(--font-basic);
+    color: #fff;
+  }
   .icon-group button {
     background: none;
     border: none;
     cursor: pointer;
   }
 
-  .icon-group button img {
-    width: 40px;
-    height: 40px;
+
+
+  .photicon {
+    max-width: 40px;
+    max-height: 40px;
+  }
+
+  .vidicon {
+    max-width: 40px;
+    max-height: 35px;
+  }
+
+  .audicon {
+    max-width: 40px;
+    max-height: 30px;
   }
 
   .attached-files {
     display: flex;
     flex-direction: column;
     border-top: 1px solid var(--border-color);
+  }
+
+  .attached-files ul{
+    padding-left: 5px;
   }
 
   .attached-file {
@@ -215,16 +370,23 @@
     display: block;
     margin: 10px;
     padding: 10px;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid var(--button-yellow);
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font-basic);
     background-color: var(--button-yellow);
     color: var(--text-dark-grey);
     font-size: 16px;
     cursor: pointer;
+    transition: 0.3s ease;
   }
 
   .submit-button:hover {
     background-color: var(--button-hover-yellow);
+    color: white;
+
+   
   }
 
   .articles-page {
@@ -235,6 +397,7 @@
 
   .network-title {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: left;
     padding-left: 20px;
@@ -275,6 +438,6 @@
     max-width: 40px;
     max-height: 40px;
     border-radius: 50%;
-    margin-right: 10px;
+    margin-right: 13px;
     object-fit: cover;
   }

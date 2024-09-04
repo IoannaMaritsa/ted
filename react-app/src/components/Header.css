@@ -29,10 +29,10 @@
   }
   
   .profile-picture2{
-    max-width: 50px;
+    max-width: 40px;
     cursor: pointer;
     /* Adjust size as needed */
-    max-height: 50px;
+    max-height: 40px;
     /* Adjust size as needed */
     border-radius: 50%;
     object-fit: cover;
@@ -41,6 +41,8 @@
     background-color: #f0f0f0;
     /* Optional: Background color if no image */
     margin: 0px;
+    margin-top:5px;
+    margin-right: 5px;
   }
 
   table tbody tr {
