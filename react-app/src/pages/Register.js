@@ -12,7 +12,7 @@ export default function Register() {
     const [success, setSuccess] = useState(false)
 
     const navigate = useNavigate();
-    const {logIn, isLoggedIn} = useAppContext();
+    const { logIn, isLoggedIn } = useAppContext();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -144,7 +144,7 @@ export default function Register() {
         try {
             // Format the date
             const formattedDob = formData.dob ? format(formData.dob, "yyyy-MM-dd") : '';
-    
+
             // Combine form data
             const userData = {
                 name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
@@ -154,25 +154,32 @@ export default function Register() {
                 dob: formattedDob,
                 profilepic: formData.profilePhoto,
             };
-    
+
             // Register the user
             const response = await addUser(userData);
-            console.log('User registered successfully:', response);
-    
-            // Save user information in session storage
-            sessionStorage.setItem('user', JSON.stringify({
-                name: userData.name,
-                email: formData.email,
-            }));
-    
-            // Attempt to log in with the registered credentials
-            try {
-                await logIn(formData.email, formData.password);
-                navigate('/epaggelmatias_homepage'); // Redirect after successful login
-            } catch (loginError) {
-                console.error('Login failed:', loginError);
-                // You might want to show an error message to the user here
+            if (response.status === 409) {
+                setErrors({ ...errors, emailInUse: true });
             }
+            else if (response.status === 201) {
+                setSuccess(true);
+                console.log('User registered successfully:', response);
+
+                // Save user information in session storage
+                sessionStorage.setItem('user', JSON.stringify({
+                    name: userData.name,
+                    email: formData.email,
+                }));
+
+                // Attempt to log in with the registered credentials
+                try {
+                    await logIn(formData.email, formData.password);
+                    navigate('/epaggelmatias_homepage'); // Redirect after successful login
+                } catch (loginError) {
+                    console.error('Login failed:', loginError);
+                    // You might want to show an error message to the user here
+                }
+            }
+
         } catch (registerError) {
             console.error('Error registering user:', registerError);
             // You might want to show an error message to the user here
@@ -184,9 +191,9 @@ export default function Register() {
         <div className="register">
             <main className="register-main-div">
                 <div className="logo-container">
-                <a href={isLoggedIn ? '/epaggelmatias_homepage' : '/'}>
-                    <img src="logo.png" alt="Logo" className="logo" />
-                </a>
+                    <a href={isLoggedIn ? '/epaggelmatias_homepage' : '/'}>
+                        <img src="logo.png" alt="Logo" className="logo" />
+                    </a>
                 </div>
                 <div className="register-box">
                     <div className="register-title-box">
