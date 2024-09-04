@@ -15,7 +15,7 @@ export const getAllUsers = async () => {
 };
 
 // Get a user by email
-export const getUser= async (email) => {
+export const getUser = async (email) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/users/${email}`);
         return response.data;
@@ -29,15 +29,17 @@ export const getUser= async (email) => {
 export const addUser = async (userData) => {
     try {
         const formData = new FormData();
+
         Object.keys(userData).forEach(key => {
             formData.append(key, userData[key]);
         });
+
         const response = await axios.post(`${API_BASE_URL}/users`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Error adding user:', error);
         throw error;
@@ -63,5 +65,26 @@ export const deleteUser = async (email) => {
     } catch (error) {
         console.error('Error deleting user:', error);
         throw error;
+    }
+};
+
+// Login a user
+export const loginUser = async (email, password) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
+        localStorage.setItem('token', response.data.token); // Store token in localStorage
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            const { data } = error.response;
+            throw new Error(data.error || 'An error occurred during login');
+        } else if (error.request) {
+            // Request was made but no response received
+            throw new Error('No response from server');
+        } else {
+            // Something happened in setting up the request
+            throw new Error('Error setting up login request');
+        }
     }
 };

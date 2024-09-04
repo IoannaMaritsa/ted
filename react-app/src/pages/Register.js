@@ -132,17 +132,22 @@ export default function Register() {
             profilepic: formData.profilePhoto,
         };
 
-        console.log(userData)
-
-
         try {
-            // Submit form data
+            console.log('Sending request...');
             const response = await addUser(userData);
             console.log('User registered successfully:', response);
-            // Redirect or show success message
+    
+            // Save user information in session storage
+            sessionStorage.setItem('user', JSON.stringify({
+                name: fullName,
+                email: formData.email,
+            }));
+    
+            console.log('Redirecting to homepage...');
+            window.location.href = '/epaggelmatias_homepage'; // Adjust the homepage path as needed
         } catch (error) {
             console.error('Error registering user:', error);
-            // Show error message
+        
         }
     };
 

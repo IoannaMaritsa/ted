@@ -26,12 +26,12 @@ const getUser = async (email) => {
             console.error('Error getting user by email:', error);
             throw error;
         }
-        if (data.rows.length === 0) {
+        if (data.length === 0) {
             console.log(`No user found with email ${email}.`);
             return null;
         }
         console.log(`Successfully retrieved user with email ${email}.`);
-        return result.rows[0];
+        return data;
     } catch (err) {
         console.error('Error getting user by email:', err);
         throw err;
@@ -55,17 +55,20 @@ const uploadProfilePic = async (buffer, originalname) => {
         default:
             throw new Error('Unsupported file type');
     }
+    const timestampedFilename = `${Date.now()}_${originalname}`;
+
     const { data, error } = await supabase
         .storage
         .from('profilepics') // Adjust the bucket name as necessary
-        .upload(`${Date.now()}_${originalname}`, buffer, {
+        .upload(timestampedFilename , buffer, {
             contentType: contentType,
         });
     if (error) {
         console.error('Error uploading profile picture:', error);
         throw error;
     }
-    return data.Key; // Return the file path or key for the uploaded file
+
+    return timestampedFilename; // Return the file path or key for the uploaded file
 };
 
 // Add a new user
@@ -78,6 +81,7 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
         if (profilepic) {
             // Upload profile picture and get its URL
             const profilePicPath = await uploadProfilePic(profilepic.buffer, profilepic.originalname);
+            console.log(profilePicPath);
             profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${profilePicPath}`;
         }   else {
             profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/default-avatar.jpeg`;
@@ -100,8 +104,8 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
             console.error('Error adding user:', error);
             throw error;
         }
-        console.log('User added:', data);
-        return data;
+        console.log('User added');
+        return true;
     } catch (err) {
         console.error('Error adding user:', err);
         throw err;
