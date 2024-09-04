@@ -1,7 +1,8 @@
+// src/App.js
 import './App.css';
-import React from "react"
-import { BrowserRouter } from "react-router-dom";
-import { Route, Routes } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from './components/ProtectedRoute.js';
 
 import HomePage from "./pages/HomePage.js";
 import Login from "./pages/Login.js";
@@ -26,36 +27,21 @@ import Help from "./pages/Help.js";
 import Help_em from "./pages/Help_employer.js";
 import Pripolicy from "./pages/Pripolicy.js";
 import Terms from "./pages/Terms.js";
-import Admin_user from "./pages/Admin_user.js"
+import Admin_user from "./pages/Admin_user.js";
 import { ContextProvider } from './context/appContext.js';
-
-
 
 export default function App() {
   return (
     <ContextProvider>
       <div className="App">
         <BrowserRouter>
-          <Routes>
+        <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot_password" element={<ForgotPass />} />
             <Route path="/admin" element={<Diax_Home />} />
-            <Route path="/epaggelmatias_homepage" element={<Epag_Home />} />
-            <Route path="/user_profile" element={<Epag_network_profile />} />
-            <Route path="epaggelmatias_article/:id" element={<Epag_article />} />
-            <Route path="/epaggelmatias_aggelies" element={<Epag_job_ad />} />
-            <Route path="/epaggelmatias_aggelies/user_profile" element={<Epag_network_profile />} />
-            <Route path="/epaggelmatias_messages" element={<Epag_messages />} />
-            <Route path="/epaggelmatias_network" element={<Epag_network />} />
-            <Route path="/epaggelmatias_network/user_profile" element={<Epag_network_profile />} />
-            <Route path="/epaggelmatias_notifications" element={<Epag_notifications />} />
-            <Route path="/epaggelmatias_notifications/user_profile" element={<Epag_network_profile />} />
-            <Route path="/epaggelmatias_notifications/epaggelmatias_article/:id" element={<Epag_article />} />
-            <Route path="/epaggelmatias_personal_info" element={<Epag_pinformation />} />
-            <Route path="/epaggelmatias_profile" element={<Epag_profile />} />
-            <Route path="/epaggelmatias_settings" element={<Epag_settings />} />
             <Route path="/communication" element={<Communication />} />
             <Route path="/community_policies" element={<CooPolicy />} />
             <Route path="/FAQ" element={<FAQ />} />
@@ -65,9 +51,25 @@ export default function App() {
             <Route path="/terms_and_conditions" element={<Terms />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin_user" element={<Admin_user />} />
+
+            {/* Protected Routes */}
+            <Route path="/epaggelmatias_homepage" element={<ProtectedRoute element={Epag_Home} />} />
+            <Route path="/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
+            <Route path="/epaggelmatias_article/:id" element={<ProtectedRoute element={Epag_article} />} />
+            <Route path="/epaggelmatias_aggelies" element={<ProtectedRoute element={Epag_job_ad} />} />
+            <Route path="/epaggelmatias_aggelies/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
+            <Route path="/epaggelmatias_messages" element={<ProtectedRoute element={Epag_messages} />} />
+            <Route path="/epaggelmatias_network" element={<ProtectedRoute element={Epag_network} />} />
+            <Route path="/epaggelmatias_network/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
+            <Route path="/epaggelmatias_notifications" element={<ProtectedRoute element={Epag_notifications} />} />
+            <Route path="/epaggelmatias_notifications/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
+            <Route path="/epaggelmatias_notifications/epaggelmatias_article/:id" element={<ProtectedRoute element={Epag_article} />} />
+            <Route path="/epaggelmatias_personal_info" element={<ProtectedRoute element={Epag_pinformation} />} />
+            <Route path="/epaggelmatias_profile" element={<ProtectedRoute element={Epag_profile} />} />
+            <Route path="/epaggelmatias_settings" element={<ProtectedRoute element={Epag_settings} />} />
           </Routes>
         </BrowserRouter>
       </div>
     </ContextProvider>
-  )
+  );
 }

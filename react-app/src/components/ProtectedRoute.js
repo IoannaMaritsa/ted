@@ -1,23 +1,12 @@
-// ProtectedRoute.js
+// src/components/ProtectedRoute.js
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAppContext } from '../context/appContext'; // Adjust path as needed
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
+const ProtectedRoute = ({ element: Component, ...rest }) => {
     const { isLoggedIn } = useAppContext();
 
-    return (
-        <Route
-            {...rest}
-            render={props =>
-                isLoggedIn ? (
-                    <Component {...props} />
-                ) : (
-                    <Redirect to="/login" />
-                )
-            }
-        />
-    );
+    return isLoggedIn ? <Component {...rest} /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
