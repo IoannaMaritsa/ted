@@ -45,7 +45,31 @@ const getArticlesByUserId = async (userId) => {
         return { success: false, message: 'Error retrieving articles' };
     }
 };
+// Function to get all articles by a specific user
+const getArticlesNotByUserId = async (userId) => {
+    try {
+        const { data, error } = await supabase
+            .from('articles')
+            .select('*')
+            .neq('author_id', userId)
+            .order('publish_date', { ascending: false });
 
+        if (error) {
+            throw error;
+        }
+
+        if (data.length === 0) {
+            console.log(`No articles found for all users except user with ID ${userId}.`);
+            return { success: false, message: 'No articles found', articles: [] };
+        }
+
+        console.log(`Found ${data.length} article(s) for every but user with ID ${userId}.`);
+        return data;
+    } catch (err) {
+        console.error('Error retrieving articles:', err);
+        return { success: false, message: 'Error retrieving articles' };
+    }
+};
 // Function to delete an article by its ID
 const deleteArticleById = async (articleId) => {
     try {
@@ -136,5 +160,6 @@ module.exports = {
     deleteArticleById,
     addInterest,
     removeInterest,
-    getUserInterests
+    getUserInterests,
+    getArticlesNotByUserId
 };

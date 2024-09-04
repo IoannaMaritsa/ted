@@ -72,7 +72,7 @@ export const ContextProvider = ({ children }) => {
         user,
         isLoggedIn,
         logIn,
-        logOut
+        logOut,
     };
 
     return (

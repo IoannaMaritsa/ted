@@ -154,11 +154,27 @@ app.get('/articles/:userId', async (req, res) => {
     const { userId } = req.params;
     try {
         const articles = await articlesModel.getArticlesByUserId(userId);
-        if (articles) 
+        if (articles) {
+            res.status(200).json({ message: 'Interest added successfully' });
             res.json(articles);
-
+        }
+    
     } catch (err) {
         console.error('Error fetching articles of a user:', err);
+        res.status(500).json({ error: 'Failed to fetch articles' });
+    }
+});
+// Get a all the articles not made by user id
+app.get('/notarticles/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const articles = await articlesModel.getArticlesNotByUserId(userId);
+        if (articles){ 
+            res.status(200).json({ message: 'Interest added successfully' });
+            res.json(articles);
+        }
+    } catch (err) {
+        console.error('Error fetching articles of everyone but the user:', err);
         res.status(500).json({ error: 'Failed to fetch articles' });
     }
 });
@@ -200,6 +216,48 @@ app.post('/articles', async (req, res) => {
         res.status(500).json({ error: 'Failed to add user' });
     }
 });
+// ---------- USER INTEREST ROUTES -----------
+
+// Add an article to a user's list of interests
+app.post('/interests/add', async (req, res) => {
+    const { userId, articleId } = req.body;
+    try {
+        await addInterest(userId, articleId);
+        res.status(200).json({ message: 'Interest added successfully' });
+    } catch (err) {
+        console.error('Error adding interest:', err);
+        res.status(500).json({ error: 'Failed to add interest' });
+    }
+});
+
+// Remove an article from a user's list of interests
+app.post('/interests/remove', async (req, res) => {
+    const { userId, articleId } = req.body;
+    try {
+        await removeInterest(userId, articleId);
+        res.status(200).json({ message: 'Interest removed successfully' });
+    } catch (err) {
+        console.error('Error removing interest:', err);
+        res.status(500).json({ error: 'Failed to remove interest' });
+    }
+});
+
+// Get all articles that a user is interested in
+app.get('/interests/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const articles = await getUserInterests(userId);
+        if (articles.length > 0) {
+            res.json(articles);
+        } else {
+            res.status(404).json({ error: 'No interests found for this user' });
+        }
+    } catch (err) {
+        console.error('Error retrieving user interests:', err);
+        res.status(500).json({ error: 'Failed to retrieve user interests' });
+    }
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

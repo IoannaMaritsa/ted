@@ -5,10 +5,35 @@ import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from "../context/appContext";
+import { useAppContext, user } from "../context/appContext";
+import { addArticle, getArticle, deleteArticle, getOtherUsersArticles } from '../api';
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
+    
+    const user_info = useAppContext();
+
+    const getArticles = async (userId) => {
+        try {
+            const response = await getOtherUsersArticles(userId);
+            setArticles(response.data);
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
+
+    const getMyArticles = async (userId) => {
+        try {
+            const response = await getArticle(userId);
+            setMy_articles(response.data);
+            
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
+
+    const [articles, setArticles] = useState(getArticles(user_info.id)); // Initialize with an empty array
+    const [my_articles, setMy_articles] = useState(getMyArticles(user_info.id)); // Initialize with an empty array
     const { user } = useAppContext();
     const [articles, setArticles] = useState([
         {
@@ -83,12 +108,20 @@ export default function Epag_Home() {
     const [my_articles, setMy_articles] = useState(articles.filter((i, _) => i.author_id === user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
 
     useEffect(() => {
-        setMy_articles(articles.filter((i, _) => i.author_id === user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
-    }, [my_articles]);
+        console.log('the id is:',user_info);
+        console.log('the article table is:',articles);
+        console.log(my_articles);
+    }, []);
 
-
-    const handleDeleteArticle = (articleId) => {
-        setArticles(articles.filter(article => article.id !== articleId));
+    const handleDeleteArticle = async (articleId) => {
+        try {
+            const response = await deleteArticle(articleId);
+            console.log('article deleted successfully');
+        }
+        catch (error) {
+            console.error('Error deleting article:', error);
+            // You might want to show an error message to the user here
+        }
     };
 
     const contacts = [
@@ -247,7 +280,7 @@ export default function Epag_Home() {
                                         {experience.date}
                                     </p>
                                 </div>
-                            ))}
+                            ))} */}
 
                         </div>
                         <div className="side-bar-part">
@@ -264,7 +297,7 @@ export default function Epag_Home() {
                                         {study.date}
                                     </p>
                                 </div>
-                            ))}
+                            ))} */}
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Δεξιότητες</span>
@@ -274,7 +307,7 @@ export default function Epag_Home() {
                                         {skill}
                                     </li>
                                 </ul>
-                            ))}
+                            ))} */}
                         </div>
                     </div>
                     <div className="side-bar-section">
@@ -358,23 +391,24 @@ export default function Epag_Home() {
                             )}
                         </form>
                     </div>
-                    <div className="articles-page">
-                        <h2>Τα άρθρα μου</h2>
-                        {my_articles.map((article, index) => (
-                            <Article
-                                key={article.id}
-                                id={article.id}
-                                title={article.title}
-                                author_id={article.author_id}
-                                date={article.date}
-                                content={article.content}
-                                onDelete={handleDeleteArticle}
-                            />
-                        ))}
-                    </div>
+                    {my_articles.length > 0 && (<div className="articles-page">
+                    <h2>Τα άρθρα μου</h2>
+                    {my_articles.map((article, index) => (
+                        <Article
+                            key={article.id}
+                            id={article.id}
+                            title={article.title}
+                            author_id={article.author_id}
+                            date={article.date}
+                            content={article.content}
+                            onDelete={handleDeleteArticle}
+                        />
+                    ))}
+                    </div>)}
+                    {articles.length > 0 && (
                     <div className="articles-page">
                         <h2>Άρθρα άλλων επαγγελματιών</h2>
-                        {sortedArticles.map((article, index) => (
+                        {articles.map((article, index) => (
                             <Article
                                 key={index}
                                 id={article.id}
@@ -385,6 +419,7 @@ export default function Epag_Home() {
                             />
                         ))}
                     </div>
+                    )}
                 </div>
             </div>
             <MainBottom />
