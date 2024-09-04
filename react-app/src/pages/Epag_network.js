@@ -1,35 +1,42 @@
-import React from "react"
+import React from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Breadcrumbs from "../components/Breadcrumbs";
 import '../css/epag-network.css';
 import { useAppContext } from "../context/appContext";
-import { useState, useMemo , useEffect} from 'react';
-import { ProfileButton } from "../components/other";
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAllContactsByUserId } from "../api";
 
 export default function Epag_network() {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchQuery, setSearchQuery] = useState();
-    const {setOtherProfile, otherProfile} = useAppContext();
-
+    const [searchQueryConnected, setSearchQueryConnected] = useState("");
+    const [searchQueryOther, setSearchQueryOther] = useState("");
+    const [currentPageConnected, setCurrentPageConnected] = useState(1);
+    const [currentPageOther, setCurrentPageOther] = useState(1);
     const itemsPerPage = 6;
-    const users = [
-        {
-            id: 1,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Alice Johnson',
-            profession: 'Software Engineer',
-            workplace: 'Tech Solutions Inc.',
-        },
-        {
-            id: 2,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Bob Smith',
-            profession: 'Graphic Designer',
-            workplace: 'Creative Studio Ltd.',
-        },
+    const [connectedUsers, setConnectedUsers] = useState([]);
+    const { setOtherProfile, otherProfile, user } = useAppContext();
+    const navigate = useNavigate();
+
+    // Fetch contacts on component mount
+    useEffect(() => {
+        const fetchContacts = async () => {
+            try {
+                const contactsData = await getAllContactsByUserId(user.id);
+                setConnectedUsers(contactsData);
+                // Assume you have another API function for potential connections
+                const potentialConnectionsData = await getOtherUsers(userId);
+                setPotentialConnections(potentialConnectionsData);
+            } catch (error) {
+                console.error('Error fetching contacts:', error);
+            }
+        };
+        fetchContacts();
+    }, [user.id]);
+
+    
+    const otherUsers = [
         {
             id: 3,
             profilePic: '/default-avatar.jpeg',
@@ -51,37 +58,13 @@ export default function Epag_network() {
             profession: 'Data Analyst',
             workplace: 'Data Insights Corp.',
         },
-        {
-            id: 6,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Frank Miller',
-            profession: 'UX/UI Designer',
-            workplace: 'Design Dynamics LLC',
-        },
-        {
-            id: 7,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Grace Lee',
-            profession: 'Financial Advisor',
-            workplace: 'Finance Solutions',
-        },
-        {
-            id: 8,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Henry Walker',
-            profession: 'HR Manager',
-            workplace: 'People First Inc.',
-        },
+        // Add more other users here
     ];
 
-    // Reset currentPage to 1 whenever searchQuery changes
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery]);
-
-    const filteredUsers = useMemo(() => {
-        const query = (searchQuery || '').toLowerCase();
-        return users.filter(user => {
+    // Filtering and Pagination for Connected Users
+    const filteredConnectedUsers = useMemo(() => {
+        const query = (searchQueryConnected || '').toLowerCase();
+        return connectedUsers.filter(user => {
             const name = (user.name || '').toLowerCase();
             const profession = (user.profession || '').toLowerCase();
             const workplace = (user.workplace || '').toLowerCase();
@@ -89,23 +72,43 @@ export default function Epag_network() {
                 profession.includes(query) ||
                 workplace.includes(query);
         });
-    }, [searchQuery, users]);
+    }, [searchQueryConnected, connectedUsers]);
 
-    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const totalPagesConnected = Math.ceil(filteredConnectedUsers.length / itemsPerPage);
+    const indexOfLastConnectedUser = currentPageConnected * itemsPerPage;
+    const indexOfFirstConnectedUser = indexOfLastConnectedUser - itemsPerPage;
+    const currentConnectedUsers = filteredConnectedUsers.slice(indexOfFirstConnectedUser, indexOfLastConnectedUser);
 
-    // Calculate the index of the first and last user on the current page
-    const indexOfLastUser = currentPage * itemsPerPage;
-    const indexOfFirstUser = indexOfLastUser - itemsPerPage;
-    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+    // Filtering and Pagination for Other Users
+    const filteredOtherUsers = useMemo(() => {
+        const query = (searchQueryOther || '').toLowerCase();
+        return otherUsers.filter(user => {
+            const name = (user.name || '').toLowerCase();
+            const profession = (user.profession || '').toLowerCase();
+            const workplace = (user.workplace || '').toLowerCase();
+            return name.includes(query) ||
+                profession.includes(query) ||
+                workplace.includes(query);
+        });
+    }, [searchQueryOther, otherUsers]);
 
-    // Change page
-    const handlePageChange = (pageNumber) => {
-        if (pageNumber > 0 && pageNumber <= totalPages) {
-            setCurrentPage(pageNumber);
+    const totalPagesOther = Math.ceil(filteredOtherUsers.length / itemsPerPage);
+    const indexOfLastOtherUser = currentPageOther * itemsPerPage;
+    const indexOfFirstOtherUser = indexOfLastOtherUser - itemsPerPage;
+    const currentOtherUsers = filteredOtherUsers.slice(indexOfFirstOtherUser, indexOfLastOtherUser);
+
+    // Handlers for Pagination
+    const handlePageChangeConnected = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPagesConnected) {
+            setCurrentPageConnected(pageNumber);
         }
     };
 
-    const navigate = useNavigate();
+    const handlePageChangeOther = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPagesOther) {
+            setCurrentPageOther(pageNumber);
+        }
+    };
 
     const handleProfileClick = (user) => {
         setOtherProfile(user);
@@ -120,23 +123,28 @@ export default function Epag_network() {
         <div>
             <Header variant="professional" />
             <Breadcrumbs />
-            <div class="main-wrapper">
-                <div class="box-header">
-                    <h1 class="title2">Συνδέσεις</h1>
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="Αναζήτηση Χρηστών"
-                            className="search-input"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <img src="search.png" alt="Search Icon" className="search-icon"></img>
-                    </div>
+            <div className="main-wrapper">
+                <div className="box-header">
+                    <h1 className="title2">Δίκτυο</h1>
                 </div>
-                <div class="center-square">
+
+                {/* Connected Users Section */}
+                <div className="user-section">
+                    <div className="header-header">
+                        <span className="section-title">Συνδέσεις</span>
+                        <div className="search-container2">
+                            <input
+                                type="text"
+                                placeholder="Αναζήτηση Συνδεδεμένων Χρηστών"
+                                className="search-input"
+                                value={searchQueryConnected}
+                                onChange={(e) => setSearchQueryConnected(e.target.value)}
+                            />
+                            <img src="search.png" alt="Search Icon" className="search-icon"></img>
+                        </div>
+                    </div>
                     <div className="grid-container">
-                        {currentUsers.map(user => (
+                        {currentConnectedUsers.map(user => (
                             <div key={user.id} className="box">
                                 <img src={user.profilePic} alt="Profile Picture" className="e-profile-pic" />
                                 <div className="user-info">
@@ -146,12 +154,9 @@ export default function Epag_network() {
                                         <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />
                                         <p className="e-workplace">{user.workplace}</p>
                                     </div>
-
                                 </div>
-
                                 <button
                                     className="info-button"
-                                    user = {user}
                                     onClick={() => handleProfileClick(user)}
                                 >
                                     Προβολή Προφίλ
@@ -160,21 +165,75 @@ export default function Epag_network() {
                         ))}
                     </div>
 
+                    <div className="pagination">
+                        <button
+                            onClick={() => handlePageChangeConnected(currentPageConnected - 1)}
+                            disabled={currentPageConnected === 1}
+                        >
+                            Προηγούμενο
+                        </button>
+                        <span>Σελίδα {currentPageConnected} από {totalPagesConnected}</span>
+                        <button
+                            onClick={() => handlePageChangeConnected(currentPageConnected + 1)}
+                            disabled={currentPageConnected === totalPagesConnected}
+                        >
+                            Επόμενο
+                        </button>
+                    </div>
                 </div>
-                <div className="pagination">
-                    <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        Προηγούμενο
-                    </button>
-                    <span>Σελίδα {currentPage} από {totalPages}</span>
-                    <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        Επόμενο
-                    </button>
+
+                {/* Other Users Section */}
+                <div className="user-section">
+                    <div className="header-header">
+                        <span className="section-title"> Μη Συνδεδεμένοι Χρήστες</span>
+                        <div className="search-container2">
+                            <input
+                                type="text"
+                                placeholder="Αναζήτηση Χρηστών"
+                                className="search-input"
+                                value={searchQueryOther}
+                                onChange={(e) => setSearchQueryOther(e.target.value)}
+                            />
+                            <img src="search.png" alt="Search Icon" className="search-icon"></img>
+                        </div>
+                    </div>
+                    <div className="grid-container">
+                        {currentOtherUsers.map(user => (
+                            <div key={user.id} className="box">
+                                <img src={user.profilePic} alt="Profile Picture" className="e-profile-pic" />
+                                <div className="user-info">
+                                    <h3 className="name">{user.name}</h3>
+                                    <p className="e-profession">{user.profession}</p>
+                                    <div className="workplace-container">
+                                        <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />
+                                        <p className="e-workplace">{user.workplace}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    className="info-button"
+                                    onClick={() => handleProfileClick(user)}
+                                >
+                                    Προβολή Προφίλ
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="pagination">
+                        <button
+                            onClick={() => handlePageChangeOther(currentPageOther- 1)}
+                            disabled={currentPageOther === 1}
+                        >
+                            Προηγούμενο
+                        </button>
+                        <span>Σελίδα {currentPageOther} από {totalPagesOther}</span>
+                        <button
+                            onClick={() => handlePageChangeOther(currentPageOther + 1)}
+                            disabled={currentPageOther === totalPagesOther}
+                        >
+                            Επόμενο
+                        </button>
+                    </div>
                 </div>
             </div>
             <MainBottom />

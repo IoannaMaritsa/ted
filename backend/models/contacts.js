@@ -1,68 +1,63 @@
 const pool = require('../db');
 
-// Function to add a contact for a user
-const addContact = async (userId, contactId) => {
-    const query = `
-        INSERT INTO contacts (user_id, contact_id)
-        VALUES ($1, $2)
-        ON CONFLICT (user_id, contact_id) DO NOTHING;
-    `;
-    const values = [userId, contactId];
-
+const getAllContactsByUserId = async (user_id) => {
     try {
-        await pool.query(query, values);
-        console.log('Contact added successfully.');
+        const { data, error } = await supabase
+            .from('contacts')
+            .select('contact_id')
+            .eq('user_id', user_id);
+        if (error) {
+            console.error('Error getting contacts:', error);
+            throw error;
+        }
+        console.log(`Successfully retrieved contacts for user ID ${user_id}.`);
+        return data;
+    } catch (err) {
+        console.error('Error getting contacts:', err);
+        throw err;
+    }
+};
+
+const addContact = async (user_id, contact_id) => {
+    try {
+        const { data, error } = await supabase
+            .from('contacts')
+            .insert([{ user_id, contact_id }, { user_id: contact_id, contact_id: user_id }]);
+        if (error) {
+            console.error('Error adding contact:', error);
+            throw error;
+        }
+        console.log('Successfully added contact.');
+        return data;
     } catch (err) {
         console.error('Error adding contact:', err);
+        throw err;
     }
 };
 
-// Function to fetch contacts for a user
-const getContacts = async (userId) => {
-    const query = `
-        SELECT u.id, u.name, u.email
-        FROM users u
-        JOIN contacts c ON u.id = c.contact_id
-        WHERE c.user_id = $1;
-    `;
-    const values = [userId];
 
+const removeContact = async (user_id, contact_id) => {
     try {
-        const results = await pool.query(query, values);
-        console.log('Contacts:', results.rows);
-        return results.rows;
-    } catch (err) {
-        console.error('Error fetching contacts:', err);
-    }
-};
-
-// Function to delete a contact from a user
-const deleteContactFromUser = async (userId, contactId) => {
-    try {
-        const result = await pool.query(
-            'DELETE FROM contacts WHERE user_id = $1 AND contact_id = $2 RETURNING *',
-            [userId, contactId]
-        );
-
-        if (result.rowCount === 0) {
-            console.log(`No contact with ID ${contactId} found for user with ID ${userId}.`);
-            return { success: false, message: 'Contact not found for user' };
+        const { data, error } = await supabase
+            .from('contacts')
+            .delete()
+            .eq('user_id', user_id)
+            .eq('contact_id', contact_id)
+            .or(`user_id.eq.${contact_id},contact_id.eq.${user_id}`);
+        if (error) {
+            console.error('Error removing contact:', error);
+            throw error;
         }
-
-        console.log(`Contact with ID ${contactId} deleted for user with ID ${userId}.`);
-        return { success: true, message: 'Contact deleted' };
+        console.log('Successfully removed contact.');
+        return data;
     } catch (err) {
-        console.error('Error deleting contact:', err);
-        return { success: false, message: 'Error deleting contact' };
-    } finally {
-        pool.release();
+        console.error('Error removing contact:', err);
+        throw err;
     }
 };
-// Example usage
-// addContact(2, 1); // Add Alice (user_id = 1) as a contact for Bob (user_id = 2)
-// getContacts(2);   // Fetch contacts for Bob (user_id = 2)
+
 module.exports = {
     addContact,
-    getContacts,
-    deleteContactFromUser
+    getAllContactsByUserId,
+    removeContact
 };

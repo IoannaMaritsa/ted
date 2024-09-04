@@ -282,6 +282,40 @@ const updatePassword = async (email, newPassword) => {
     }
 };
 
+// Get users that the specified user is not connected to and exclude the user themselves
+const getUnconnectedUsers = async (userId) => {
+    try {
+        // Fetch all users
+        const { data: allUsers, error: allUsersError } = await supabase.from('users').select('*');
+        if (allUsersError) {
+            console.error('Error getting all users:', allUsersError);
+            throw allUsersError;
+        }
+
+        // Fetch user's contacts
+        const { data: contacts, error: contactsError } = await supabase
+            .from('contacts')
+            .select('contact_id')
+            .eq('user_id', userId);
+        if (contactsError) {
+            console.error('Error getting contacts:', contactsError);
+            throw contactsError;
+        }
+
+        // Extract contact IDs
+        const contactIds = contacts.map(contact => contact.contact_id);
+
+        // Filter out the user themselves and their contacts
+        const unconnectedUsers = allUsers.filter(user => 
+            user.id !== userId && !contactIds.includes(user.id)
+        );
+
+        return unconnectedUsers;
+    } catch (err) {
+        console.error('Error getting unconnected users:', err);
+        throw err;
+    }
+};
 
 module.exports = {
     getAllUsers,
@@ -291,4 +325,5 @@ module.exports = {
     updateEmail,
     updatePassword,
     deleteUser,
+    getUnconnectedUsers
 };

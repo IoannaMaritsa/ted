@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 
 const usersModel = require('./models/users'); // Adjust the path as necessary
 const articlesModel = require('./models/articles');
+const contactsModel = require('./models/contacts');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -255,6 +256,41 @@ app.get('/interests/:userId', async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve user interests' });
     }
 });
+
+// ---------- CONTACT ROUTES -----------
+// Get all contacts for a specific user
+app.get('/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+    try {
+        const contacts = await  contactsModel.getAllContactsByUserId(user_id);
+        res.status(200).json(contacts);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching contacts', error });
+    }
+});
+
+// Add a contact for a user
+app.post('/', async (req, res) => {
+    const { user_id, contact_id } = req.body;
+    try {
+        await contactsModel.addContact(user_id, contact_id);
+        res.status(201).json({ message: 'Contact added successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding contact', error });
+    }
+});
+
+// Remove a contact for a user
+app.delete('/', async (req, res) => {
+    const { user_id, contact_id } = req.body;
+    try {
+        await contactsModel.removeContact(user_id, contact_id);
+        res.status(200).json({ message: 'Contact removed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error removing contact', error });
+    }
+});
+
 
 // Start server
 app.listen(PORT, () => {

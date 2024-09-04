@@ -175,3 +175,36 @@ export const getUserInterests = async (userId) => {
         throw error;
     }
 };
+
+// Get all contacts for a specific user
+export const getAllContactsByUserId = async (userId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching contacts:', error);
+        throw error;
+    }
+};
+
+// Add a contact for a user
+export const addContact = async (userId, contactId) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/`, { user_id: userId, contact_id: contactId });
+        return response;
+    } catch (error) {
+        console.error('Error adding contact:', error);
+        throw error;
+    }
+};
+
+// Remove a contact for a user
+export const removeContact = async (userId, contactId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/`, { data: { user_id: userId, contact_id: contactId } });
+        return response;
+    } catch (error) {
+        console.error('Error removing contact:', error);
+        throw error;
+    }
+};
