@@ -5,7 +5,7 @@ import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext, user } from "../context/appContext";
+import { useAppContext} from "../context/appContext";
 import { addArticle, getArticle, deleteArticle, getOtherUsersArticles } from '../api';
 import '../css/epag-home.css';
 
@@ -42,7 +42,7 @@ export default function Epag_Home() {
     const bucketName = 'profilepics';
 
     // Original URL (saved in the profilepic field)
-    const originalProfilePicUrl = user?.profilepic;
+    const originalProfilePicUrl = user_info?.profilepic;
 
     // Add '/public/' to the URL path if necessary
     const profileImageUrl = originalProfilePicUrl
@@ -216,7 +216,7 @@ export default function Epag_Home() {
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Επαγγελματική εμπειρία</span>
-                            {user_info.experiences.map((experience, index) => (
+                            {/* {user_info.experiences.map((experience, index) => (
                                 <div className="home-user-info">
                                     <span className="home-user-info-h3">
                                         {experience.profession}
@@ -228,12 +228,12 @@ export default function Epag_Home() {
                                         {experience.date}
                                     </p>
                                 </div>
-                            ))} 
+                            ))}  */}
 
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Σπουδές</span>
-                            {user_info.studies.map((study, index) => (
+                            {/* {user_info.studies.map((study, index) => (
                                 <div className="home-user-info">
                                     <span className="home-user-info-h3">
                                         {study.university}
@@ -245,17 +245,17 @@ export default function Epag_Home() {
                                         {study.date}
                                     </p>
                                 </div>
-                            ))} 
+                            ))}  */}
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Δεξιότητες</span>
-                            {user_info.skills.map((skill, index) => (
+                            {/* {user_info.skills.map((skill, index) => (
                                 <ul className="home-user-info-ul">
                                     <li>
                                         {skill}
                                     </li>
                                 </ul>
-                            ))} 
+                            ))}  */}
                         </div>
                     </div>
                     <div className="side-bar-section">
