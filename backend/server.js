@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const usersModel = require('./models/users'); // Adjust the path as necessary
+const articlesModel = require('./models/articles');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -68,11 +69,13 @@ app.post('/users', upload.single('profilepic'), async (req, res) => {
         });
 
         const result = await usersModel.addUser(name, email, password, location, dob, profilepic);
-        if (result) {
-            res.status(201).json({ message: 'User created successfully' });
-        } else {
-            res.status(400).json({ error: 'User creation failed' });
+        if (result.success === false) {
+            // If the user already exists, send a 409 status with the message
+            return res.status(409).json({ error: result.message });
         }
+
+        // If user creation is successful, send a 201 status
+        res.status(201).json({ message: result.message });
     } catch (err) {
         console.error('Error adding user:', err);
         res.status(500).json({ error: 'Failed to add user' });
@@ -145,8 +148,58 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Login failed' });
     }
 });
+// ---------- ARTICLE ROUTES -----------
+// Get a all the articles by user id
+app.get('/articles/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const articles = await articlesModel.getArticlesByUserId(userId);
+        if (articles) 
+            res.json(articles);
 
+    } catch (err) {
+        console.error('Error fetching articles of a user:', err);
+        res.status(500).json({ error: 'Failed to fetch articles' });
+    }
+});
+// Delete a user by email
+app.delete('/article/:articleId', upload.none(), async (req, res) => {
+    const { articleId } = req.params;
+    try {
+        const result = await articlesModel.deleteArticleById(articleId);
+        if (result) {
+            res.status(204).send();  // 204 No Content when deletion is successful
+        } else {
+            res.status(404).json({ error: 'Article not found' });
+        }
+    } catch (err) {
+        console.error('Error deleting article:', err);
+        res.status(500).json({ error: 'Failed to delete article' });
+    }
+});
+// Handle article creation
+app.post('/articles', async (req, res) => {
+    try {
+        const { title, authorId, publishDate, content } = req.body;
 
+        console.log('Incoming user data:', {
+            title, authorId, publishDate, content
+        });
+
+        const result = await articlesModel.addArticle(title, authorId, publishDate, content);
+        if(result){
+            // If user creation is successful, send a 201 status
+            res.status(201).json({ message: result.message });
+        }
+        else {
+            res.status(404).json({ error: 'Article not created' });
+        }
+        
+    } catch (err) {
+        console.error('Error adding user:', err);
+        res.status(500).json({ error: 'Failed to add user' });
+    }
+});
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

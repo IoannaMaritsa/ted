@@ -60,7 +60,7 @@ const uploadProfilePic = async (buffer, originalname) => {
     const { data, error } = await supabase
         .storage
         .from('profilepics') // Adjust the bucket name as necessary
-        .upload(timestampedFilename , buffer, {
+        .upload(timestampedFilename, buffer, {
             contentType: contentType,
         });
     if (error) {
@@ -74,6 +74,17 @@ const uploadProfilePic = async (buffer, originalname) => {
 // Add a new user
 const addUser = async (name, email, password, location, dob, profilepic) => {
     try {
+        const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', email)
+            .single();
+
+        if (existingUser) {
+            // Return a specific error indicating that the email is already taken
+            return { success: false, message: 'Email already in use' };
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         let profilePicUrl = null;
@@ -83,7 +94,7 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
             const profilePicPath = await uploadProfilePic(profilepic.buffer, profilepic.originalname);
             console.log(profilePicPath);
             profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${profilePicPath}`;
-        }   else {
+        } else {
             profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/default-avatar.jpeg`;
         }
 
@@ -134,13 +145,13 @@ const deleteUser = async (email) => {
             // Delete the old profile picture from Supabase Storage
             const { error: deleteFileError } = await supabase
                 .storage
-                .from('profilepics') 
+                .from('profilepics')
                 .remove([filePath]);
 
-                if (deleteFileError) {
-                    console.error('Error deleting image:', deleteFileError);
-                    throw deleteFileError;
-                }
+            if (deleteFileError) {
+                console.error('Error deleting image:', deleteFileError);
+                throw deleteFileError;
+            }
             console.log(`Profile picture deleted for user with email ${email}`);
         }
         // Delete the profile pic from the storage
@@ -212,13 +223,13 @@ const updateUser = async (email, updates) => {
             // Delete the old profile picture from Supabase Storage
             const { error: deleteFileError } = await supabase
                 .storage
-                .from('profilepics') 
+                .from('profilepics')
                 .remove([filePath]);
 
-                if (deleteFileError) {
-                    console.error('Error deleting image:', deleteFileError);
-                    throw deleteFileError;
-                }
+            if (deleteFileError) {
+                console.error('Error deleting image:', deleteFileError);
+                throw deleteFileError;
+            }
             console.log(`Old profile picture deleted for user with email ${email}`);
         }
 
@@ -235,7 +246,7 @@ const updateEmail = async (oldEmail, newEmail) => {
     try {
         const { data: updatedUser, error: updateError } = await supabase
             .from('users')
-            .update({email : newEmail})
+            .update({ email: newEmail })
             .eq('email', email)
             .single();
         if (updateError) {
@@ -256,19 +267,19 @@ const updatePassword = async (email, newPassword) => {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         const { data: updatedUser, error: updateError } = await supabase
-        .from('users')
-        .update({password : newPassword})
-        .eq('email', email)
-        .single();
-    if (updateError) {
-        console.error('Error updating user password:', updateError);
-        throw updateError;
+            .from('users')
+            .update({ password: newPassword })
+            .eq('email', email)
+            .single();
+        if (updateError) {
+            console.error('Error updating user password:', updateError);
+            throw updateError;
+        }
+        console.log(`Password updated successfully for user  ${newEmail}.`);
+    } catch (error) {
+        console.error('Error updating password:', error);
+        throw error;
     }
-    console.log(`Password updated successfully for user  ${newEmail}.`);
-} catch (error) {
-    console.error('Error updating password:', error);
-    throw error;
-}
 };
 
 

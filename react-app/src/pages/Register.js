@@ -9,6 +9,8 @@ import { addUser } from '../api'; // Adjust the import path as needed
 
 export default function Register() {
 
+    const [success, setSuccess] = useState(false)
+
     const navigate = useNavigate();
     const {logIn, isLoggedIn} = useAppContext();
 
@@ -24,6 +26,7 @@ export default function Register() {
     const [errors, setErrors] = useState({
         passwordMismatch: false,
         emailInvalid: false,
+        emailInUse: false,
         passwordInvalid: false,
         locationInvalid: false,
         dobInvalid: false
@@ -32,17 +35,19 @@ export default function Register() {
     const fileInputRef = useRef(null);
 
     const handleDateChange = (date) => {
-        setFormData({ ...formData, dob: date });
-        const today = new Date();
-        const minAge = 18; // Minimum age requirement
-        const age = today.getFullYear() - date.getFullYear();
-        const monthDiff = today.getMonth() - date.getMonth();
-        const dayDiff = today.getDate() - date.getDate();
+        if (date != null) {
+            setFormData({ ...formData, dob: date });
+            const today = new Date();
+            const minAge = 18; // Minimum age requirement
+            const age = today.getFullYear() - date.getFullYear();
+            const monthDiff = today.getMonth() - date.getMonth();
+            const dayDiff = today.getDate() - date.getDate();
 
-        if (age < minAge || (age === minAge && monthDiff < 0) || (age === minAge && monthDiff === 0 && dayDiff < 0)) {
-            setErrors({ ...errors, dobInvalid: true });
-        } else {
-            setErrors({ ...errors, dobInvalid: false });
+            if (age < minAge || (age === minAge && monthDiff < 0) || (age === minAge && monthDiff === 0 && dayDiff < 0)) {
+                setErrors({ ...errors, dobInvalid: true });
+            } else {
+                setErrors({ ...errors, dobInvalid: false });
+            }
         }
     };
 
@@ -75,6 +80,7 @@ export default function Register() {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             const isEmailValid = emailRegex.test(value);
             setErrors({ ...errors, emailInvalid: !isEmailValid });
+            setErrors({ ...errors, emailInUse: false });
         }
 
         if (name === 'confirmPassword') {
@@ -243,6 +249,7 @@ export default function Register() {
                             </div>
                         </div>
                         {errors.emailInvalid && <div className='error-message-div'><span className="error-message">Εισάγετε έγκυρο email</span></div>}
+                        {errors.emailInUse && <div className='error-message-div'><span className="error-message">Το τρέχον email χρησιμοποιείται ήδη</span></div>}
                         <div className={`form-group ${errors.emailInvalid ? 'error' : ''}`}>
                             <img src="email-icon.png" alt="Email Icon" className="input-icon" />
                             <input type="text"
@@ -320,6 +327,7 @@ export default function Register() {
                         </div>
 
                         <div class="wrap">
+                            {success && (<p>Η εγγραφή έγινε με επιτυχία</p>)}
                             <button type="submit" className="button-register"
                             >
                                 Εγγραφή

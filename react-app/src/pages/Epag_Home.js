@@ -189,7 +189,7 @@ export default function Epag_Home() {
 
     return (
         <div>
-            <Header variant="professional" />
+            <Header />
             <nav className="breadcrumbs"><img src="/home.png" className='home-icon' alt="Home"/> &nbsp;/</nav>
             <div className="split-epag">
                 <div className="side-bar">

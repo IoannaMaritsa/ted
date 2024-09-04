@@ -41,8 +41,19 @@ export const addUser = async (userData) => {
         });
         return response;
     } catch (error) {
-        console.error('Error adding user:', error);
-        throw error;
+        if (error.response) {
+            // Request made and server responded with a status code
+            // that falls out of the range of 2xx
+            return error.response;
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error('Error request:', error.request);
+            throw new Error('No response from server');
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error('Error message:', error.message);
+            throw new Error('Error setting up request');
+        }
     }
 };
 
