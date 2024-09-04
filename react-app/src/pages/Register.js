@@ -12,7 +12,7 @@ export default function Register() {
     const [success, setSuccess] = useState(false)
 
     const navigate = useNavigate();
-    const {logIn} = useAppContext();
+    const {logIn, isLoggedIn} = useAppContext();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -184,9 +184,9 @@ export default function Register() {
         <div className="register">
             <main className="register-main-div">
                 <div className="logo-container">
-                    <a href='/'>
-                        <img src="logo.png" alt="Logo" className="logo" />
-                    </a>
+                <a href={isLoggedIn ? '/epaggelmatias_homepage' : '/'}>
+                    <img src="logo.png" alt="Logo" className="logo" />
+                </a>
                 </div>
                 <div className="register-box">
                     <div className="register-title-box">
