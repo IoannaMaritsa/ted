@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import '../css/register.css'
+import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useAppContext } from '../context/appContext';
 import { format } from 'date-fns'; // Import format function from date-fns
 import { addUser } from '../api'; // Adjust the import path as needed
 
@@ -9,7 +11,8 @@ export default function Register() {
 
     const [success, setSuccess] = useState(false)
 
-    const [dob] = useState('');
+    const navigate = useNavigate();
+    const {logIn} = useAppContext();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -139,28 +142,40 @@ export default function Register() {
         };
 
         try {
-            console.log('Sending request...');
+            // Format the date
+            const formattedDob = formData.dob ? format(formData.dob, "yyyy-MM-dd") : '';
+    
+            // Combine form data
+            const userData = {
+                name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
+                email: formData.email,
+                password: formData.password,
+                location: formData.location,
+                dob: formattedDob,
+                profilepic: formData.profilePhoto,
+            };
+    
+            // Register the user
             const response = await addUser(userData);
-            if (response.status === 409) {
-                setErrors({ ...errors, emailInUse: true });
+            console.log('User registered successfully:', response);
+    
+            // Save user information in session storage
+            sessionStorage.setItem('user', JSON.stringify({
+                name: userData.name,
+                email: formData.email,
+            }));
+    
+            // Attempt to log in with the registered credentials
+            try {
+                await logIn(formData.email, formData.password);
+                navigate('/epaggelmatias_homepage'); // Redirect after successful login
+            } catch (loginError) {
+                console.error('Login failed:', loginError);
+                // You might want to show an error message to the user here
             }
-            else if (response.status === 201) {
-                setSuccess(true);
-                console.log('User registered successfully:', response);
-
-                // Save user information in session storage
-                sessionStorage.setItem('user', JSON.stringify({
-                    name: fullName,
-                    email: formData.email,
-                }));
-
-                console.log('Redirecting to homepage...');
-                window.location.href = '/epaggelmatias_homepage'; // Adjust the homepage path as needed
-            }
-
-        } catch (error) {
-            console.error('Error registering user:', error);
-
+        } catch (registerError) {
+            console.error('Error registering user:', registerError);
+            // You might want to show an error message to the user here
         }
     };
 
