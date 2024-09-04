@@ -11,8 +11,6 @@ import '../css/epag-home.css';
 
 export default function Epag_Home() {
     
-    const user_info = useAppContext();
-
     const getArticles = async (userId) => {
         try {
             const response = await getOtherUsersArticles(userId);
@@ -32,47 +30,11 @@ export default function Epag_Home() {
         }
     };
 
-    const [articles, setArticles] = useState(getArticles(user_info.id)); // Initialize with an empty array
-    const [my_articles, setMy_articles] = useState(getMyArticles(user_info.id)); // Initialize with an empty array
     const { user } = useAppContext();
-    const [articles, setArticles] = useState([
-        {
-            id: '1',
-            title: 'Article 1',
-            author_id: 1,
-            date: '2024-07-26',
-            content: 'This is the content of the first article. It is a brief description of the article.'
-        },
-        {
-            id: '2',
-            title: 'Article 2',
-            author_id: 2,
-            date: '2024-07-25',
-            content: 'This is the content of the second article. It is a brief description of the article.'
-        },
-        {
-            id: '3',
-            title: 'Article 3',
-            author_id: 3,
-            date: '2024-07-28',
-            content: 'This is the content of the third article. It is a brief description of the article.'
-        },
-        {
-            id: '4',
-            title: 'Article 4',
-            author_id: 999,
-            date: '2024-07-25',
-            content: 'This is the content of the second article. It is a brief description of the article.'
-        },
-        {
-            id: '5',
-            title: 'Article 5',
-            author_id: 999,
-            date: '2024-07-28',
-            content: 'This is the content of the third article. It is a brief description of the article.'
-        },
-        // Add more articles as needed
-    ]);
+    const [articles, setArticles] = useState(getArticles(user.id)); // Initialize with an empty array
+    const [my_articles, setMy_articles] = useState(getMyArticles(user.id)); // Initialize with an empty array
+    
+    
 
     // Base URL and bucket name
     const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
@@ -105,7 +67,6 @@ export default function Epag_Home() {
 
     const sortedArticles = articles.filter((i, _) => i.author_id !== user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const [my_articles, setMy_articles] = useState(articles.filter((i, _) => i.author_id === user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
 
     useEffect(() => {
         console.log('the id is:',user_info);
@@ -280,7 +241,7 @@ export default function Epag_Home() {
                                         {experience.date}
                                     </p>
                                 </div>
-                            ))} */}
+                            ))} 
 
                         </div>
                         <div className="side-bar-part">
@@ -297,7 +258,7 @@ export default function Epag_Home() {
                                         {study.date}
                                     </p>
                                 </div>
-                            ))} */}
+                            ))} 
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Δεξιότητες</span>
@@ -307,7 +268,7 @@ export default function Epag_Home() {
                                         {skill}
                                     </li>
                                 </ul>
-                            ))} */}
+                            ))} 
                         </div>
                     </div>
                     <div className="side-bar-section">
