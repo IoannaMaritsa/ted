@@ -1,26 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './Header.css';
+import { getSignedUrl } from '../api';
+import { useAppContext } from '../context/appContext';
 
 const Header = ({ variant }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { logOut, isLoggedIn, user } = useAppContext();
+
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    console.log("logg",isLoggedIn);
+    console.log(localStorage.getItem('token'));
+    console.log(user);
+
+  }, []);
+
+  // Base URL and bucket name
+  const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
+  const bucketName = 'profilepics';
+
+  // Original URL (saved in the profilepic field)
+  const originalProfilePicUrl = user?.profilepic;
+
+  // Add '/public/' to the URL path if necessary
+  const profileImageUrl = originalProfilePicUrl
+      ? originalProfilePicUrl.replace(
+          `${baseURL}/storage/v1/object/${bucketName}/`,
+          `${baseURL}/storage/v1/object/public/${bucketName}/`
+        )
+      : `${baseURL}/storage/v1/object/public/${bucketName}/default-avatar.jpeg`;
 
   const handleProfileClick = () => {
     setShowDropdown(!showDropdown);
   };
 
-  useEffect(() => {
-    // Check authentication status on component mount
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      // Optionally verify token and fetch user info from an API
-      // For now, we just set as logged in if the token exists
-      setIsLoggedIn(true);
-      // Fetch user data from API if needed
-      // Example: fetchUserData(token).then(data => setUser(data));
-    }
-  }, []);
+  const handleSignOut = () => {
+    logOut(); // Call the logOut function from context
+    setShowDropdown(false); // Close dropdown on sign out
+    navigate('/login'); // Use navigate for redirection
+  };
+
 
   return (
     <header className="header">
@@ -41,33 +62,7 @@ const Header = ({ variant }) => {
           </div>
         ) : (
           <>
-            <img
-              src="/default-avatar.jpeg"
-              className="profile-picture2"
-              alt="Profile"
-              onClick={handleProfileClick}
-            />
-            {showDropdown && (
-              <div className="dropdown">
-                <div className="dropdown-content">
-                  <img
-                    src="/default-avatar.jpeg"
-                    alt="Profile Picture"
-                    className="dropdown-profile-pic"
-                  />
-                  <div className="dropdown-info">
-                    <div className="dropdown-name">User Name</div>
-                    <div className="dropdown-email">user@example.com</div>
-                  </div>
-                </div>
-                <div className="dropdown-footer">
-                  <button className="sign-out-button">
-                    Sign Out
-                    <img src="/logout.png" alt="Log Out Icon" className="logout-icon" />
-                  </button>
-                </div>
-              </div>
-            )}
+
             <div className="tabs">
               <NavLink exact to="/epaggelmatias_homepage" activeClassName="active-tab" className="tab">
                 Αρχική Σελίδα
@@ -91,6 +86,33 @@ const Header = ({ variant }) => {
                 Ρυθμίσεις
               </NavLink>
             </div>
+            <img
+              src={profileImageUrl}
+              className="profile-picture2"
+              alt="Profile"
+              onClick={handleProfileClick}
+            />
+            {showDropdown && (
+              <div className="dropdown">
+                <div className="dropdown-content">
+                  <img
+                    src={profileImageUrl}
+                    alt="Profile Picture"
+                    className="dropdown-profile-pic"
+                  />
+                  <div className="dropdown-info">
+                    <div className="dropdown-name">{user?.name}</div>
+                    <div className="dropdown-email">{user?.email}</div>
+                  </div>
+                </div>
+                <div className="dropdown-footer">
+                  <button className="sign-out-button" onClick={handleSignOut}>
+                    Αποσύνδεση
+                    <img src="/logout.png" alt="Log Out Icon" className="logout-icon"  />
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

@@ -121,10 +121,6 @@ export default function Epag_Home() {
         navigate('/user_profile', { state: { otherProfile: user } });
     };
 
-    useEffect(() => {
-        console.log('Updated otherProfile:', otherProfile);
-    }, [otherProfile]);
-
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [attachedFiles, setAttachedFiles] = useState([]);

@@ -71,7 +71,9 @@ export const deleteUser = async (email) => {
 // Login a user
 export const loginUser = async (email, password) => {
     try {
+        console.log("Logging in with", email, password);
         const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
+        console.log("Login response:", response);
         localStorage.setItem('token', response.data.token); // Store token in localStorage
         return response.data;
     } catch (error) {
