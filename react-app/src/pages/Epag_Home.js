@@ -5,16 +5,18 @@ import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext, user } from "../context/appContext";
+import { useAppContext} from "../context/appContext";
 import { addArticle, getArticle, deleteArticle, getOtherUsersArticles } from '../api';
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
     
+    const user_info = useAppContext().user;
+
     const getArticles = async (userId) => {
         try {
             const response = await getOtherUsersArticles(userId);
-            setArticles(response.data);
+            setArticles(response);
         } catch (error) {
             console.error('Error getting articles:', error);
         }
@@ -23,16 +25,15 @@ export default function Epag_Home() {
     const getMyArticles = async (userId) => {
         try {
             const response = await getArticle(userId);
-            setMy_articles(response.data);
+            setMy_articles(response);
             
         } catch (error) {
             console.error('Error getting articles:', error);
         }
     };
 
-    const { user } = useAppContext();
-    const [articles, setArticles] = useState(getArticles(user.id)); // Initialize with an empty array
-    const [my_articles, setMy_articles] = useState(getMyArticles(user.id)); // Initialize with an empty array
+    const [articles, setArticles] = useState([]); // Initialize with an empty array
+    const [my_articles, setMy_articles] = useState([]);
     
     
 
@@ -41,7 +42,7 @@ export default function Epag_Home() {
     const bucketName = 'profilepics';
 
     // Original URL (saved in the profilepic field)
-    const originalProfilePicUrl = user?.profilepic;
+    const originalProfilePicUrl = user_info?.profilepic;
 
     // Add '/public/' to the URL path if necessary
     const profileImageUrl = originalProfilePicUrl
@@ -51,22 +52,10 @@ export default function Epag_Home() {
         )
         : `${baseURL}/storage/v1/object/public/${bucketName}/default-avatar.jpeg`;
 
-    const user_info = {
-        id: user.id,
-        profilePic: profileImageUrl,
-        name: user.name,
-        workplace: user.workplace || "Google",
-        profession: user.profession || "Software Developer",
-        location: user.location,
-        birthday: user.dob,
-        email: user.email,
-        experiences: [{ profession: 'Software Engineer', workplace: 'Google', date: 'Jan 2020 - Dec 2021' }, { profession: 'Frontend Developer', workplace: 'Microsoft', date: 'Jan 2019 - Dec 2019' }],
-        studies: [{ university: 'Ekpa', degree: 'Undergraduate Degree, Software Engineering', date: '2016 - 2020' }, { university: 'Harvard', degree: 'Masters, Comp Sci', date: '2020 - 2024' }],
-        skills: ['Customer Satisfaction', 'C++ Knowledge', 'Python Knowledge', 'React Framework']
-    }
-
 
     useEffect(() => {
+        getArticles(user_info.id);
+        getMyArticles(user_info.id);
         console.log('the id is:',user_info);
         console.log('the article table is:',articles);
         console.log(my_articles);
@@ -227,7 +216,7 @@ export default function Epag_Home() {
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Επαγγελματική εμπειρία</span>
-                            {user_info.experiences.map((experience, index) => (
+                            {/* {user_info.experiences.map((experience, index) => (
                                 <div className="home-user-info">
                                     <span className="home-user-info-h3">
                                         {experience.profession}
@@ -239,12 +228,12 @@ export default function Epag_Home() {
                                         {experience.date}
                                     </p>
                                 </div>
-                            ))} 
+                            ))}  */}
 
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Σπουδές</span>
-                            {user_info.studies.map((study, index) => (
+                            {/* {user_info.studies.map((study, index) => (
                                 <div className="home-user-info">
                                     <span className="home-user-info-h3">
                                         {study.university}
@@ -256,17 +245,17 @@ export default function Epag_Home() {
                                         {study.date}
                                     </p>
                                 </div>
-                            ))} 
+                            ))}  */}
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Δεξιότητες</span>
-                            {user_info.skills.map((skill, index) => (
+                            {/* {user_info.skills.map((skill, index) => (
                                 <ul className="home-user-info-ul">
                                     <li>
                                         {skill}
                                     </li>
                                 </ul>
-                            ))} 
+                            ))}  */}
                         </div>
                     </div>
                     <div className="side-bar-section">
