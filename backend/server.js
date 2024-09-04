@@ -155,7 +155,6 @@ app.get('/articles/:userId', async (req, res) => {
     try {
         const articles = await articlesModel.getArticlesByUserId(userId);
         if (articles) {
-            res.status(200).json({ message: 'Interest added successfully' });
             res.json(articles);
         }
     
@@ -170,7 +169,6 @@ app.get('/notarticles/:userId', async (req, res) => {
     try {
         const articles = await articlesModel.getArticlesNotByUserId(userId);
         if (articles){ 
-            res.status(200).json({ message: 'Interest added successfully' });
             res.json(articles);
         }
     } catch (err) {

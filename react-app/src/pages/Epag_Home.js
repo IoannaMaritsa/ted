@@ -11,12 +11,12 @@ import '../css/epag-home.css';
 
 export default function Epag_Home() {
     
-    const user_info = useAppContext();
+    const user_info = useAppContext().user;
 
     const getArticles = async (userId) => {
         try {
             const response = await getOtherUsersArticles(userId);
-            setArticles(response.data);
+            setArticles(response);
         } catch (error) {
             console.error('Error getting articles:', error);
         }
@@ -25,17 +25,19 @@ export default function Epag_Home() {
     const getMyArticles = async (userId) => {
         try {
             const response = await getArticle(userId);
-            setMy_articles(response.data);
+            setMy_articles(response);
             
         } catch (error) {
             console.error('Error getting articles:', error);
         }
     };
 
-    const [articles, setArticles] = useState(getArticles(user_info.id)); // Initialize with an empty array
-    const [my_articles, setMy_articles] = useState(getMyArticles(user_info.id)); // Initialize with an empty array
+    const [articles, setArticles] = useState([]); // Initialize with an empty array
+    const [my_articles, setMy_articles] = useState([]); // Initialize with an empty array
 
     useEffect(() => {
+        getArticles(user_info.id);
+        getMyArticles(user_info.id);
         console.log('the id is:',user_info);
         console.log('the article table is:',articles);
         console.log(my_articles);
