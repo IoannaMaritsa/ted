@@ -5,73 +5,51 @@ import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from "../context/appContext";
+import { useAppContext, user } from "../context/appContext";
+import { addArticle, getArticle, deleteArticle, getOtherUsersArticles } from '../api';
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
-    const [articles, setArticles] = useState([
-        {
-            id: '1',
-            title: 'Article 1',
-            author_id: 1,
-            date: '2024-07-26',
-            content: 'This is the content of the first article. It is a brief description of the article.'
-        },
-        {
-            id: '2',
-            title: 'Article 2',
-            author_id: 2,
-            date: '2024-07-25',
-            content: 'This is the content of the second article. It is a brief description of the article.'
-        },
-        {
-            id: '3',
-            title: 'Article 3',
-            author_id: 3,
-            date: '2024-07-28',
-            content: 'This is the content of the third article. It is a brief description of the article.'
-        },
-        {
-            id: '4',
-            title: 'Article 4',
-            author_id: 999,
-            date: '2024-07-25',
-            content: 'This is the content of the second article. It is a brief description of the article.'
-        },
-        {
-            id: '5',
-            title: 'Article 5',
-            author_id: 999,
-            date: '2024-07-28',
-            content: 'This is the content of the third article. It is a brief description of the article.'
-        },
-        // Add more articles as needed
-    ]);
+    
+    const user_info = useAppContext();
 
-    const user_info = {
-        id : 999,
-        profilePic: '/default-avatar.jpeg',
-        name: 'Λάκης Λαλάκης',
-        profession: 'Πολιτικός Μηχανικός',
-        workplace: 'NASA',
-        location: 'Τρίπολη',
-        birthday: '27-07-1960',
-        email: 'lalakis@example.com',
-        experiences: [{ profession: 'Software Engineer', workplace: 'Google', date: 'Jan 2020 - Dec 2021' }, { profession: 'Frontend Developer', workplace: 'Microsoft', date: 'Jan 2019 - Dec 2019' }],
-        studies: [{ university: 'Ekpa', degree: 'Undergraduate Degree, Software Engineering', date: '2016 - 2020' }, { university: 'Harvard', degree: 'Masters, Comp Sci', date: '2020 - 2024' }],
-        skills: ['Customer Satisfaction', 'C++ Knowledge', 'Python Knowledge', 'React Framework']
-    }
+    const getArticles = async (userId) => {
+        try {
+            const response = await getOtherUsersArticles(userId);
+            setArticles(response.data);
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
 
-    const sortedArticles = articles.filter((i, _) => i.author_id !== user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date));
+    const getMyArticles = async (userId) => {
+        try {
+            const response = await getArticle(userId);
+            setMy_articles(response.data);
+            
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
 
-    const [my_articles, setMy_articles] = useState(articles.filter((i, _) => i.author_id === user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
+    const [articles, setArticles] = useState(getArticles(user_info.id)); // Initialize with an empty array
+    const [my_articles, setMy_articles] = useState(getMyArticles(user_info.id)); // Initialize with an empty array
 
     useEffect(() => {
-        setMy_articles(articles.filter((i, _) => i.author_id === user_info.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
-    }, [my_articles]);
+        console.log('the id is:',user_info);
+        console.log('the article table is:',articles);
+        console.log(my_articles);
+    }, []);
 
-    const handleDeleteArticle = (articleId) => {
-        setArticles(articles.filter(article => article.id !== articleId));
+    const handleDeleteArticle = async (articleId) => {
+        try {
+            const response = await deleteArticle(articleId);
+            console.log('article deleted successfully');
+        }
+        catch (error) {
+            console.error('Error deleting article:', error);
+            // You might want to show an error message to the user here
+        }
     };
 
     const contacts = [
@@ -172,8 +150,8 @@ export default function Epag_Home() {
         const year = today.getFullYear();
         const formattedDate = `${year}-${month}-${date}`;
         // Handle the form submission logic here
-        const article  = {
-            id : articles.length + 1,
+        const article = {
+            id: articles.length + 1,
             title: title,
             author_id: user_info.id,
             date: formattedDate,
@@ -190,7 +168,7 @@ export default function Epag_Home() {
     return (
         <div>
             <Header />
-            <nav className="breadcrumbs"><img src="/home.png" className='home-icon' alt="Home"/> &nbsp;/</nav>
+            <nav className="breadcrumbs"><img src="/home.png" className='home-icon' alt="Home" /> &nbsp;/</nav>
             <div className="split-epag">
                 <div className="side-bar">
                     <div className="side-bar-section">
@@ -215,7 +193,7 @@ export default function Epag_Home() {
                         </div>
                         <div className="side-bar-part">
                             <h4>Επαγγελματική εμπειρία</h4>
-                            {user_info.experiences.map((experience, index) => (
+                            {/* {user_info.experiences.map((experience, index) => (
                                 <div className="home-user-info">
                                     <p className="home-user-info-h3">
                                         {experience.profession}
@@ -227,12 +205,12 @@ export default function Epag_Home() {
                                         {experience.date}
                                     </p>
                                 </div>
-                            ))}
+                            ))} */}
 
                         </div>
                         <div className="side-bar-part">
                             <h4>Σπουδές</h4>
-                            {user_info.studies.map((study, index) => (
+                            {/* {user_info.studies.map((study, index) => (
                                 <div className="home-user-info">
                                     <p className="home-user-info-h3">
                                         {study.university}
@@ -244,17 +222,17 @@ export default function Epag_Home() {
                                         {study.date}
                                     </p>
                                 </div>
-                            ))}
+                            ))} */}
                         </div>
                         <div className="side-bar-part">
                             <h4>Δεξιότητες</h4>
-                            {user_info.skills.map((skill, index) => (
+                            {/* {user_info.skills.map((skill, index) => (
                                 <ul className="home-user-info-ul">
                                     <li>
                                         {skill}
                                     </li>
                                 </ul>
-                            ))}
+                            ))} */}
                         </div>
                     </div>
                     <div className="side-bar-section">
@@ -333,10 +311,10 @@ export default function Epag_Home() {
                             )}
                         </form>
                     </div>
-                    <div className="articles-page">
-                        <h2>Τα άρθρα μου</h2>
-                        {my_articles.map((article, index) => (
-                            <Article
+                    {my_articles.length > 0 && (<div className="articles-page">
+                    <h2>Τα άρθρα μου</h2>
+                    {my_articles.map((article, index) => (
+                        <Article
                             key={article.id}
                             id={article.id}
                             title={article.title}
@@ -345,11 +323,12 @@ export default function Epag_Home() {
                             content={article.content}
                             onDelete={handleDeleteArticle}
                         />
-                        ))}
-                    </div>
+                    ))}
+                    </div>)}
+                    {articles.length > 0 && (
                     <div className="articles-page">
                         <h2>Άρθρα άλλων επαγγελματιών</h2>
-                        {sortedArticles.map((article, index) => (
+                        {articles.map((article, index) => (
                             <Article
                                 key={index}
                                 id={article.id}
@@ -360,6 +339,7 @@ export default function Epag_Home() {
                             />
                         ))}
                     </div>
+                    )}
                 </div>
             </div>
             <MainBottom />

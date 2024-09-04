@@ -101,3 +101,77 @@ export const loginUser = async (email, password) => {
         }
     }
 };
+// Get a article using userId
+export const getArticle = async (userId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/articles/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching article by userid:', error);
+        throw error;
+    }
+};
+// Get a articles using userId
+export const getOtherUsersArticles = async (userId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/notarticles/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching article by userid:', error);
+        throw error;
+    }
+};
+// Delete an article
+export const deleteArticle = async (articleId) => {
+    try {
+        await axios.delete(`${API_BASE_URL}/articles/${articleId}`);
+        console.log('Article deleted successfully');
+    } catch (error) {
+        console.error('Error deleting article:', error);
+        throw error;
+    }
+};
+
+// Create a new article
+export const addArticle = async (title, authorId, publishDate, content) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/articles`, { title, authorId, publishDate, content });
+        return response;
+    } catch (error) {
+        console.error('Error creating a new article:', error);
+        throw error;
+    }
+};
+
+// Create a new interest
+export const addInterest = async (userId, articleId) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/interests/add`, { userId, articleId });
+        return response;
+    } catch (error) {
+        console.error('Error creating an interest:', error);
+        throw error;
+    }
+};
+
+// Create a new interest
+export const removeInterest = async (userId, articleId) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/interests/remove`, { userId, articleId });
+        return response;
+    } catch (error) {
+        console.error('Error deleting an interest:', error);
+        throw error;
+    }
+};
+
+// Get interests using userId
+export const getUserInterests = async (userId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/interests/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching interests by userid:', error);
+        throw error;
+    }
+};
