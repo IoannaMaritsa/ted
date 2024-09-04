@@ -87,7 +87,7 @@ const Header = ({ variant }) => {
               </NavLink>
             </div>
             <img
-              src={profileImageUrl}
+              src="/default-avatar.jpeg"
               className="profile-picture2"
               alt="Profile"
               onClick={handleProfileClick}
