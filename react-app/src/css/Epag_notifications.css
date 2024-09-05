@@ -12,7 +12,6 @@
   
   .notifications-scrollable-list {
     max-height: 300px;
-    padding: 5px 0px;
     overflow-y: auto;
     border: 1px solid #ccc;
     margin-bottom: 40px;
@@ -22,9 +21,12 @@
   
   .notification-item {
     display: flex;
+    flex-direction: row;
     align-items: center;
     padding: 20px;
     border-bottom: 1px solid #eee;
+    transition: 0.3s ease;
+
   }
   
   .notification-item:last-child {
@@ -33,6 +35,7 @@
 
   .notification-item:hover {
     background-color: #fff3d7;
+
   }
   
   .profile-pic {
@@ -40,6 +43,7 @@
     height: 40px;
     border-radius: 50%;
     margin-right: 10px;
+    cursor: pointer;
   }
   
   .notification-text {
@@ -53,6 +57,19 @@
     font-weight: bold;
     cursor: pointer;
   }
+
+
+
+  .notification-name1 {
+    width: fit-content;
+    font-weight: bold;
+    width: 380px;
+    margin-left: 10px;
+  }
+
+  .actual-name {
+    cursor: pointer;
+  }
   
   .notification-time {
     text-align: right;
@@ -60,9 +77,11 @@
     color: #888;
   }
 
-  .request-buttons {
+  .request-buttons15 {
     display: flex;
-    margin-top: 10px;
+    flex-direction: row;
+    margin-left: 100px;
+    gap: 10px;
   }
   
   .accept-button,
@@ -100,3 +119,63 @@
     font-style: italic;
     color: #555;
   }
+
+  .another-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+  }
+
+
+  .accept-button15{
+    padding: 7px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100px;
+    border-radius: 10px;
+    border: 2px solid var(--button-grey);
+    color: white;
+    background-color: var(--button-grey);
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.accept-button15:hover{
+    background-color: white;
+    color: var(--button-grey);
+    cursor: pointer;
+}
+
+
+.reject-button15{
+  padding: 7px 7px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 100px;
+  border-radius: 10px;
+  border: 2px solid var(--button-light-grey);
+  color:var(--button-grey);
+  background-color: var(--button-light-grey);
+  font-size:  15px;
+  font-family: var(--font-basic);
+  font-weight: 700;
+  transition: 0.3s ease;
+  margin: auto;
+}
+
+.reject-button15:hover{
+  background-color: #e0e0e0;
+  border: 2px solid var(--button-grey);
+  cursor: pointer;
+}

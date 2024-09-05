@@ -6,7 +6,7 @@ import MainBottom from '../components/MainBottom';
 import '../css/admin.css';
 import { getUser, sendFriendRequest, getSentFriendRequests, getReceivedFriendRequests, updateFriendRequestStatus, addContact, removeContact, getFriendRequestByEmails, getAllContactsByUserEmail, deleteFriendRequest } from "../api";
 import Breadcrumbs from "../components/Breadcrumbs";
-import getProfileImageUrl from "../hooks/getImageUrl";
+import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
 
 export default function Epag_network_profile() {
@@ -261,7 +261,7 @@ export default function Epag_network_profile() {
                         <div className="a-container">
                             <div className="a-square-div">
                                 <div className="a-profile-pic">
-                                    <img src={getProfileImageUrl(otherProfile?.profilepic)} alt="Profile" />
+                                    <img src={getImageUrl(otherProfile?.profilepic, "profilepics")} alt="Profile" />
                                 </div>
                                 <div className="user-text">
                                     <div className="a-name">{otherProfile?.name}</div>
