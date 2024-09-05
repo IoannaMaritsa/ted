@@ -102,9 +102,10 @@ export const loginUser = async (email, password) => {
     }
 };
 // Get a article using userId
-export const getArticle = async (userId) => {
+export const getArticle = async (userEmail) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/articles/${userId}`);
+        const response = await axios.get(`${API_BASE_URL}/articles/${userEmail}`);
+        console.log('article is', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching article by userid:', error);
@@ -112,9 +113,9 @@ export const getArticle = async (userId) => {
     }
 };
 // Get a articles using userId
-export const getOtherUsersArticles = async (userId) => {
+export const getOtherUsersArticles = async (userEmail) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/notarticles/${userId}`);
+        const response = await axios.get(`${API_BASE_URL}/notarticles/${userEmail}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching article by userid:', error);
@@ -125,6 +126,7 @@ export const getOtherUsersArticles = async (userId) => {
 export const getArticleById = async (id) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/article/${id}`);
+        console.log('article is', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching article by its id:', error);
@@ -132,12 +134,12 @@ export const getArticleById = async (id) => {
     }
 };
 //get all the articles
-export const getAllArticles = async (userId) => {
+export const getAllArticles = async (userEmail) => {
     try {
         // Fetch all users and contacts
         const [myarticles, othersarticles] = await Promise.all([
-            getArticle(userId),
-            getOtherUsersArticles(userId)
+            getArticle(userEmail),
+            getOtherUsersArticles(userEmail)
         ]);
         
         return {myarticles, othersarticles};
@@ -158,10 +160,10 @@ export const deleteArticle = async (articleId) => {
 };
 
 // Create a new article
-export const addArticle = async (title, authorId, publishDate, content) => {
+export const addArticle = async (title, authorEmail, publishDate, content) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/articles`, { title, authorId, publishDate, content });
-        return response;
+        const response = await axios.post(`${API_BASE_URL}/articles`, { title, authorEmail, publishDate, content });
+        return response.data;
     } catch (error) {
         console.error('Error creating a new article:', error);
         throw error;
@@ -169,9 +171,9 @@ export const addArticle = async (title, authorId, publishDate, content) => {
 };
 
 // Create a new interest
-export const addInterest = async (userId, articleId) => {
+export const addInterest = async (userEmail, articleId) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/interests/add`, { userId, articleId });
+        const response = await axios.post(`${API_BASE_URL}/interests/add`, { userEmail, articleId });
         return response;
     } catch (error) {
         console.error('Error creating an interest:', error);
@@ -180,9 +182,9 @@ export const addInterest = async (userId, articleId) => {
 };
 
 // Create a new interest
-export const removeInterest = async (userId, articleId) => {
+export const removeInterest = async (userEmail, articleId) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/interests/remove`, { userId, articleId });
+        const response = await axios.post(`${API_BASE_URL}/interests/remove`, { userEmail, articleId });
         return response;
     } catch (error) {
         console.error('Error deleting an interest:', error);
@@ -191,9 +193,9 @@ export const removeInterest = async (userId, articleId) => {
 };
 
 // Get interests using userId
-export const getUserInterests = async (userId) => {
+export const getUserInterests = async (userEmail) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/interests/${userId}`);
+        const response = await axios.get(`${API_BASE_URL}/interests/${userEmail}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching interests by userid:', error);
@@ -470,11 +472,11 @@ export const getAllSkillsForUser = async (userId) => {
 };
 
 // Function to add a comment
-export const addComment = async (articleId, authorId, text) => {
+export const addComment = async (articleId, authorEmail, text) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/comments`, {
             articleId,
-            authorId,
+            authorEmail,
             text
         });
         return response.data;
@@ -496,9 +498,9 @@ export const getComments = async (articleId) => {
 };
 
 // Function to get all comments by a specific user
-export const getCommentsOfUser = async (authorId) => {
+export const getCommentsOfUser = async (authorEmail) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/comments/user/${authorId}`);
+        const response = await axios.get(`${API_BASE_URL}/comments/user/${authorEmail}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching comments by user:', error);
@@ -514,5 +516,37 @@ export const deleteComment = async (commentId) => {
     } catch (error) {
         console.error('Error deleting comment:', error);
         throw error; // Rethrow the error to handle it further up if necessary
+    }
+};
+
+// Function to add an attachment to an article
+export const addAttachment = async (articleId, type, attachedFile) => {
+    try {
+        const formData = new FormData();
+        formData.append('articleId', articleId);
+        formData.append('type', type);
+        formData.append('file', attachedFile); // 'file' should match the key expected on the server
+
+        const response = await axios.post(`${API_BASE_URL}/attachments`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Set the correct content type for form data
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Error adding attachment:', error);
+        throw error;
+    }
+};
+
+// Function to get attachments for a specific article by article ID
+export const getAttachments = async (articleId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/attachments/${articleId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching attachments:', error);
+        throw error;
     }
 };

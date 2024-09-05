@@ -13,6 +13,7 @@ const experiencesModel = require('./models/experiences');
 const studiesModel = require('./models/studies');
 const skillsModel = require('./models/skills');
 const commentsModel = require('./models/comments');
+const attachmentsModel = require('./models/attachments');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -156,10 +157,10 @@ app.post('/login', async (req, res) => {
 });
 // ---------- ARTICLE ROUTES -----------
 // Get a all the articles by user id
-app.get('/articles/:userId', async (req, res) => {
-    const { userId } = req.params;
+app.get('/articles/:userEmail', async (req, res) => {
+    const { userEmail } = req.params;
     try {
-        const articles = await articlesModel.getArticlesByUserId(userId);
+        const articles = await articlesModel.getArticlesByUserEmail(userEmail);
         if (articles) {
             res.json(articles);
         }
@@ -170,10 +171,10 @@ app.get('/articles/:userId', async (req, res) => {
     }
 });
 // Get a all the articles not made by user id
-app.get('/notarticles/:userId', async (req, res) => {
-    const { userId } = req.params;
+app.get('/notarticles/:userEmail', async (req, res) => {
+    const { userEmail } = req.params;
     try {
-        const articles = await articlesModel.getArticlesNotByUserId(userId);
+        const articles = await articlesModel.getArticlesNotByUserEmail(userEmail);
         if (articles){ 
             res.json(articles);
         }
@@ -187,10 +188,10 @@ app.get('/article/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const articles = await articlesModel.getArticlesById(id);
-        if (articles) {
-            res.json(articles);
+        if (!articles) {
+            res.status(404).json({ error: 'Article not found' });
         }
-    
+        res.status(200).json(articles);
     } catch (err) {
         console.error('Error fetching articles of a user:', err);
         res.status(500).json({ error: 'Failed to fetch articles' });
@@ -214,16 +215,16 @@ app.delete('/articles/:articleId', upload.none(), async (req, res) => {
 // Handle article creation
 app.post('/articles', async (req, res) => {
     try {
-        const { title, authorId, publishDate, content } = req.body;
+        const { title, authorEmail, publishDate, content } = req.body;
 
         console.log('Incoming user data:', {
-            title, authorId, publishDate, content
+            title, authorEmail, publishDate, content
         });
 
-        const result = await articlesModel.addArticle(title, authorId, publishDate, content);
+        const result = await articlesModel.addArticle(title, authorEmail, publishDate, content);
         if(result){
             // If user creation is successful, send a 201 status
-            res.status(201).json({ message: result.message });
+            res.status(201).json(result);
         }
         else {
             res.status(404).json({ error: 'Article not created' });
@@ -238,9 +239,9 @@ app.post('/articles', async (req, res) => {
 
 // Add an article to a user's list of interests
 app.post('/interests/add', async (req, res) => {
-    const { userId, articleId } = req.body;
+    const { userEmail, articleId } = req.body;
     try {
-        await addInterest(userId, articleId);
+        await addInterest(userEmail, articleId);
         res.status(200).json({ message: 'Interest added successfully' });
     } catch (err) {
         console.error('Error adding interest:', err);
@@ -250,9 +251,9 @@ app.post('/interests/add', async (req, res) => {
 
 // Remove an article from a user's list of interests
 app.post('/interests/remove', async (req, res) => {
-    const { userId, articleId } = req.body;
+    const { userEmail, articleId } = req.body;
     try {
-        await removeInterest(userId, articleId);
+        await removeInterest(userEmail, articleId);
         res.status(200).json({ message: 'Interest removed successfully' });
     } catch (err) {
         console.error('Error removing interest:', err);
@@ -261,10 +262,10 @@ app.post('/interests/remove', async (req, res) => {
 });
 
 // Get all articles that a user is interested in
-app.get('/interests/:userId', async (req, res) => {
-    const { userId } = req.params;
+app.get('/interests/:userEmail', async (req, res) => {
+    const { userEmail } = req.params;
     try {
-        const articles = await getUserInterests(userId);
+        const articles = await getUserInterests(userEmail);
         if (articles.length > 0) {
             res.json(articles);
         } else {
@@ -596,6 +597,44 @@ app.delete('/comments/:commentId', async (req, res) => {
         res.status(500).json({ message: 'Error deleting comment', error: error.message });
     }
 });
+
+// Add an attachment to an article
+app.post('/attachments', upload.single('file'), async (req, res) => {
+    const { articleId, type } = req.body;
+    const attachedFile = req.file; // The file object provided by multer
+
+    try {
+        if (!attachedFile) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        // Pass the buffer and the original name to the addAttachment function
+        const attachment = await attachmentsModel.addAttachment(articleId, type, attachedFile);
+
+        res.status(201).json(attachment);
+    } catch (error) {
+        console.error('Error adding attachment:', error);
+        res.status(500).json({ message: 'Error adding attachment', error: error.message });
+    }
+});
+
+// Get attachments for a specific article by article ID
+app.get('/attachments/:articleId', async (req, res) => {
+    const { articleId } = req.params;
+
+    try {
+        const attachments = await attachmentsModel.getAttachments(articleId);
+        if (!attachments || attachments.length === 0) {
+            res.status(404).json({ message: 'No attachments found for this article' });
+        } else {
+            res.status(200).json(attachments);
+        }
+    } catch (error) {
+        console.error('Error fetching attachments:', error);
+        res.status(500).json({ message: 'Error fetching attachments', error: error.message });
+    }
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
