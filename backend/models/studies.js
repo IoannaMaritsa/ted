@@ -1,14 +1,19 @@
-const pool = require('../db'); // Ensure this points to your db.js file
+const supabase = require('../supabaseClient');
 
-// Function to add a new studies
+// Function to add a new study
 const addStudies = async (userId, university, degree, startDate, endDate) => {
     try {
-        const result = await pool.query(
-            'INSERT INTO studies (user_id, university, degree, start_date, end_date) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [userId, university, degree, startDate, endDate]
-        );
-        console.log('Submission added successfully.');
-        return result.rows[0];
+        const { data, error } = await supabase
+            .from('studies')
+            .insert([{ user_id: userId, university, degree, start_date: startDate, end_date: endDate }])
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Study added successfully.');
+        return data;
     } catch (err) {
         console.error('Error adding studies:', err);
         throw err;
@@ -18,38 +23,43 @@ const addStudies = async (userId, university, degree, startDate, endDate) => {
 // Function to get studies by user ID
 const getStudiesByUserId = async (userId) => {
     try {
-        const result = await pool.query('SELECT * FROM studies WHERE user_id = $1', [userId]);
-        return result.rows;
+        const { data, error } = await supabase
+            .from('studies')
+            .select('*')
+            .eq('user_id', userId);
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
     } catch (err) {
         console.error('Error getting studies by user ID:', err);
         throw err;
     }
 };
 
-//Function to delete study
-const deleteUserStudy = async (userId, studyId) => {
+// Function to delete a study
+const deleteUserStudy = async (studyId) => {
     try {
-        const result = await pool.query(
-            'DELETE FROM studies WHERE id = $1 AND user_id = $2 RETURNING *',
-            [studyId, userId]
-        );
+        const { data, error } = await supabase
+            .from('studies')
+            .delete()
+            .eq('id', studyId)
+            .single();
 
-        if (result.rowCount === 0) {
-            console.log(`Study with ID ${studyId} not found for user ID ${userId}.`);
+        if (error) {
+            console.log(`Study with ID ${studyId} not found.`);
             return { success: false, message: 'Study not found' };
         }
 
-        console.log(`Study with ID ${studyId} deleted for user ID ${userId}.`);
-        return { success: true, message: 'Study deleted successfully' };
+        console.log(`Study with ID ${studyId} deleted.`);
+        return { success: true, message: 'Study deleted successfully', data };
     } catch (err) {
         console.error('Error deleting study:', err);
         return { success: false, message: 'Error deleting study' };
-    } finally {
-        pool.release();
     }
 };
-// Uncomment to run examples
-// addStudies(1, 'National and Kapodistrian University of Athens', 'Software Engineer', '2020', '2026');
 
 module.exports = {
     addStudies,

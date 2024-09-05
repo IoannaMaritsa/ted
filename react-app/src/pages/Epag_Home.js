@@ -6,12 +6,17 @@ import Article from '../components/article_display';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext} from "../context/appContext";
-import { addArticle, getArticle, deleteArticle, getOtherUsersArticles } from '../api';
+import { addArticle, getArticle, deleteArticle, getOtherUsersArticles, getAllExperiencesForUser, getAllStudiesForUser , getAllSkillsForUser} from '../api';
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
     
     const user_info = useAppContext().user;
+    const [articles, setArticles] = useState([]); // Initialize with an empty array
+    const [my_articles, setMy_articles] = useState([]);
+    const [experiences, setExperiences] = useState([]);
+    const [studies, setStudies] = useState([]);
+    const [skills, setSkills] = useState([]);
 
     const getArticles = async (userId) => {
         try {
@@ -32,10 +37,33 @@ export default function Epag_Home() {
         }
     };
 
-    const [articles, setArticles] = useState([]); // Initialize with an empty array
-    const [my_articles, setMy_articles] = useState([]);
-    
-    
+    const getExperiences = async (userId) => {
+        try {
+            const response = await getAllExperiencesForUser(userId);
+            setExperiences(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
+
+    const getStudies = async (userId) => {
+        try {
+            const response = await getAllStudiesForUser(userId);
+            setStudies(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
+
+    const getSkills = async (userId) => {
+        try {
+            const response = await getAllSkillsForUser(userId);
+            setSkills(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
+
 
     // Base URL and bucket name
     const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
@@ -56,9 +84,11 @@ export default function Epag_Home() {
     useEffect(() => {
         getArticles(user_info.id);
         getMyArticles(user_info.id);
+        getExperiences(user_info.id);
+        getStudies(user_info.id);
+        getSkills(user_info.id);
         console.log('the id is:',user_info);
-        console.log('the article table is:',articles);
-        console.log(my_articles);
+        console.log('skills', skills);
     }, []);
 
     const handleDeleteArticle = async (articleId) => {
@@ -216,7 +246,7 @@ export default function Epag_Home() {
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Επαγγελματική εμπειρία</span>
-                            {/* {user_info.experiences.map((experience, index) => (
+                            {experiences.map((experience, index) => (
                                 <div className="home-user-info">
                                     <span className="home-user-info-h3">
                                         {experience.profession}
@@ -225,15 +255,15 @@ export default function Epag_Home() {
                                         {experience.workplace}
                                     </p>
                                     <p className="home-user-info-h5">
-                                        {experience.date}
+                                        <span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span>
                                     </p>
                                 </div>
-                            ))}  */}
+                            ))} 
 
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Σπουδές</span>
-                            {/* {user_info.studies.map((study, index) => (
+                            {studies.map((study, index) => (
                                 <div className="home-user-info">
                                     <span className="home-user-info-h3">
                                         {study.university}
@@ -242,20 +272,20 @@ export default function Epag_Home() {
                                         {study.degree}
                                     </p>
                                     <p className="home-user-info-h5">
-                                        {study.date}
+                                        <span>{study.start_date}</span> - <span>{study.end_date}</span>
                                     </p>
                                 </div>
-                            ))}  */}
+                            ))} 
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Δεξιότητες</span>
-                            {/* {user_info.skills.map((skill, index) => (
+                            {skills.map((skill, index) => (
                                 <ul className="home-user-info-ul">
                                     <li>
-                                        {skill}
+                                        {skill.skill_name}
                                     </li>
                                 </ul>
-                            ))}  */}
+                            ))} 
                         </div>
                     </div>
                     <div className="side-bar-section">
@@ -347,7 +377,7 @@ export default function Epag_Home() {
                             id={article.id}
                             title={article.title}
                             author_id={article.author_id}
-                            date={article.date}
+                            date={article.publish_date}
                             content={article.content}
                             onDelete={handleDeleteArticle}
                         />
@@ -362,7 +392,7 @@ export default function Epag_Home() {
                                 id={article.id}
                                 title={article.title}
                                 author_id={article.author_id}
-                                date={article.date}
+                                date={article.publish_date}
                                 content={article.content}
                             />
                         ))}
