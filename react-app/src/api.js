@@ -311,3 +311,135 @@ export const getFriendRequestByEmails = async (email1, email2) => {
         throw error;
     }
 };
+
+// Get all experiences for a specific user by id
+export const getAllExperiencesForUser = async (userId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/experiences/${userId}`);
+        console.log('Experiences fetched successfully:', response.data); // Added logging
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Server responded with an error:', error.response.data);
+        } else if (error.request) {
+            // No response received
+            console.error('No response received from server:', error.request);
+        } else {
+            // Error setting up request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error; // Rethrow to handle higher up if necessary
+    }
+};
+
+
+// Add an experience to a user
+export const addExperience = async (userId, profession, workplace, start_date, end_date) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/experiences`, { userId, profession, workplace, start_date, end_date });
+        return response;
+    } catch (error) {
+        console.error('Error adding experience:', error);
+        throw error;
+    }
+};
+
+// Remove an experience for a user
+export const deleteExperience = async (id) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/experiences/${id}`);
+        return response;
+    } catch (error) {
+        console.error('Error removing experience:', error);
+        throw error;
+    }
+};
+
+// Get all studies for a specific user by id
+export const getAllStudiesForUser = async (userId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/studies/${userId}`);
+        console.log('Studies fetched successfully:', response.data); // Added logging
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Server responded with an error:', error.response.data);
+        } else if (error.request) {
+            // No response received
+            console.error('No response received from server:', error.request);
+        } else {
+            // Error setting up request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error; // Rethrow to handle higher up if necessary
+    }
+};
+
+// Add a study for a user
+export const addStudy = async (userId, university, degree, start_date, end_date) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/studies`, { userId, university, degree, start_date, end_date });
+        return response;
+    } catch (error) {
+        console.error('Error adding study:', error);
+        throw error;
+    }
+};
+
+// Remove a study for a user
+export const deleteStudy = async (id) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/studies/${id}`);
+        return response;
+    } catch (error) {
+        console.error('Error removing study:', error);
+        throw error;
+    }
+};
+
+// Function to add a skill to a user
+export const addSkillToUser = async (userId, skillName) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/skills`, { userId, skillName });
+        console.log(`Skill '${skillName}' added to user ID ${userId}:`, response.data);
+        return response;
+    } catch (error) {
+        console.error('Error adding skill:', error);
+        throw error;
+    }
+};
+
+// Function to delete a skill from a user
+export const deleteSkillFromUser = async (userId, skillId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/skills`, { data: { userId, skillId } });
+        console.log(`Skill with ID ${skillId} deleted for user ID ${userId}:`, response);
+        return response;
+    } catch (error) {
+        console.error('Error deleting skill:', error);
+        throw error;
+    }
+};
+
+// Function to get all skills for a specific user by user ID
+export const getAllSkillsForUser = async (userId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/skills/${userId}`);
+        console.log('Skills fetched successfully:', response.data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Server responded with an error:', error.response.data);
+        } else if (error.request) {
+            // No response received
+            console.error('No response received from server:', error.request);
+        } else {
+            // Error setting up request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error; // Rethrow to handle higher up if necessary
+    }
+};

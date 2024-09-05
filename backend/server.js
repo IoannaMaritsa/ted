@@ -9,6 +9,9 @@ const usersModel = require('./models/users'); // Adjust the path as necessary
 const articlesModel = require('./models/articles');
 const contactsModel = require('./models/contacts');
 const friend_requestsModel = require('./models/friendrequests');
+const experiencesModel = require('./models/experiences');
+const studiesModel = require('./models/studies');
+const skillsModel = require('./models/skills');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -381,6 +384,141 @@ app.get('/friend-request', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     } 
+});
+// ---------- EXPERIENCE ROUTES -----------
+
+// Get all experiences for a specific user by id
+app.get('/experiences/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(`Fetching experiences for id: ${userId}`);
+    try {
+        const experiences = await experiencesModel.getExperiencesByUserId(userId);
+        if (!experiences) {
+            return res.status(404).json({ message: 'No experiences found' });
+        }
+        res.status(200).json(experiences);
+    } catch (error) {
+        console.error('Error fetching experiences:', error);
+        res.status(500).json({ message: 'Error fetching experiences', error: error.message });
+    }
+});
+
+
+// Add an experience for a user by id
+app.post('/experiences', async (req, res) => {
+    const { userId, profession , workplace , start_date , end_date } = req.body;
+    try {
+        await experiencesModel.addExperience(userId,profession,workplace,start_date,end_date);
+        res.status(201).json({ message: 'Experience added successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding experience', error });
+    }
+});
+
+// Delete an experience by id
+app.delete('/experiences/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const experience = await experiencesModel.deleteUserExperience(id);
+        if (!experience) {
+            return res.status(404).json({ message: 'Experience not found' });
+        }
+        res.status(200).json(experience);
+    } catch (err) {
+        console.error('Error deleting experience:', err);
+        res.status(500).json({ error: 'Failed to delete experience' });
+    }
+});
+// ---------- STUDIES ROUTES -----------
+
+// Get all studies for a specific user by id
+app.get('/studies/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(`Fetching studies for id: ${userId}`);
+    try {
+        const studies = await studiesModel.getStudiesByUserId(userId);
+        if (!studies || studies.length === 0) {
+            return res.status(404).json({ message: 'No studies found' });
+        }
+        res.status(200).json(studies);
+    } catch (error) {
+        console.error('Error fetching studies:', error);
+        res.status(500).json({ message: 'Error fetching studies', error: error.message });
+    }
+});
+
+// Add a study for a user by id
+app.post('/studies', async (req, res) => {
+    const { userId, university, degree, start_date, end_date } = req.body;
+    try {
+        await studiesModel.addStudies(userId, university, degree, start_date, end_date);
+        res.status(201).json({ message: 'Study added successfully' });
+    } catch (error) {
+        console.error('Error adding study:', error);
+        res.status(500).json({ message: 'Error adding study', error });
+    }
+});
+
+// Delete a study by id
+app.delete('/studies/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const study = await studiesModel.deleteUserStudy(id);
+        if (!study) {
+            return res.status(404).json({ message: 'Study not found' });
+        }
+        res.status(200).json(study);
+    } catch (err) {
+        console.error('Error deleting study:', err);
+        res.status(500).json({ error: 'Failed to delete study' });
+    }
+});
+// ---------- SKILL ROUTES -----------
+
+// Route to add a skill to a user
+app.post('/skills', async (req, res) => {
+    const { userId, skillName } = req.body;
+    try {
+        const skills = await skillsModel.addSkillToUser(userId, skillName);
+        if (!skills || skills.length === 0) {
+            return res.status(404).json({ message: 'skills not found' });
+        }
+        res.status(201).json({ message: `Skill '${skillName}' added to user ID ${userId}` });
+    } catch (error) {
+        console.error('Error adding skill:', error);
+        res.status(500).json({ message: 'Error adding skill', error: error.message });
+    }
+});
+
+// Route to delete a skill from a user
+app.delete('/skills', async (req, res) => {
+    const { userId, skillId } = req.body;
+    try {
+        const result = await skillsModel.deleteSkillFromUser(userId, skillId);
+        if (!result){ 
+            res.status(404).json({ message: 'skills not found' });
+        }    
+        res.status(200).json({ message: 'Skill deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting skill:', error);
+        res.status(500).json({ message: 'Error deleting skill', error: error.message });
+    }
+});
+
+// Route to get all skills for a specific user by user ID
+app.get('/skills/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(`Fetching skills for id: ${userId}`);
+    try {
+        const skills = await skillsModel.getAllSkillsForUser(userId);
+        if (!skills || skills.length === 0) {
+            return res.status(404).json({ message: 'No skills found for user' }); // Ensure to return here
+        }
+        res.status(200).json(skills);
+    } catch (error) {
+        console.error('Error fetching skills:', error);
+        res.status(500).json({ message: 'Error fetching skills', error: error.message });
+    }
 });
 
 // Start server
