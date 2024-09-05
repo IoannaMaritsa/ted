@@ -1,87 +1,76 @@
-import React from "react"
+import React from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import Breadcrumbs from "../components/Breadcrumbs";
 import '../css/epag-network.css';
 import { useAppContext } from "../context/appContext";
-import { useState, useMemo , useEffect} from 'react';
-import { ProfileButton } from "../components/other";
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAllContactsByUserEmail, getNonConnectedUsersByEmail, getUser, sendFriendRequest, getSentFriendRequests, getReceivedFriendRequests, updateFriendRequestStatus, addContact, getFriendRequestByEmails, deleteFriendRequest } from "../api";
+import getProfileImageUrl from "../hooks/getProfileImageUrl";
 
 export default function Epag_network() {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchQuery, setSearchQuery] = useState();
-    const {setOtherProfile, otherProfile} = useAppContext();
-
+    const [searchQueryConnected, setSearchQueryConnected] = useState("");
+    const [searchQueryOther, setSearchQueryOther] = useState("");
+    const [currentPageConnected, setCurrentPageConnected] = useState(1);
+    const [currentPageOther, setCurrentPageOther] = useState(1);
     const itemsPerPage = 6;
-    const users = [
-        {
-            id: 1,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Alice Johnson',
-            profession: 'Software Engineer',
-            workplace: 'Tech Solutions Inc.',
-        },
-        {
-            id: 2,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Bob Smith',
-            profession: 'Graphic Designer',
-            workplace: 'Creative Studio Ltd.',
-        },
-        {
-            id: 3,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Charlie Brown',
-            profession: 'Product Manager',
-            workplace: 'Innovate Co.',
-        },
-        {
-            id: 4,
-            profilePic: '/default-avatar.jpeg',
-            name: 'David Wilson',
-            profession: 'Marketing Specialist',
-            workplace: 'AdVantage Agency',
-        },
-        {
-            id: 5,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Eve Davis',
-            profession: 'Data Analyst',
-            workplace: 'Data Insights Corp.',
-        },
-        {
-            id: 6,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Frank Miller',
-            profession: 'UX/UI Designer',
-            workplace: 'Design Dynamics LLC',
-        },
-        {
-            id: 7,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Grace Lee',
-            profession: 'Financial Advisor',
-            workplace: 'Finance Solutions',
-        },
-        {
-            id: 8,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Henry Walker',
-            profession: 'HR Manager',
-            workplace: 'People First Inc.',
-        },
-    ];
+    const [connectedUsers, setConnectedUsers] = useState([]);
+    const [otherUsers, setOtherUsers] = useState([]);
+    const [pendingRequests, setPendingRequests] = useState([]);
+    const [sentRequests, setSentRequests] = useState([]);
+    const { user } = useAppContext();
+    const navigate = useNavigate();
 
-    // Reset currentPage to 1 whenever searchQuery changes
+
+
+    const fetchContacts = async () => {
+        try {
+            // Fetch connected users
+            const contacts = await getAllContactsByUserEmail(user.email);
+            const contactEmails = contacts.map(contact => contact.contact_email);
+            const contactDetailsPromises = contactEmails.map(email => getUser(email));
+            const contactsData = await Promise.all(contactDetailsPromises);
+            setConnectedUsers(contactsData);
+
+            // Fetch non-connected users
+            const nonContacts = await getNonConnectedUsersByEmail(user.email);
+            setOtherUsers(nonContacts);
+
+            // Fetch pending and sent friend requests
+            const [sent, received] = await Promise.all([
+                getSentFriendRequests(user.email),
+                getReceivedFriendRequests(user.email)
+            ]);
+            setSentRequests(sent);
+            setPendingRequests(received);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery]);
+        fetchContacts();
+    }, [user.email]);
 
-    const filteredUsers = useMemo(() => {
-        const query = (searchQuery || '').toLowerCase();
-        return users.filter(user => {
+
+    const isRequestPending = (targetEmail) => {
+        return pendingRequests.some(req =>
+            (req.sender_email === user.email && req.receiver_email === targetEmail) ||
+            (req.receiver_email === user.email && req.sender_email === targetEmail)
+        );
+    };
+
+    const hasSentRequest = (targetEmail) => {
+        return sentRequests.some(req => req.receiver_email === targetEmail);
+    };
+
+
+    // Filtering and Pagination for Connected Users
+    const filteredConnectedUsers = useMemo(() => {
+        const query = (searchQueryConnected || '').toLowerCase();
+        return connectedUsers.filter(user => {
             const name = (user.name || '').toLowerCase();
             const profession = (user.profession || '').toLowerCase();
             const workplace = (user.workplace || '').toLowerCase();
@@ -89,96 +78,294 @@ export default function Epag_network() {
                 profession.includes(query) ||
                 workplace.includes(query);
         });
-    }, [searchQuery, users]);
+    }, [searchQueryConnected, connectedUsers]);
 
-    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const totalPagesConnected = Math.ceil(filteredConnectedUsers.length / itemsPerPage);
+    const indexOfLastConnectedUser = currentPageConnected * itemsPerPage;
+    const indexOfFirstConnectedUser = indexOfLastConnectedUser - itemsPerPage;
+    const currentConnectedUsers = filteredConnectedUsers.slice(indexOfFirstConnectedUser, indexOfLastConnectedUser);
 
-    // Calculate the index of the first and last user on the current page
-    const indexOfLastUser = currentPage * itemsPerPage;
-    const indexOfFirstUser = indexOfLastUser - itemsPerPage;
-    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+    // Function to determine if a user has an incoming friend request
+    const hasIncomingRequest = (userEmail) => {
+        return pendingRequests.some(req => req.sender_email === userEmail && req.receiver_email === user.email);
+    };
 
-    // Change page
-    const handlePageChange = (pageNumber) => {
-        if (pageNumber > 0 && pageNumber <= totalPages) {
-            setCurrentPage(pageNumber);
+    // Filtering, Sorting, and Pagination for Other Users
+    const filteredOtherUsers = useMemo(() => {
+        const query = (searchQueryOther || '').toLowerCase();
+        const filtered = otherUsers.filter(user => {
+            const name = (user.name || '').toLowerCase();
+            const profession = (user.profession || '').toLowerCase();
+            const workplace = (user.workplace || '').toLowerCase();
+            return name.includes(query) ||
+                profession.includes(query) ||
+                workplace.includes(query);
+        });
+    
+        return filtered.sort((a, b) => {
+            const aHasRequest = hasIncomingRequest(a.email);
+            const bHasRequest = hasIncomingRequest(b.email);
+            const aHasSentRequest = hasSentRequest(a.email);
+            const bHasSentRequest = hasSentRequest(b.email);
+    
+            if (aHasRequest && !bHasRequest) {
+                return -1; // a should come before b
+            }
+            if (!aHasRequest && bHasRequest) {
+                return 1; // b should come before a
+            }
+            if (aHasSentRequest && !bHasSentRequest) {
+                return 1; // a should come after b
+            }
+            if (!aHasSentRequest && bHasSentRequest) {
+                return -1; // b should come after a
+            }
+            return 0; // maintain original order if both have or don't have requests
+        });
+    }, [searchQueryOther, otherUsers, pendingRequests, sentRequests]);
+
+    const totalPagesOther = Math.ceil(filteredOtherUsers.length / itemsPerPage);
+    const indexOfLastOtherUser = currentPageOther * itemsPerPage;
+    const indexOfFirstOtherUser = indexOfLastOtherUser - itemsPerPage;
+    const currentOtherUsers = filteredOtherUsers.slice(indexOfFirstOtherUser, indexOfLastOtherUser);
+
+    // Handlers for Pagination
+    const handlePageChangeConnected = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPagesConnected) {
+            setCurrentPageConnected(pageNumber);
         }
     };
 
-    const navigate = useNavigate();
-
-    const handleProfileClick = (user) => {
-        setOtherProfile(user);
-        navigate('/epaggelmatias_network/user_profile', { state: { otherProfile: user } });
+    const handlePageChangeOther = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPagesOther) {
+            setCurrentPageOther(pageNumber);
+        }
     };
 
-    useEffect(() => {
-        console.log('Updated otherProfile:', otherProfile);
-    }, [otherProfile]);
+    const handleProfileClick = (user) => {
+        console.log("email2", user.email);
+        navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
+        window.scrollTo(0, 0);
+    };
+
+    // Handle connection request
+    const handleConnectClick = async (targetUserEmail) => {
+        if (!isRequestPending(targetUserEmail) && !hasSentRequest(targetUserEmail)) {
+            try {
+                console.log(user.email, targetUserEmail)
+                const response = await sendFriendRequest(user.email, targetUserEmail);
+                console.log("FQ:", response);
+                // Update state with new sent request
+                setSentRequests(prev => [...prev, { sender_email: user.email, receiver_email: targetUserEmail, status: 'pending' }]);
+            } catch (error) {
+                console.error('Error sending friend request:', error);
+            }
+        }
+    };
+
+    const handleAcceptRequest = async (senderEmail) => {
+
+        try {
+            // Fetch the friend request
+            const friendRequest = await getFriendRequestByEmails(senderEmail, user.email);
+
+            if (friendRequest) {
+                // Assuming the friend request has an `id` property
+                await updateFriendRequestStatus(friendRequest.id, 'accepted');
+                await addContact(user.email, senderEmail);
+                await addContact(senderEmail, user.email);
+                await deleteFriendRequest(friendRequest.id);
+
+            }
+            fetchContacts();
+        } catch (error) {
+            console.error('Error accepting friend request:', error);
+        }
+    };
+
+    const handleRejectRequest = async (senderEmail) => {
+        try {
+            // Get the friend request by sender and current user email
+            const request = await getFriendRequestByEmails(senderEmail, user.email);
+            if (request) {
+                // Update the friend request status to 'rejected'
+                await updateFriendRequestStatus(request.id, 'rejected');
+
+                // Remove the friend request
+                await deleteFriendRequest(request.id);
+
+                // Reload contacts and non-contacts
+                fetchContacts();
+            } else {
+                console.error('No friend request found to reject');
+            }
+        } catch (error) {
+            console.error('Error rejecting friend request:', error);
+        }
+    };
+
 
     return (
         <div>
             <Header variant="professional" />
             <Breadcrumbs />
-            <div class="main-wrapper">
-                <div class="box-header">
-                    <h1 class="title2">Συνδέσεις</h1>
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="Αναζήτηση Χρηστών"
-                            className="search-input"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <img src="search.png" alt="Search Icon" className="search-icon"></img>
-                    </div>
+            <div className="main-wrapper">
+                <div className="box-header">
+                    <h1 className="title2">Δίκτυο</h1>
                 </div>
-                <div class="center-square">
-                    <div className="grid-container">
-                        {currentUsers.map(user => (
-                            <div key={user.id} className="box">
-                                <img src={user.profilePic} alt="Profile Picture" className="e-profile-pic" />
-                                <div className="user-info">
-                                    <h3 className="name">{user.name}</h3>
-                                    <p className="e-profession">{user.profession}</p>
-                                    <div className="workplace-container">
-                                        <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />
-                                        <p className="e-workplace">{user.workplace}</p>
+
+                {/* Connected Users Section */}
+                <div className="user-section">
+                    <div className="header-header">
+                        <span className="section-title">Συνδέσεις</span>
+                        <div className="search-container2">
+                            <input
+                                type="text"
+                                placeholder="Αναζήτηση Συνδεδεμένων Χρηστών"
+                                className="search-input"
+                                value={searchQueryConnected}
+                                onChange={(e) => setSearchQueryConnected(e.target.value)}
+                            />
+                            <img src="search.png" alt="Search Icon" className="search-icon" />
+                        </div>
+                    </div>
+                    {filteredConnectedUsers.length > 0 ? (
+                        <div>
+                            <div className="grid-container">
+                                {currentConnectedUsers.map(user => (
+                                    <div key={user.id} className="box">
+                                        <img src={getProfileImageUrl(user.profilepic)} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
+                                        <div className="user-info">
+                                            <h3 className="name">{user.name}</h3>
+                                            {user.profession && <p className="e-profession">{user.profession}</p>}
+                                            {user.workplace && (
+                                                <div className="workplace-container">
+                                                    <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />
+                                                    <p className="e-workplace">{user.workplace}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button
+                                            className="conn-button"
+                                            onClick={() => handleProfileClick(user)}
+                                        >
+                                            Προβολή Προφίλ
+                                        </button>
                                     </div>
-
-                                </div>
-
-                                <button
-                                    className="info-button"
-                                    user = {user}
-                                    onClick={() => handleProfileClick(user)}
-                                >
-                                    Προβολή Προφίλ
-                                </button>
+                                ))}
                             </div>
-                        ))}
-                    </div>
 
+                            {totalPagesConnected > 1 && (
+                                <div className="pagination">
+                                    <button
+                                        onClick={() => handlePageChangeConnected(currentPageConnected - 1)}
+                                        disabled={currentPageConnected === 1}
+                                    >
+                                        Προηγούμενο
+                                    </button>
+                                    <span>Σελίδα {currentPageConnected} από {totalPagesConnected}</span>
+                                    <button
+                                        onClick={() => handlePageChangeConnected(currentPageConnected + 1)}
+                                        disabled={currentPageConnected === totalPagesConnected}
+                                    >
+                                        Επόμενο
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="no-connections">
+                            Δεν έχετε συνδέσεις ακόμα
+                        </div>
+                    )}
                 </div>
-                <div className="pagination">
-                    <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        Προηγούμενο
-                    </button>
-                    <span>Σελίδα {currentPage} από {totalPages}</span>
-                    <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        Επόμενο
-                    </button>
+
+                {/* Other Users Section */}
+                <div className="user-section">
+                    <div className="header-header2">
+                        <span className="section-title2">Μη Συνδεδεμένοι Χρήστες</span>
+                        <div className="search-container2">
+                            <input
+                                type="text"
+                                placeholder="Αναζήτηση Χρηστών"
+                                className="search-input"
+                                onChange={(e) => setSearchQueryOther(e.target.value)}
+                            />
+                            <img src="search.png" alt="Search Icon" className="search-icon" />
+                        </div>
+                    </div>
+                    {filteredOtherUsers.length > 0 ? (
+                        <div>
+                            <div className="grid-container">
+                                {currentOtherUsers.map(user => (
+                                    <div key={user.id} className="box">
+                                        <img src={getProfileImageUrl(user.profilepic)} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
+                                        <div className="user-info">
+                                            <h3 className="name">{user.name}</h3>
+                                            {user.profession && <p className="e-profession">{user.profession}</p>}
+                                            {user.workplace && (
+                                                <div className="workplace-container">
+                                                    <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />
+                                                    <p className="e-workplace">{user.workplace}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {isRequestPending(user.email) ? (
+                                            <div className="button-div-no-299">
+                                                <button className="pending-button" onClick={() => handleAcceptRequest(user.email)}>
+                                                    Αποδοχή
+                                                </button>
+                                                <button className="reject-button" onClick={() => handleRejectRequest(user.email)}>
+                                                    Απόρριψη
+                                                </button>
+                                            </div>
+                                        ) : hasSentRequest(user.email) ? (
+
+                                            <div className="button-div-no-300">
+                                                <span className="sent-button">
+                                                    Έχει σταλθεί αίτημα σύνδεσης
+
+                                                </span>
+                                                <img src="/pending.png" alt="Message" className="pending-ic" />
+                                            </div>
+                                        ) : (
+                                            <button className="conn-button1" onClick={() => handleConnectClick(user.email)}>
+                                                Σύνδεση<img src="/yellow-req.png" alt="Message" className="pr-icon2" />
+                                            </button>
+
+                                        )}
+
+                                    </div>
+                                ))}
+                            </div>
+
+                            {totalPagesOther > 1 && (
+                                <div className="pagination">
+                                    <button
+                                        onClick={() => handlePageChangeOther(currentPageOther - 1)}
+                                        disabled={currentPageOther === 1}
+                                    >
+                                        Προηγούμενο
+                                    </button>
+                                    <span>Σελίδα {currentPageOther} από {totalPagesOther}</span>
+                                    <button
+                                        onClick={() => handlePageChangeOther(currentPageOther + 1)}
+                                        disabled={currentPageOther === totalPagesOther}
+                                    >
+                                        Επόμενο
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="no-connections">
+                            Δεν έχετε συνδέσεις ακόμα
+                        </div>
+                    )}
                 </div>
             </div>
             <MainBottom />
             <Footer />
-        </div>
+        </div >
     );
 }

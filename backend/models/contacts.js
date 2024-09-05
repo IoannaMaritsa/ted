@@ -1,68 +1,83 @@
-const pool = require('../db');
+const supabase = require('../supabaseClient');
 
-// Function to add a contact for a user
-const addContact = async (userId, contactId) => {
-    const query = `
-        INSERT INTO contacts (user_id, contact_id)
-        VALUES ($1, $2)
-        ON CONFLICT (user_id, contact_id) DO NOTHING;
-    `;
-    const values = [userId, contactId];
-
+// Get all contacts for a user by email
+const getAllContactsByEmail = async (userEmail) => {
     try {
-        await pool.query(query, values);
-        console.log('Contact added successfully.');
+        const { data, error } = await supabase
+            .from('contacts')
+            .select('contact_email')
+            .eq('user_email', userEmail);
+        if (error) {
+            console.error('Error getting contacts:', error);
+            throw error;
+        }
+        console.log(`Successfully retrieved contacts for user with email ${userEmail}.`);
+        console.log(data);
+        return data;
+    } catch (err) {
+        console.error('Error getting contacts:', err);
+        throw err;
+    }
+};
+
+
+// Add a contact for a user by email
+const addContact = async (userEmail, contactEmail) => {
+    try {
+        const { data, error } = await supabase
+            .from('contacts')
+            .upsert([
+                { user_email: userEmail, contact_email: contactEmail },
+                { user_email: contactEmail, contact_email: userEmail }
+            ]);
+        if (error) {
+            console.error('Error adding contact:', error);
+            throw error;
+        }
+        console.log('Successfully added contact.');
+        return data;
     } catch (err) {
         console.error('Error adding contact:', err);
+        throw err;
     }
 };
 
-// Function to fetch contacts for a user
-const getContacts = async (userId) => {
-    const query = `
-        SELECT u.id, u.name, u.email
-        FROM users u
-        JOIN contacts c ON u.id = c.contact_id
-        WHERE c.user_id = $1;
-    `;
-    const values = [userId];
 
+// Remove a contact for a user by email
+const removeContact = async (userEmail, contactEmail) => {
     try {
-        const results = await pool.query(query, values);
-        console.log('Contacts:', results.rows);
-        return results.rows;
-    } catch (err) {
-        console.error('Error fetching contacts:', err);
-    }
-};
+        // Delete contact where user_email is userEmail and contact_email is contactEmail
+        const { data: data1, error: error1 } = await supabase
+            .from('contacts')
+            .delete()
+            .match({ user_email: userEmail, contact_email: contactEmail });
 
-// Function to delete a contact from a user
-const deleteContactFromUser = async (userId, contactId) => {
-    try {
-        const result = await pool.query(
-            'DELETE FROM contacts WHERE user_id = $1 AND contact_id = $2 RETURNING *',
-            [userId, contactId]
-        );
-
-        if (result.rowCount === 0) {
-            console.log(`No contact with ID ${contactId} found for user with ID ${userId}.`);
-            return { success: false, message: 'Contact not found for user' };
+        if (error1) {
+            console.error('Error removing contact (first query):', error1);
+            throw error1;
         }
 
-        console.log(`Contact with ID ${contactId} deleted for user with ID ${userId}.`);
-        return { success: true, message: 'Contact deleted' };
+        // Delete contact where user_email is contactEmail and contact_email is userEmail
+        const { data: data2, error: error2 } = await supabase
+            .from('contacts')
+            .delete()
+            .match({ user_email: contactEmail, contact_email: userEmail });
+
+        if (error2) {
+            console.error('Error removing contact (second query):', error2);
+            throw error2;
+        }
+
+        console.log('Successfully removed contact.');
+        return { data1, data2 };
     } catch (err) {
-        console.error('Error deleting contact:', err);
-        return { success: false, message: 'Error deleting contact' };
-    } finally {
-        pool.release();
+        console.error('Error removing contact:', err);
+        throw err;
     }
 };
-// Example usage
-// addContact(2, 1); // Add Alice (user_id = 1) as a contact for Bob (user_id = 2)
-// getContacts(2);   // Fetch contacts for Bob (user_id = 2)
+
 module.exports = {
     addContact,
-    getContacts,
-    deleteContactFromUser
+    getAllContactsByEmail,
+    removeContact
 };

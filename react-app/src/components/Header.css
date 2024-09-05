@@ -62,12 +62,13 @@
     position: absolute;
     top: 80px; /* Adjust as needed */
     right: 0;
-    width: 300px; /* Adjust as needed */
+    width: 320px; /* Adjust as needed */
     background-color: white;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     box-shadow: 0 5px 40px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    margin-right: 5px;
   }
   
   .dropdown::before {
@@ -88,27 +89,35 @@
   }
   
   .dropdown-profile-pic {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 5px;
-    margin-right: 20px;
+    margin-right: 10px;
+    margin-left: 12px;
   }
   
   .dropdown-info {
     display: flex;
     font-family: var(--font-basic);
     flex-direction: column;
+    margin: auto;
   }
   
   .dropdown-name {
     font-size: 16px;
-    font-weight: bold;
+    font-weight:600;
+    color:#4f4f4f;
+    text-align: center;
+    font-family: var(--font-basic);
     margin-bottom: 2px;
   }
   
   .dropdown-email {
     font-size: 14px;
-    color: #666;
+    font-weight: 500;
+    color:#777777;
+    text-align: center;
+    font-family: var(--font-basic);
   }
   
   .dropdown-footer {
@@ -121,6 +130,7 @@
   .sign-out-button {
     display: flex;
     padding: 7px 15px;
+    width: 130px;
     border: none;
     background-color: var(--button-light-grey);
     color: var(--text-dark-grey);

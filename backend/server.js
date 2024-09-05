@@ -7,6 +7,8 @@ const bcrypt = require('bcrypt');
 
 const usersModel = require('./models/users'); // Adjust the path as necessary
 const articlesModel = require('./models/articles');
+const contactsModel = require('./models/contacts');
+const friend_requestsModel = require('./models/friendrequests');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -254,6 +256,131 @@ app.get('/interests/:userId', async (req, res) => {
         console.error('Error retrieving user interests:', err);
         res.status(500).json({ error: 'Failed to retrieve user interests' });
     }
+});
+
+// ---------- CONTACT ROUTES -----------
+
+// Get all contacts for a specific user by email
+app.get('/contacts/:email', async (req, res) => {
+    const { email } = req.params;
+    console.log(`Fetching contacts for email: ${email}`);
+    try {
+        const contacts = await contactsModel.getAllContactsByEmail(email);
+        if (!contacts) {
+            return res.status(404).json({ message: 'No contacts found' });
+        }
+        res.status(200).json(contacts);
+    } catch (error) {
+        console.error('Error fetching contacts:', error);
+        res.status(500).json({ message: 'Error fetching contacts', error: error.message });
+    }
+});
+
+
+// Add a contact for a user by email
+app.post('/contacts', async (req, res) => {
+    const { userEmail, contactEmail } = req.body;
+    try {
+        await contactsModel.addContact(userEmail, contactEmail);
+        res.status(201).json({ message: 'Contact added successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding contact', error });
+    }
+});
+
+// Remove a contact for a user by email
+app.delete('/contacts', async (req, res) => {
+    const { userEmail, contactEmail } = req.body;
+    console.log("serverside", userEmail, contactEmail)
+    try {
+        await contactsModel.removeContact(userEmail, contactEmail);
+        res.status(200).json({ message: 'Contact removed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error removing contact', error });
+    }
+});
+
+// ---------- FRIEND REQUEST ROUTES -----------
+// Send a friend request
+app.post('/send', async (req, res) => {
+    const { senderEmail, receiverEmail } = req.body;
+    console.log("server side")
+    try {
+        const result = await friend_requestsModel.sendFriendRequest(senderEmail, receiverEmail);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to send friend request' });
+    }
+});
+
+// Get sent friend requests for a user
+app.get('/sent', async (req, res) => {
+    const { email } = req.query;
+
+    try {
+        const sentRequests = await friend_requestsModel.getSentFriendRequests(email);
+        res.status(200).json(sentRequests);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve sent friend requests' });
+    }
+});
+
+// Get received friend requests for a user
+app.get('/received', async (req, res) => {
+    const { email } = req.query;
+
+    try {
+        const receivedRequests = await friend_requestsModel.getReceivedFriendRequests(email);
+        res.status(200).json(receivedRequests);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve received friend requests' });
+    }
+});
+
+// Delete a friend request
+app.delete('/friendrequests/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await friend_requestsModel.deleteFriendRequest(id);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete friend request' });
+    }
+});
+
+// Update friend request status
+app.patch('/friendrequests/:id', async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        const result = await friend_requestsModel.updateFriendRequestStatus(id, status);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update friend request status' });
+    }
+});
+
+// Route to get a friend request by two emails
+app.get('/friend-request', async (req, res) => {
+    const { email1, email2 } = req.query;
+    
+    console.log("serverside", email1, email2)
+    if (!email1 || !email2) {
+        return res.status(400).json({ error: 'Missing email parameters' });
+    }
+
+    try {
+        const request = await friend_requestsModel.getFriendRequestByEmails(email1, email2);
+        if (request) {
+            res.json(request);
+        } else {
+            res.status(404).json({ message: 'No friend request found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    } 
 });
 
 // Start server

@@ -175,3 +175,139 @@ export const getUserInterests = async (userId) => {
         throw error;
     }
 };
+
+// Get all contacts for a specific user by email
+export const getAllContactsByUserEmail = async (userEmail) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/contacts/${userEmail}`);
+        console.log('Contacts fetched successfully:', response.data); // Added logging
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Server responded with an error:', error.response.data);
+        } else if (error.request) {
+            // No response received
+            console.error('No response received from server:', error.request);
+        } else {
+            // Error setting up request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error; // Rethrow to handle higher up if necessary
+    }
+};
+
+
+// Add a contact for a user by email
+export const addContact = async (userEmail, contactEmail) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/contacts`, { userEmail, contactEmail });
+        return response;
+    } catch (error) {
+        console.error('Error adding contact:', error);
+        throw error;
+    }
+};
+
+// Remove a contact for a user by email
+export const removeContact = async (userEmail, contactEmail) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/contacts`, { data: { userEmail, contactEmail } });
+        return response;
+    } catch (error) {
+        console.error('Error removing contact:', error);
+        throw error;
+    }
+};
+
+
+export const getNonConnectedUsersByEmail = async (userEmail) => {
+    try {
+        // Fetch all users and contacts
+        const [allUsers, connectedUsers] = await Promise.all([
+            getAllUsers(),
+            getAllContactsByUserEmail(userEmail)
+        ]);
+        // Create a set of connected user emails for quick lookup
+        const connectedEmails = new Set(connectedUsers.map(contact => contact.contact_email));
+
+        // Filter out the current user and connected users from all users
+        const nonConnectedUsers = allUsers.filter(user =>
+            user.email !== userEmail && !connectedEmails.has(user.email)
+        );
+        return nonConnectedUsers;
+    } catch (error) {
+        console.error('Error fetching non-connected users:', error);
+        throw error;
+    }
+};
+
+
+// Send a friend request
+export const sendFriendRequest = async (senderEmail, receiverEmail) => {
+    try {
+        console.log("api",senderEmail, receiverEmail)
+        const response = await axios.post(`${API_BASE_URL}/send`, { senderEmail, receiverEmail });
+        return response.data;
+    } catch (error) {
+        console.error('Error sending friend request:', error);
+        throw error;
+    }
+};
+
+// Get sent friend requests for a user
+export const getSentFriendRequests = async (email) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/sent`, { params: { email } });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching sent friend requests:', error);
+        throw error;
+    }
+};
+
+// Get received friend requests for a user
+export const getReceivedFriendRequests = async (email) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/received`, { params: { email } });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching received friend requests:', error);
+        throw error;
+    }
+};
+
+// Delete a friend request
+export const deleteFriendRequest = async (id) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/friendrequests/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting friend request:', error);
+        throw error;
+    }
+};
+
+// Update friend request status
+export const updateFriendRequestStatus = async (id, status) => {
+    try {
+        const response = await axios.patch(`${API_BASE_URL}/friendrequests/${id}`, { status });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating friend request status:', error);
+        throw error;
+    }
+};
+
+// Get a friend request by two emails
+export const getFriendRequestByEmails = async (email1, email2) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/friend-request`, {
+            params: { email1, email2 }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching friend request by emails:', error);
+        throw error;
+    }
+};
