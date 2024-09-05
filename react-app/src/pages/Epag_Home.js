@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from "../context/appContext";
 import getImageUrl from "../hooks/getImageUrl";
-import { addArticle, getArticle, getUser,deleteArticle, getOtherUsersArticles, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser } from '../api';
+import { addArticle, getArticle, getUser, deleteArticle, getOtherUsersArticles, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, addAttachment } from '../api';
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
@@ -20,18 +20,18 @@ export default function Epag_Home() {
     const [skills, setSkills] = useState([]);
     const [contacts, setContacts] = useState([]);
 
-    const getArticles = async (userId) => {
+    const getArticles = async (userEmail) => {
         try {
-            const response = await getOtherUsersArticles(userId);
+            const response = await getOtherUsersArticles(userEmail);
             setArticles(response);
         } catch (error) {
             console.error('Error getting articles:', error);
         }
     };
 
-    const getMyArticles = async (userId) => {
+    const getMyArticles = async (userEmail) => {
         try {
-            const response = await getArticle(userId);
+            const response = await getArticle(userEmail);
             setMy_articles(response);
 
         } catch (error) {
@@ -81,9 +81,9 @@ export default function Epag_Home() {
     };
 
     useEffect(() => {
-        getArticles(user_info.id);
+        getArticles(user_info.email);
         getContacts(user_info.email)
-        getMyArticles(user_info.id);
+        getMyArticles(user_info.email);
         getExperiences(user_info.id);
         getStudies(user_info.id);
         getSkills(user_info.id);
@@ -107,8 +107,8 @@ export default function Epag_Home() {
 
     const navigate = useNavigate();
 
-     // On profile pick navigate to the selected user's profile
-     const handleProfileClick = (user) => {
+    // On profile pick navigate to the selected user's profile
+    const handleProfileClick = (user) => {
         console.log("email2", user.email);
         navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
         window.scrollTo(0, 0);
@@ -142,7 +142,7 @@ export default function Epag_Home() {
 
             setAttachedFiles((prevFiles) => [
                 ...prevFiles,
-                { type, name: file.name }
+                { type : type, file: file }
             ]);
             console.log(`Attached ${type}:`, file);
         }
@@ -159,7 +159,7 @@ export default function Epag_Home() {
         setAttachedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const today = new Date();
         const date = today.getDate();
@@ -167,19 +167,32 @@ export default function Epag_Home() {
         const year = today.getFullYear();
         const formattedDate = `${year}-${month}-${date}`;
         // Handle the form submission logic here
-        const article = {
-            id: articles.length + 1,
-            title: title,
-            author_id: user_info.id,
-            date: formattedDate,
-            content: body.substring(0, 50)
+        let articleId;
+        try {
+            articleId = await addArticle(title, user_info.email, formattedDate, body);
+        } catch (error) {
+            console.error('Error adding article:', error);
         }
-        // Reset the form
-        setArticles([...articles, article]);
+        console.log('created article with id:', articleId);
+        for (const attachment of attachedFiles) {
+            const { type, file } = attachment;
+
+            try {
+                await addAttachment(articleId, type, file);
+                console.log(`Attachment for article ID ${articleId} added successfully.`);
+            } catch (error) {
+                console.error(`Error adding attachment for article ID ${articleId}:`, error);
+            }
+        }
 
         setTitle('');
         setBody('');
         setAttachedFiles([]);
+
+        document.getElementById('attachFileButton').addEventListener('click', (event) => {
+            event.preventDefault();
+            // Code to handle file attachment
+        });
     };
 
     return (
@@ -272,10 +285,10 @@ export default function Epag_Home() {
                 </div>
                 <div className="main-section">
                     <div className="article-creator">
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={(e) => handleSubmit(e)}>
                             <div className="article-creator-top">
                                 <span className="article-creator-ttitle">Δημιουργία νέου άρθρου</span>
-                                <button type="submit" className="submit-button">Ανάρτηση</button>
+                                <button type="submit" id="submitArticleButton" className="submit-button">Ανάρτηση</button>
                             </div>
 
 
@@ -302,13 +315,13 @@ export default function Epag_Home() {
                             </div>
                             <div className="icon-group">
                                 <p>Επισύναψη αρχείου:</p>
-                                <button onClick={() => handleFileUpload('image')} >
+                                <button type="button" id="attachFileButton" onClick={() => handleFileUpload('image')} >
                                     <img src="/photo-icon.png" alt="Attach Image" className="photicon" />
                                 </button>
-                                <button onClick={() => handleFileUpload('video')}>
+                                <button type="button" id="attachFileButton" onClick={() => handleFileUpload('video')}>
                                     <img src="/video-icon.png" alt="Attach Video" className="vidicon" />
                                 </button>
-                                <button onClick={() => handleFileUpload('audio')}>
+                                <button type="button" id="attachFileButton" onClick={() => handleFileUpload('audio')}>
                                     <img src="/audio-icon.png" alt="Attach Audio" className="audicon" />
                                 </button>
                                 <input
@@ -322,10 +335,10 @@ export default function Epag_Home() {
                                 <div className="attached-files">
                                     <span className="attach-title">Επισυναπτόμενα αρχεία:</span>
                                     <ul>
-                                        {attachedFiles.map((file, index) => (
+                                        {attachedFiles.map((attachment, index) => (
                                             <li className="attach-li" key={index}>
-                                                <span className="attach-type" > {file.type.toUpperCase()}: </span>
-                                                <span className="attach-name"> {file.name} </span>
+                                                <span className="attach-type" > {attachment.type.toUpperCase()}: </span>
+                                                <span className="attach-name"> {attachment.file.name} </span>
                                                 <img className="yellow-trash" type="button" src="/yellow-trash.png" alt="delete" onClick={() => handleRemoveFile(index)} />
                                             </li>
                                         ))}
@@ -341,7 +354,7 @@ export default function Epag_Home() {
                                 key={article.id}
                                 id={article.id}
                                 title={article.title}
-                                author_id={article.author_id}
+                                author_email={article.author_email}
                                 date={article.publish_date}
                                 content={article.content}
                                 onDelete={handleDeleteArticle}
@@ -356,7 +369,7 @@ export default function Epag_Home() {
                                     key={index}
                                     id={article.id}
                                     title={article.title}
-                                    author_id={article.author_id}
+                                    author_email={article.author_email}
                                     date={article.publish_date}
                                     content={article.content}
                                 />

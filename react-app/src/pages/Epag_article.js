@@ -7,7 +7,8 @@ import { useAppContext } from "../context/appContext";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { getArticleById , getComments} from '../api';
+import { getArticleById , getComments , getUser , getAttachments} from '../api';
+import getImageUrl from '../hooks/getImageUrl';
 
 function DateTime(date, time) {
     this.date = date; // Date in YYYY-MM-DD format
@@ -54,6 +55,8 @@ const Epag_article = () => {
 
     const [comments, setComments] = useState([]);
     const [article, setArticle] = useState([]);
+    const [author, setAuthor] = useState([]);
+    const [attachments, setAttachments] = useState([]);
 
     const getArticle = async (id) => {
         try {
@@ -64,12 +67,30 @@ const Epag_article = () => {
         }
     };
 
+    const getAuthor = async (email) => {
+        try {
+            const response = await getUser(email);
+            setAuthor(response);
+        } catch (error) {
+            console.error('Error getting author:', error);
+        }
+    };
+
+    const getArticleAttachments = async (articleId) => {
+        try {
+            const response = await getAttachments(articleId);
+            setAttachments(response);
+        } catch (error) {
+            console.error('Error getting attachments:', error);
+        }
+    };
+
     const getCommentsOfArticle = async (articleId) => {
         try {
             const response = await getComments(articleId);
             setComments(response);
         } catch (error) {
-            console.error('Error getting articles:', error);
+            console.error('Error getting comments:', error);
         }
     };
 
@@ -78,8 +99,10 @@ const Epag_article = () => {
     useEffect(() => {
         getArticle(parseInt(id));
         getCommentsOfArticle(parseInt(id));
+        getAuthor(article.author_email)
+        getArticleAttachments(parseInt(id));
         console.log(article);
-    }, []);
+    }, [article.author_email]);
 
     const handleBodyChange = (e) => {
         setBody(e.target.value);
@@ -115,24 +138,24 @@ const Epag_article = () => {
                         <h1>{article.title}</h1>
                     </div>
                     <div className="article-meta">
-                        <div className="article-author1" onClick={() => handleProfileClick(article.author)}>
-                            {/* <img src={article.author.profilePic} alt="User Icon" className="icon" />
-                            <span>{article.author.name}</span> */}
+                        <div className="article-author1" onClick={() => handleProfileClick(author)}>
+                            <img src={getImageUrl(author?.profilepic, "profilepics")} alt="User Icon" className="icon" />
+                            <span>{author.name}</span>
                         </div>
                         <div className="article-date">
                             <img src="/calendar.png" alt="Date icon" className="icon" />
-                            <span>{article.date}</span>
+                            <span>{article.publish_date}</span>
                         </div>
                     </div>
                     <p className="article-content">{article.content}</p>
-                    {/* {article.attachments.images.length > 0 && (
+                    {attachments.length > 0 && (
                         <div className="attachments">
-                            <h3>Φωτογραφίες</h3>
-                            {article.attachments.images.map((image, index) => (
-                                <img key={index} src={`/${image}`} alt={`Attachment ${index + 1}`} className='article-image' />
+                            <h3>Επισυναπτόμενα αρχεία:</h3>
+                            {attachments.map((attachment, index) => (
+                                <img key={index} src={getImageUrl(attachment?.url, "attachments")} alt={`Attachment ${index + 1}`} className='article-image' />
                             ))}
                         </div>
-                    )} */}
+                    )}
 
                     {/* {article.attachments.videos.length > 0 && (
                         <div className="attachments">

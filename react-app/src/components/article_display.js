@@ -7,7 +7,7 @@ import './article_display.css';
 
 
 
-const Article = ({ id, title, author_id, date, content, onDelete }) => {
+const Article = ({ id, title, author_email, date, content, onDelete }) => {
 
   const user_info = useAppContext().user;
   const [users, setUsers] = useState([]);
@@ -21,7 +21,7 @@ const Article = ({ id, title, author_id, date, content, onDelete }) => {
     }
   };
 
-  const author = users.find(user => user.id === author_id)?.name || 'Unknown Author';
+  const author = users.find(user => user.email === author_email)?.name || 'Unknown Author';
 
   const handleDeleteClick = () => {
     onDelete(id); // Call the delete function passed as a prop
@@ -46,8 +46,8 @@ const Article = ({ id, title, author_id, date, content, onDelete }) => {
           <span>{date}</span>
         </div>
       </div>
-      <p className="article-content">{content}</p>
-      {author_id === user_info.id && (
+      <p className="article-content">{content.substring(0, 250)}...</p>
+      {author_email === user_info.email && (
         <div className='send-right'>
           <img src="/remove.png" alt="Image Icon" className='big-icon' onClick={handleDeleteClick} />
         </div>

@@ -1,19 +1,25 @@
 const supabase = require('../supabaseClient');
 
 // Function to insert a new article
-const addArticle = async (title, authorId, publishDate, content) => {
+const addArticle = async (title, authorEmail, publishDate, content) => {
     try {
         const { data, error } = await supabase
             .from('articles')
-            .insert([{ title, author_id: authorId, publish_date: publishDate, content }])
+            .insert([{ title, author_email: authorEmail, publish_date: publishDate, content }])
+            .select('id') // Ensure that Supabase returns the id of the inserted row
             .single();
 
         if (error) {
             throw error;
         }
 
-        console.log('Article inserted with ID:', data.id);
-        return data.id; // Return the ID of the inserted article
+        if (!data) {
+            throw new Error('Insert operation did not return any data.');
+        }
+
+        const articleId = data.id; // Assuming 'id' is the name of the auto-generated ID column
+        console.log('Article inserted with ID:', articleId);
+        return articleId; // Return the ID of the inserted article
     } catch (err) {
         console.error('Error inserting article:', err);
         throw err;
@@ -21,12 +27,12 @@ const addArticle = async (title, authorId, publishDate, content) => {
 };
 
 // Function to get all articles by a specific user
-const getArticlesByUserId = async (userId) => {
+const getArticlesByUserEmail = async (userEmail) => {
     try {
         const { data, error } = await supabase
             .from('articles')
             .select('*')
-            .eq('author_id', userId)
+            .eq('author_email', userEmail)
             .order('publish_date', { ascending: false });
 
         if (error) {
@@ -34,11 +40,11 @@ const getArticlesByUserId = async (userId) => {
         }
 
         if (data.length === 0) {
-            console.log(`No articles found for user with ID ${userId}.`);
+            console.log(`No articles found for user with ID ${userEmail}.`);
             return { success: false, message: 'No articles found', articles: [] };
         }
 
-        console.log(`Found ${data.length} article(s) for user with ID ${userId}.`);
+        console.log(`Found ${data.length} article(s) for user with ID ${userEmail}.`);
         return data;
     } catch (err) {
         console.error('Error retrieving articles:', err);
@@ -48,35 +54,29 @@ const getArticlesByUserId = async (userId) => {
 // Function to get all articles by a specific user
 const getArticlesById = async (id) => {
     try {
-        const { data, error } = await supabase
-            .from('articles')
-            .select('*')
-            .eq('id', id)
-            .single
-
+        const { data, error } = await supabase.from('articles').select('*').eq('id', id).single();
         if (error) {
+            console.error('Error getting article by id:', error);
             throw error;
         }
-
         if (data.length === 0) {
-            console.log(`No articles found with ID ${id}.`);
-            return { success: false, message: 'No articles found', articles: [] };
+            console.log(`No article found with id ${id}.`);
+            return null;
         }
-
-        console.log(`Found article with ID ${id}.`);
+        console.log(`Successfully retrieved article with id ${id}.`);
         return data;
     } catch (err) {
-        console.error('Error retrieving article:', err);
-        return { success: false, message: 'Error retrieving article' };
+        console.error('Error getting article with id:', err);
+        throw err;
     }
 };
 // Function to get all articles by a specific user
-const getArticlesNotByUserId = async (userId) => {
+const getArticlesNotByUserEmail = async (userEmail) => {
     try {
         const { data, error } = await supabase
             .from('articles')
             .select('*')
-            .neq('author_id', userId)
+            .neq('author_email', userEmail)
             .order('publish_date', { ascending: false });
 
         if (error) {
@@ -84,11 +84,11 @@ const getArticlesNotByUserId = async (userId) => {
         }
 
         if (data.length === 0) {
-            console.log(`No articles found for all users except user with ID ${userId}.`);
+            console.log(`No articles found for all users except user with ID ${userEmail}.`);
             return { success: false, message: 'No articles found', articles: [] };
         }
 
-        console.log(`Found ${data.length} article(s) for every but user with ID ${userId}.`);
+        console.log(`Found ${data.length} article(s) for every but user with ID ${userEmail}.`);
         return data;
     } catch (err) {
         console.error('Error retrieving articles:', err);
@@ -122,17 +122,17 @@ const deleteArticleById = async (articleId) => {
 };
 
 // Add an article to a user's list of interests
-const addInterest = async (userId, articleId) => {
+const addInterest = async (userEmail, articleId) => {
     try {
         const { error } = await supabase
             .from('user_interests')
-            .upsert([{ user_id: userId, article_id: articleId }], { onConflict: ['user_id', 'article_id'] });
+            .upsert([{ user_email: userEmail, article_id: articleId }], { onConflict: ['user_email', 'article_id'] });
 
         if (error) {
             throw error;
         }
 
-        console.log(`Article ${articleId} added to user ${userId}'s interests.`);
+        console.log(`Article ${articleId} added to user ${userEmail}'s interests.`);
     } catch (error) {
         console.error('Error adding interest:', error);
         throw error;
@@ -140,19 +140,19 @@ const addInterest = async (userId, articleId) => {
 };
 
 // Remove an article from a user's list of interests
-const removeInterest = async (userId, articleId) => {
+const removeInterest = async (userEmail, articleId) => {
     try {
         const { error } = await supabase
             .from('user_interests')
             .delete()
-            .eq('user_id', userId)
+            .eq('user_email', userEmail)
             .eq('article_id', articleId);
 
         if (error) {
             throw error;
         }
 
-        console.log(`Article ${articleId} removed from user ${userId}'s interests.`);
+        console.log(`Article ${articleId} removed from user ${userEmail}'s interests.`);
     } catch (error) {
         console.error('Error removing interest:', error);
         throw error;
@@ -160,12 +160,12 @@ const removeInterest = async (userId, articleId) => {
 };
 
 // Get all articles that a user is interested in
-const getUserInterests = async (userId) => {
+const getUserInterests = async (userEmail) => {
     try {
         const { data, error } = await supabase
             .from('user_interests')
             .select('article_id, articles (*)')
-            .eq('user_id', userId);
+            .eq('user_email', userEmail);
 
         if (error) {
             throw error;
@@ -181,11 +181,11 @@ const getUserInterests = async (userId) => {
 
 module.exports = {
     addArticle,
-    getArticlesByUserId,
+    getArticlesByUserEmail,
     deleteArticleById,
     addInterest,
     removeInterest,
     getUserInterests,
-    getArticlesNotByUserId,
+    getArticlesNotByUserEmail,
     getArticlesById
 };
