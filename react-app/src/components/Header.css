@@ -30,9 +30,11 @@
   
   .profile-picture2{
     max-width: 40px;
+    width: 40px;
     cursor: pointer;
     /* Adjust size as needed */
     max-height: 40px;
+    height: 40px;
     /* Adjust size as needed */
     border-radius: 50%;
     object-fit: cover;
