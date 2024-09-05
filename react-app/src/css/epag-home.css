@@ -80,6 +80,7 @@
   }
   .profile-sect-name {
     font-size: 16px;
+    width: 150px;
     font-weight:600;
     color:#4f4f4f;
     text-align: center;
@@ -89,6 +90,7 @@
   .profile-sect-prof {
     font-size: 14px;
     font-weight: 500;
+        width: 150px;
     color:#777777;
     text-align: center;
     font-family: var(--font-basic);
