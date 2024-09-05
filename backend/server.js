@@ -177,7 +177,7 @@ app.get('/notarticles/:userId', async (req, res) => {
     }
 });
 // Delete a user by email
-app.delete('/article/:articleId', upload.none(), async (req, res) => {
+app.delete('/articles/:articleId', upload.none(), async (req, res) => {
     const { articleId } = req.params;
     try {
         const result = await articlesModel.deleteArticleById(articleId);
