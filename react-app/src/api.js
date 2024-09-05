@@ -121,6 +121,31 @@ export const getOtherUsersArticles = async (userId) => {
         throw error;
     }
 };
+// Get an article using its id
+export const getArticleById = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/article/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching article by its id:', error);
+        throw error;
+    }
+};
+//get all the articles
+export const getAllArticles = async (userId) => {
+    try {
+        // Fetch all users and contacts
+        const [myarticles, othersarticles] = await Promise.all([
+            getArticle(userId),
+            getOtherUsersArticles(userId)
+        ]);
+        
+        return {myarticles, othersarticles};
+    } catch (error) {
+        console.error('Error fetching all the articles:', error);
+        throw error;
+    }
+};
 // Delete an article
 export const deleteArticle = async (articleId) => {
     try {
@@ -246,7 +271,7 @@ export const getNonConnectedUsersByEmail = async (userEmail) => {
 // Send a friend request
 export const sendFriendRequest = async (senderEmail, receiverEmail) => {
     try {
-        console.log("api",senderEmail, receiverEmail)
+        console.log("api", senderEmail, receiverEmail)
         const response = await axios.post(`${API_BASE_URL}/send`, { senderEmail, receiverEmail });
         return response.data;
     } catch (error) {
@@ -441,5 +466,53 @@ export const getAllSkillsForUser = async (userId) => {
             console.error('Error setting up request:', error.message);
         }
         throw error; // Rethrow to handle higher up if necessary
+    }
+};
+
+// Function to add a comment
+export const addComment = async (articleId, authorId, text) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/comments`, {
+            articleId,
+            authorId,
+            text
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        throw error; // Rethrow the error to handle it further up if necessary
+    }
+};
+
+// Function to get all comments for a specific article
+export const getComments = async (articleId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/comments/${articleId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        throw error; // Rethrow the error to handle it further up if necessary
+    }
+};
+
+// Function to get all comments by a specific user
+export const getCommentsOfUser = async (authorId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/comments/user/${authorId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching comments by user:', error);
+        throw error; // Rethrow the error to handle it further up if necessary
+    }
+};
+
+// Function to delete a comment
+export const deleteComment = async (commentId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/comments/${commentId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+        throw error; // Rethrow the error to handle it further up if necessary
     }
 };

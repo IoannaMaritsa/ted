@@ -1,16 +1,17 @@
-const pool = require('../db');
+const supabase = require('../supabaseClient');
 
 // Function to add a comment
 const addComment = async (articleId, authorId, text) => {
-    const query = `
-        INSERT INTO comments (article_id, author_id, text)
-        VALUES ($1, $2, $3);
-    `;
-    const values = [articleId, authorId, text];
-
     try {
-        await pool.query(query, values);
-        console.log('Comment added successfully.');
+        const { data, error } = await supabase
+            .from('comments')
+            .insert([{ article_id: articleId, author_id: authorId, text }]);
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Comment added successfully:', data);
     } catch (err) {
         console.error('Error adding comment:', err);
     }
@@ -18,17 +19,18 @@ const addComment = async (articleId, authorId, text) => {
 
 // Function to get comments for an article
 const getComments = async (articleId) => {
-    const query = `
-        SELECT * 
-        FROM comments
-        WHERE article_id = $1;
-    `;
-    const values = [articleId];
-
     try {
-        const res = await pool.query(query, values);
-        console.log('Comments:', res.rows);
-        return res.rows;
+        const { data, error } = await supabase
+            .from('comments')
+            .select('*')
+            .eq('article_id', articleId);
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Comments:', data);
+        return data;
     } catch (err) {
         console.error('Error fetching comments:', err);
     }
@@ -36,30 +38,36 @@ const getComments = async (articleId) => {
 
 // Function to get comments of a user
 const getCommentsOfUser = async (authorId) => {
-    const query = `
-        SELECT * 
-        FROM comments
-        WHERE author_id = $1;
-    `;
-    const values = [authorId];
-
     try {
-        const res = await pool.query(query, values);
-        console.log('Comments:', res.rows);
-        return res.rows;
+        const { data, error } = await supabase
+            .from('comments')
+            .select('*')
+            .eq('author_id', authorId);
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Comments:', data);
+        return data;
     } catch (err) {
         console.error('Error fetching comments:', err);
     }
 };
 
+// Function to delete a comment
 const deleteComment = async (commentId) => {
     try {
-        const result = await pool.query(
-            'DELETE FROM comments WHERE id = $1 RETURNING *',
-            [commentId]
-        );
+        const { data, error } = await supabase
+            .from('comments')
+            .delete()
+            .match({ id: commentId });
 
-        if (result.rowCount === 0) {
+        if (error) {
+            throw error;
+        }
+
+        if (data.length === 0) {
             console.log(`No comment with ID ${commentId} found.`);
             return { success: false, message: 'Comment not found' };
         }
@@ -69,14 +77,9 @@ const deleteComment = async (commentId) => {
     } catch (err) {
         console.error('Error deleting comment:', err);
         return { success: false, message: 'Error deleting comment' };
-    } finally {
-        pool.release();
     }
 };
 
-// Example usage
-// addComment(1, 2, 'This is a comment on the article.');
-// getComments(1);
 module.exports = {
     addComment,
     getComments,

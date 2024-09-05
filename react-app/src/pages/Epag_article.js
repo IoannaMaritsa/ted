@@ -7,6 +7,7 @@ import { useAppContext } from "../context/appContext";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import { getArticleById , getComments} from '../api';
 
 function DateTime(date, time) {
     this.date = date; // Date in YYYY-MM-DD format
@@ -31,30 +32,10 @@ const getCurrentTime = () => {
     return `${hours}:${minutes}`;
 };
 
-const myuser = {
-    id: 189,
-    profilePic: '/default-avatar.jpeg',
-    name: 'Λάκης Λαλάκης',
-}
-const users = [
-    {
-        id: 1,
-        profilePic: '/default-avatar.jpeg',
-        name: 'John Doe',
-    },
-    {
-        id: 2,
-        profilePic: '/default-avatar.jpeg',
-        name: 'Jane Smith',
-    },
-    {
-        id: 3,
-        profilePic: '/default-avatar.jpeg',
-        name: 'Charlie Brown',
-    }
-];
+
 
 const Epag_article = () => {
+    const myuser = useAppContext().user;
 
     const { setOtherProfile, otherProfile } = useAppContext();
 
@@ -71,32 +52,34 @@ const Epag_article = () => {
 
     const [body, setBody] = useState('');
 
-    const articles = [
-        { id: 1, title: 'Sample Article Title 1', author: users.find((person) => person.id === 1), date: 'July 25, 2024', content: 'This is a sample article content. It provides a brief overview of the article.', attachments: { images: ['businessleader.jpg', 'activist.jpg'], videos: [], audios: [] } },
-        { id: 2, title: 'Sample Article Title 2', author: users.find((person) => person.id === 2), date: 'July 24, 2024', content: 'This is another sample article content. It provides more details about the article.', attachments: { images: [], videos: ['big_buck_bunn.mp4'], audios: ['sample3.MP3'] } },
-        // Add more articles as needed
-    ];
+    const [comments, setComments] = useState([]);
+    const [article, setArticle] = useState([]);
 
-    const [all_comments, setAll_comments] = useState([
-        { article_id: 1, author: users.find((person) => person.id === 3), datetime: new DateTime('2024-08-25', '12:30'), text: 'Very useful!' },
-        { article_id: 2, author: users.find((person) => person.id === 3), datetime: new DateTime('2009-07-28', '08:15'), text: 'I find this very disturbing!' },
-        { article_id: 1, author: users.find((person) => person.id === 2), datetime: new DateTime('2017-01-01', '18:45'), text: 'Good Job!' },
-    ]);
+    const getArticle = async (id) => {
+        try {
+            const response = await getArticleById(id);
+            setArticle(response);
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
+
+    const getCommentsOfArticle = async (articleId) => {
+        try {
+            const response = await getComments(articleId);
+            setComments(response);
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
 
     const { id } = useParams();
-    const article = articles.find(article => article.id === parseInt(id));
 
-    if (!article) {
-        return (
-            <div>
-                <Header variant="professional" />
-                <Breadcrumbs />
-                <div className='main'>Article not found</div>
-                <MainBottom />
-                <Footer />
-            </div>
-        );
-    }
+    useEffect(() => {
+        getArticle(parseInt(id));
+        getCommentsOfArticle(parseInt(id));
+        console.log(article);
+    }, []);
 
     const handleBodyChange = (e) => {
         setBody(e.target.value);
@@ -112,20 +95,12 @@ const Epag_article = () => {
             datetime: currentDateTime,  // Example date
             text: body  // Example comment text
         };
-        setAll_comments([...all_comments, newComment]);
+        setComments([...comments, newComment]);
 
         console.log('Article submitted:', { body });
         // Reset the form
         setBody('');
     };
-
-    const sortComments = (comments) => {
-        comments.sort((a, b) => new Date(`${b.datetime.date}T${b.datetime.time}:00`) - new Date(`${a.datetime.date}T${a.datetime.time}:00`));
-        
-        return comments;
-    }
-
-    const comments = sortComments(all_comments.filter((i, _) => i.article_id === parseInt(id)));
 
     return (
         <div>
@@ -141,8 +116,8 @@ const Epag_article = () => {
                     </div>
                     <div className="article-meta">
                         <div className="article-author1" onClick={() => handleProfileClick(article.author)}>
-                            <img src={article.author.profilePic} alt="User Icon" className="icon" />
-                            <span>{article.author.name}</span>
+                            {/* <img src={article.author.profilePic} alt="User Icon" className="icon" />
+                            <span>{article.author.name}</span> */}
                         </div>
                         <div className="article-date">
                             <img src="/calendar.png" alt="Date icon" className="icon" />
@@ -150,16 +125,16 @@ const Epag_article = () => {
                         </div>
                     </div>
                     <p className="article-content">{article.content}</p>
-                    {article.attachments.images.length > 0 && (
+                    {/* {article.attachments.images.length > 0 && (
                         <div className="attachments">
                             <h3>Φωτογραφίες</h3>
                             {article.attachments.images.map((image, index) => (
                                 <img key={index} src={`/${image}`} alt={`Attachment ${index + 1}`} className='article-image' />
                             ))}
                         </div>
-                    )}
+                    )} */}
 
-                    {article.attachments.videos.length > 0 && (
+                    {/* {article.attachments.videos.length > 0 && (
                         <div className="attachments">
                             <h3>Βίντεο</h3>
                             {article.attachments.videos.map((video, index) => (
@@ -169,8 +144,8 @@ const Epag_article = () => {
                                 </video>
                             ))}
                         </div>
-                    )}
-
+                    )} */}
+{/* 
                     {article.attachments.audios.length > 0 && (
                         <div className="attachments">
                             <h3>Ήχοι</h3>
@@ -181,7 +156,7 @@ const Epag_article = () => {
                                 </audio>
                             ))}
                         </div>
-                    )}
+                    )} */}
 
                     <div className='article-comment-section'>
                         <h3>Σχόλια</h3>
@@ -191,7 +166,7 @@ const Epag_article = () => {
                             <>
                                 {comments.map((comment, index) => (
                                     <div className='notification-item'>
-                                        <img src={comment.author.profilePic} alt={`${comment.author.name}'s profile`} className='profile-pic' />
+                                        {/* <img src={comment.author.profilePic} alt={`${comment.author.name}'s profile`} className='profile-pic' /> */}
                                         <div className='notification-text'>
                                             {comment.datetime.date === getCurrentDate() ? (
                                                 <div className="notification-time">{comment.datetime.time}</div>

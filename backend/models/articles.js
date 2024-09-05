@@ -46,6 +46,31 @@ const getArticlesByUserId = async (userId) => {
     }
 };
 // Function to get all articles by a specific user
+const getArticlesById = async (id) => {
+    try {
+        const { data, error } = await supabase
+            .from('articles')
+            .select('*')
+            .eq('id', id)
+            .single
+
+        if (error) {
+            throw error;
+        }
+
+        if (data.length === 0) {
+            console.log(`No articles found with ID ${id}.`);
+            return { success: false, message: 'No articles found', articles: [] };
+        }
+
+        console.log(`Found article with ID ${id}.`);
+        return data;
+    } catch (err) {
+        console.error('Error retrieving article:', err);
+        return { success: false, message: 'Error retrieving article' };
+    }
+};
+// Function to get all articles by a specific user
 const getArticlesNotByUserId = async (userId) => {
     try {
         const { data, error } = await supabase
@@ -161,5 +186,6 @@ module.exports = {
     addInterest,
     removeInterest,
     getUserInterests,
-    getArticlesNotByUserId
+    getArticlesNotByUserId,
+    getArticlesById
 };
