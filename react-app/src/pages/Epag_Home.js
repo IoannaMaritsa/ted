@@ -210,7 +210,7 @@ export default function Epag_Home() {
                             <span className="profile-sect-head">Τοποθεσία</span>
                             <span className="profile-sect-bot">{user_info.location}</span>
                             <span className="profile-sect-head">Ημ.Γέννησης</span>
-                            <span className="profile-sect-bot">{user_info.birthday}</span>
+                            <span className="profile-sect-bot">{user_info.dob}</span>
                             <span className="profile-sect-head">Email</span>
                             <span className="profile-sect-bot">{user_info.email}</span>
                         </div>

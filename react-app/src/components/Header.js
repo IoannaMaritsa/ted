@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import './Header.css';
 import { getSignedUrl } from '../api';
 import { useAppContext } from '../context/appContext';
+import getProfileImageUrl from '../hooks/getProfileImageUrl';
 
 const Header = ({ variant }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -17,21 +18,7 @@ const Header = ({ variant }) => {
 
   }, []);
 
-  // Base URL and bucket name
-  const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
-  const bucketName = 'profilepics';
-
-  // Original URL (saved in the profilepic field)
-  const originalProfilePicUrl = user?.profilepic;
-
-  // Add '/public/' to the URL path if necessary
-  const profileImageUrl = originalProfilePicUrl
-      ? originalProfilePicUrl.replace(
-          `${baseURL}/storage/v1/object/${bucketName}/`,
-          `${baseURL}/storage/v1/object/public/${bucketName}/`
-        )
-      : `${baseURL}/storage/v1/object/public/${bucketName}/default-avatar.jpeg`;
-
+ 
   const handleProfileClick = () => {
     setShowDropdown(!showDropdown);
   };
@@ -87,7 +74,7 @@ const Header = ({ variant }) => {
               </NavLink>
             </div>
             <img
-              src="/default-avatar.jpeg"
+              src={getProfileImageUrl(user?.profilepic)}
               className="profile-picture2"
               alt="Profile"
               onClick={handleProfileClick}
@@ -96,7 +83,7 @@ const Header = ({ variant }) => {
               <div className="dropdown">
                 <div className="dropdown-content">
                   <img
-                    src={profileImageUrl}
+                    src={getProfileImageUrl(user?.profilepic)}
                     alt="Profile Picture"
                     className="dropdown-profile-pic"
                   />

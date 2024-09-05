@@ -70,10 +70,14 @@
 
 /* Box styling */
 .box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: #ffffff; /* Light grey background for boxes */
     padding: 20px;
     text-align: center;
-    height: 270px;
+    height: 350px;
     width: 230px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
@@ -92,7 +96,8 @@
     height: 150px;
     border-radius: 50%;
     background-color: #ddd;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
+    cursor: pointer;
 }
 
 .e-profession {
@@ -108,6 +113,9 @@
     font-size: 15px;
     font-family: var(--font-basic);
     margin: 1px;
+    white-space: nowrap; /* Prevents wrapping */
+    overflow: hidden; /* Hides overflowed text */
+    text-overflow: ellipsis; /* Adds ellipsis (...) */
 }
 
 .workplace-container {
@@ -126,6 +134,8 @@
 .user-section {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 20px; /* Adjust the gap between sections as needed */
     margin-bottom: 100px;
 }
@@ -136,7 +146,9 @@
     display: flex;
     flex-direction: column;
     justify-content: start;
+    gap: 3px;
     margin-bottom: 30px;
+    width: 200px; /* Set a fixed width or max-width */
 }
 
 .info-button {
@@ -159,10 +171,37 @@
   }
 
 
+.no-connections {
+    width: 916px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    vertical-align: center;
+    background-color: white;
+    height: 180px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 18px;
+    font-weight: 500;
+    font-family: var(--font-basic)
+}
+
+
 .button-1-cont {
     display: flex;
     flex-direction: row;
     gap: 15px;
+}
+
+.button-2-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
 }
 
 .connect-button {
@@ -277,14 +316,33 @@
     margin-bottom: 3px;
 }
 
+.section-title2 {
+    text-align: left;
+    width: 300px;
+    font-size: 21px;
+    font-weight: 600;
+    color: black;
+    margin-bottom: 3px;
+}
+
 .header-header {
-    width: 856px;
+    width: 916px;
     display: flex;
     flex-direction: row;
     justify-content: start;
     align-items: center;
-    gap: 470px;
-    margin-left: 30px;
+    gap: 530px;
+
+}
+
+.header-header2 {
+    width: 916px;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 334px;
+
 }
 
 .search-container2 {
@@ -305,4 +363,306 @@
     background-color: white;
     border-color: #333;
     box-shadow: 0px 2px 15px rgba(109, 109, 109, 0.2);
+}
+
+.conn-button1{
+    padding: 5px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 160px;
+    border-radius: 10px;
+    border: 2px solid var(--button-yellow);
+    color: var(--button-yellow);
+    background-color: white;
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.conn-button1:hover{
+    background-color: var(--button-yellow);
+    color: white;
+    cursor: pointer;
+}
+
+.conn-button1:hover .pr-icon2{
+    filter: brightness(100);
+}
+
+
+.conn-button{
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 160px;
+    border-radius: 10px;
+    border: 2px solid var(--button-grey);
+    color: white;
+    background-color: var(--button-grey);
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.conn-button:hover{
+    background-color: white;
+    color: var(--button-grey);
+    cursor: pointer;
+}
+
+.pending-button{
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100px;
+    border-radius: 10px;
+    border: 2px solid var(--button-grey);
+    color: white;
+    background-color: var(--button-grey);
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.pending-button:hover{
+    background-color: white;
+    color: var(--button-grey);
+    cursor: pointer;
+}
+
+.button-div-no-299 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: auto;
+}
+
+.button-div-no-301 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: auto;
+}
+
+
+
+.reject-button{
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100px;
+    border-radius: 10px;
+    border: 2px solid var(--button-light-grey);
+    color:var(--button-grey);
+    background-color: var(--button-light-grey);
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.reject-button:hover{
+    background-color: #e0e0e0;
+    border: 2px solid var(--button-grey);
+    cursor: pointer;
+}
+
+
+
+.sent-button {
+    margin:auto;
+    font-size:  15px;
+    width: 200px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+}
+
+
+.pending-ic {
+    width: 25px;
+    height: 25px;
+}
+
+.unfriend-ic {
+    width: 25px;
+    height: 25px;
+    margin-left: 10px;
+}
+
+.button-div-no-300 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: auto;
+}
+
+
+.reject-button2{
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 105px;
+    border-radius: 10px;
+    border: 2px solid var(--button-light-grey);
+    color:var(--button-grey);
+    background-color: var(--button-light-grey);
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.reject-button2:hover{
+    background-color: #e0e0e0;
+    border: 2px solid var(--button-grey);
+    cursor: pointer;
+}
+
+.pending-button2{
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 105px;
+    border-radius: 10px;
+    border: 2px solid var(--button-grey);
+    color: white;
+    background-color: var(--button-grey);
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.pending-button2:hover{
+    background-color: white;
+    color: var(--button-grey);
+    cursor: pointer;
+}
+
+.unfriend-button {
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 220px;
+    border-radius: 10px;
+    border: 2px solid var(--button-light-grey);
+    color: var(--button-grey);
+    background-color: var(--button-light-grey);
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.unfriend-button:hover{
+    background-color: #e0e0e0;
+    border: 2px solid var(--button-grey);
+    cursor: pointer;
+}
+
+.message-button2 {
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+    width: 220px;
+    border-radius: 10px;
+    border: 2px solid var(--button-yellow);
+    color:  var(--button-yellow);
+    background-color: white;
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.message-button2:hover{
+    background-color:  var(--button-yellow);
+    color: white;
+    cursor: pointer;
+}
+
+.message-button2:hover .mess-icon2{
+    filter: brightness(100);
+}
+
+.mess-icon2 {
+    width: 25px;
+    height: 25px;
+}
+
+
+
+.conn-button2 {
+    padding: 10px 7px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 90px;
+    width: 220px;
+    border-radius: 10px;
+    border: 2px solid var(--button-yellow);
+    color:  var(--button-yellow);
+    background-color: white;
+    font-size:  15px;
+    font-family: var(--font-basic);
+    font-weight: 700;
+    transition: 0.3s ease;
+    margin: auto;
+}
+
+.conn-button2:hover{
+    background-color:  var(--button-yellow);
+    color: white;
+    cursor: pointer;
+}
+
+.conn-button2:hover .conn-icon2{
+    filter: brightness(100);
+}
+
+.conn-icon2 {
+    width: 25px;
+    height: 25px;
 }

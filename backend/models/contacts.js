@@ -1,16 +1,18 @@
-const pool = require('../db');
+const supabase = require('../supabaseClient');
 
-const getAllContactsByUserId = async (user_id) => {
+// Get all contacts for a user by email
+const getAllContactsByEmail = async (userEmail) => {
     try {
         const { data, error } = await supabase
             .from('contacts')
-            .select('contact_id')
-            .eq('user_id', user_id);
+            .select('contact_email')
+            .eq('user_email', userEmail);
         if (error) {
             console.error('Error getting contacts:', error);
             throw error;
         }
-        console.log(`Successfully retrieved contacts for user ID ${user_id}.`);
+        console.log(`Successfully retrieved contacts for user with email ${userEmail}.`);
+        console.log(data);
         return data;
     } catch (err) {
         console.error('Error getting contacts:', err);
@@ -18,11 +20,16 @@ const getAllContactsByUserId = async (user_id) => {
     }
 };
 
-const addContact = async (user_id, contact_id) => {
+
+// Add a contact for a user by email
+const addContact = async (userEmail, contactEmail) => {
     try {
         const { data, error } = await supabase
             .from('contacts')
-            .insert([{ user_id, contact_id }, { user_id: contact_id, contact_id: user_id }]);
+            .upsert([
+                { user_email: userEmail, contact_email: contactEmail },
+                { user_email: contactEmail, contact_email: userEmail }
+            ]);
         if (error) {
             console.error('Error adding contact:', error);
             throw error;
@@ -36,20 +43,33 @@ const addContact = async (user_id, contact_id) => {
 };
 
 
-const removeContact = async (user_id, contact_id) => {
+// Remove a contact for a user by email
+const removeContact = async (userEmail, contactEmail) => {
     try {
-        const { data, error } = await supabase
+        // Delete contact where user_email is userEmail and contact_email is contactEmail
+        const { data: data1, error: error1 } = await supabase
             .from('contacts')
             .delete()
-            .eq('user_id', user_id)
-            .eq('contact_id', contact_id)
-            .or(`user_id.eq.${contact_id},contact_id.eq.${user_id}`);
-        if (error) {
-            console.error('Error removing contact:', error);
-            throw error;
+            .match({ user_email: userEmail, contact_email: contactEmail });
+
+        if (error1) {
+            console.error('Error removing contact (first query):', error1);
+            throw error1;
         }
+
+        // Delete contact where user_email is contactEmail and contact_email is userEmail
+        const { data: data2, error: error2 } = await supabase
+            .from('contacts')
+            .delete()
+            .match({ user_email: contactEmail, contact_email: userEmail });
+
+        if (error2) {
+            console.error('Error removing contact (second query):', error2);
+            throw error2;
+        }
+
         console.log('Successfully removed contact.');
-        return data;
+        return { data1, data2 };
     } catch (err) {
         console.error('Error removing contact:', err);
         throw err;
@@ -58,6 +78,6 @@ const removeContact = async (user_id, contact_id) => {
 
 module.exports = {
     addContact,
-    getAllContactsByUserId,
+    getAllContactsByEmail,
     removeContact
 };
