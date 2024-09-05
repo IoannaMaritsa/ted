@@ -8,7 +8,7 @@ import { useAppContext } from "../context/appContext";
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllContactsByUserEmail, getNonConnectedUsersByEmail, getUser, sendFriendRequest, getSentFriendRequests, getReceivedFriendRequests, updateFriendRequestStatus, addContact, getFriendRequestByEmails, deleteFriendRequest } from "../api";
-import getProfileImageUrl from "../hooks/getProfileImageUrl";
+import getImageUrl from "../hooks/getImageUrl";
 
 export default function Epag_network() {
     const [searchQueryConnected, setSearchQueryConnected] = useState("");
@@ -227,7 +227,7 @@ export default function Epag_network() {
                             <div className="grid-container">
                                 {currentConnectedUsers.map(user => (
                                     <div key={user.id} className="box">
-                                        <img src={getProfileImageUrl(user.profilepic)} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
+                                        <img src={getImageUrl(user.profilepic, "profilepics")} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
                                         <div className="user-info">
                                             <h3 className="name">{user.name}</h3>
                                             {user.profession && <p className="e-profession">{user.profession}</p>}
@@ -292,7 +292,7 @@ export default function Epag_network() {
                             <div className="grid-container">
                                 {currentOtherUsers.map(user => (
                                     <div key={user.id} className="box">
-                                        <img src={getProfileImageUrl(user.profilepic)} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
+                                        <img src={getImageUrl(user.profilepic, "profilepics")} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
                                         <div className="user-info">
                                             <h3 className="name">{user.name}</h3>
                                             {user.profession && <p className="e-profession">{user.profession}</p>}

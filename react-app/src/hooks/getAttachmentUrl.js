@@ -1,14 +1,14 @@
   // Function to get the profile image URL
-  const getProfileImageUrl = (url) => {
+  const getAttachmentUrl = (url) => {
     const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
-    const bucketName = 'profilepics';
+    const bucketName = 'attachments';
     if (url) {
         return url.replace(
             `${baseURL}/storage/v1/object/${bucketName}/`,
             `${baseURL}/storage/v1/object/public/${bucketName}/`
         );
     } else {
-        return `${baseURL}/storage/v1/object/public/${bucketName}/default-avatar.jpeg`;
+        return `${baseURL}/storage/v1/object/public/profilepics/default-avatar.jpeg`;
     }
 };
 
