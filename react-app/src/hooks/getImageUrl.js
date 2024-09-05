@@ -1,7 +1,6 @@
   // Function to get the profile image URL
-  const getProfileImageUrl = (url) => {
+  const getImageUrl = (url, bucketName) => {
     const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
-    const bucketName = 'profilepics';
     if (url) {
         return url.replace(
             `${baseURL}/storage/v1/object/${bucketName}/`,
@@ -12,4 +11,4 @@
     }
 };
 
-export default getProfileImageUrl;
+export default getImageUrl;

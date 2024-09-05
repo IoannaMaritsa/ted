@@ -5,18 +5,20 @@ import MainBottom from '../components/MainBottom';
 import Article from '../components/article_display';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext} from "../context/appContext";
-import { addArticle, getArticle, deleteArticle, getOtherUsersArticles, getAllExperiencesForUser, getAllStudiesForUser , getAllSkillsForUser} from '../api';
+import { useAppContext } from "../context/appContext";
+import getImageUrl from "../hooks/getImageUrl";
+import { addArticle, getArticle, getUser,deleteArticle, getOtherUsersArticles, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser } from '../api';
 import '../css/epag-home.css';
 
 export default function Epag_Home() {
-    
+
     const user_info = useAppContext().user;
     const [articles, setArticles] = useState([]); // Initialize with an empty array
     const [my_articles, setMy_articles] = useState([]);
     const [experiences, setExperiences] = useState([]);
     const [studies, setStudies] = useState([]);
     const [skills, setSkills] = useState([]);
+    const [contacts, setContacts] = useState([]);
 
     const getArticles = async (userId) => {
         try {
@@ -31,7 +33,7 @@ export default function Epag_Home() {
         try {
             const response = await getArticle(userId);
             setMy_articles(response);
-            
+
         } catch (error) {
             console.error('Error getting articles:', error);
         }
@@ -65,29 +67,27 @@ export default function Epag_Home() {
     };
 
 
-    // Base URL and bucket name
-    const baseURL = 'https://deenohwgdmmzsnyvpnxz.supabase.co';
-    const bucketName = 'profilepics';
+    const getContacts = async (userEmail) => {
+        try {
+            const contacts = await getAllContactsByUserEmail(userEmail);
+            const contactEmails = contacts.map(contact => contact.contact_email);
+            const contactDetailsPromises = contactEmails.map(email => getUser(email));
+            const contactsData = await Promise.all(contactDetailsPromises);
 
-    // Original URL (saved in the profilepic field)
-    const originalProfilePicUrl = user_info?.profilepic;
-
-    // Add '/public/' to the URL path if necessary
-    const profileImageUrl = originalProfilePicUrl
-        ? originalProfilePicUrl.replace(
-            `${baseURL}/storage/v1/object/${bucketName}/`,
-            `${baseURL}/storage/v1/object/public/${bucketName}/`
-        )
-        : `${baseURL}/storage/v1/object/public/${bucketName}/default-avatar.jpeg`;
-
+            setContacts(contactsData); // Store the full contact details in state
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
 
     useEffect(() => {
         getArticles(user_info.id);
+        getContacts(user_info.email)
         getMyArticles(user_info.id);
         getExperiences(user_info.id);
         getStudies(user_info.id);
         getSkills(user_info.id);
-        console.log('the id is:',user_info);
+        console.log('the id is:', user_info);
         console.log('skills', skills);
     }, []);
 
@@ -102,51 +102,16 @@ export default function Epag_Home() {
         }
     };
 
-    const contacts = [
-        {
-            id: 1,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Alice Johnson',
-        },
-        {
-            id: 2,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Bob Smith',
-        },
-        {
-            id: 3,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Charlie Brown',
-        },
-        {
-            id: 4,
-            profilePic: '/default-avatar.jpeg',
-            name: 'David Wilson',
-        },
-        {
-            id: 5,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Eve Davis',
-        },
-        {
-            id: 6,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Jojo Siwa',
-        },
-        {
-            id: 7,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Charles White',
-        },
-    ];
 
     const { setOtherProfile, otherProfile } = useAppContext();
 
     const navigate = useNavigate();
 
-    const handleProfileClick = (user) => {
-        setOtherProfile(user);
-        navigate('/user_profile', { state: { otherProfile: user } });
+     // On profile pick navigate to the selected user's profile
+     const handleProfileClick = (user) => {
+        console.log("email2", user.email);
+        navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
+        window.scrollTo(0, 0);
     };
 
     const [title, setTitle] = useState('');
@@ -226,7 +191,7 @@ export default function Epag_Home() {
                     <div className="side-bar-section">
                         <div className="side-bar-part">
                             <div className="split-page">
-                                <img src={profileImageUrl} alt="avatar" className="profile_image" />
+                                <img src={getImageUrl(user_info.profilepic, "profilepics")} alt="avatar" className="profile_image" />
                                 <div className="text-section2">
                                     <span className="profile-sect-name">{user_info.name}</span>
                                     <span className="profile-sect-prof">{user_info.profession}</span>
@@ -258,7 +223,7 @@ export default function Epag_Home() {
                                         <span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span>
                                     </p>
                                 </div>
-                            ))} 
+                            ))}
 
                         </div>
                         <div className="side-bar-part">
@@ -275,7 +240,7 @@ export default function Epag_Home() {
                                         <span>{study.start_date}</span> - <span>{study.end_date}</span>
                                     </p>
                                 </div>
-                            ))} 
+                            ))}
                         </div>
                         <div className="side-bar-part">
                             <span className="profile-sect-headhead">Δεξιότητες</span>
@@ -285,19 +250,19 @@ export default function Epag_Home() {
                                         {skill.skill_name}
                                     </li>
                                 </ul>
-                            ))} 
+                            ))}
                         </div>
                     </div>
                     <div className="side-bar-section">
                         <div className="network-title">
                             <img src="/community.png" alt="avatar" className="network-icon" />
-                            <span className="profile-sect-headhead">Δίκτυο</span>
+                            <span className="profile-sect-headhead">Συνδέσεις</span>
                         </div>
                         <div className="contacts-page">
                             <ul className="contacts-list">
-                                {contacts.map((contact, index) => (
+                                {contacts?.map((contact, index) => (
                                     <div className="contact" onClick={() => handleProfileClick(contact)}>
-                                        <img src={contact.profilePic} alt="contact-pic" className="contact-icon" />
+                                        <img src={getImageUrl(contact.profilepic, "profilepics")} alt="contact-pic" className="contact-icon" />
                                         <li className="profile-sect-contact" key={index}>{contact.name} </li>
                                     </div>
                                 ))}
@@ -358,7 +323,7 @@ export default function Epag_Home() {
                                     <span className="attach-title">Επισυναπτόμενα αρχεία:</span>
                                     <ul>
                                         {attachedFiles.map((file, index) => (
-                                            <li className="attach-li"key={index}>
+                                            <li className="attach-li" key={index}>
                                                 <span className="attach-type" > {file.type.toUpperCase()}: </span>
                                                 <span className="attach-name"> {file.name} </span>
                                                 <img className="yellow-trash" type="button" src="/yellow-trash.png" alt="delete" onClick={() => handleRemoveFile(index)} />
@@ -370,33 +335,33 @@ export default function Epag_Home() {
                         </form>
                     </div>
                     {my_articles.length > 0 && (<div className="articles-page">
-                    <h2>Τα άρθρα μου</h2>
-                    {my_articles.map((article, index) => (
-                        <Article
-                            key={article.id}
-                            id={article.id}
-                            title={article.title}
-                            author_id={article.author_id}
-                            date={article.publish_date}
-                            content={article.content}
-                            onDelete={handleDeleteArticle}
-                        />
-                    ))}
-                    </div>)}
-                    {articles.length > 0 && (
-                    <div className="articles-page">
-                        <h2>Άρθρα άλλων επαγγελματιών</h2>
-                        {articles.map((article, index) => (
+                        <h2>Τα άρθρα μου</h2>
+                        {my_articles.map((article, index) => (
                             <Article
-                                key={index}
+                                key={article.id}
                                 id={article.id}
                                 title={article.title}
                                 author_id={article.author_id}
                                 date={article.publish_date}
                                 content={article.content}
+                                onDelete={handleDeleteArticle}
                             />
                         ))}
-                    </div>
+                    </div>)}
+                    {articles.length > 0 && (
+                        <div className="articles-page">
+                            <h2>Άρθρα άλλων επαγγελματιών</h2>
+                            {articles.map((article, index) => (
+                                <Article
+                                    key={index}
+                                    id={article.id}
+                                    title={article.title}
+                                    author_id={article.author_id}
+                                    date={article.publish_date}
+                                    content={article.content}
+                                />
+                            ))}
+                        </div>
                     )}
                 </div>
             </div>

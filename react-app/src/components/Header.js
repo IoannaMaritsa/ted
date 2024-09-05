@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import './Header.css';
 import { getSignedUrl } from '../api';
 import { useAppContext } from '../context/appContext';
-import getProfileImageUrl from '../hooks/getProfileImageUrl';
+import getImageUrl from '../hooks/getImageUrl';
 
 const Header = ({ variant }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -74,7 +74,7 @@ const Header = ({ variant }) => {
               </NavLink>
             </div>
             <img
-              src={getProfileImageUrl(user?.profilepic)}
+              src={getImageUrl(user?.profilepic, "profilepics")}
               className="profile-picture2"
               alt="Profile"
               onClick={handleProfileClick}
@@ -83,7 +83,7 @@ const Header = ({ variant }) => {
               <div className="dropdown">
                 <div className="dropdown-content">
                   <img
-                    src={getProfileImageUrl(user?.profilepic)}
+                    src={getImageUrl(user?.profilepic, "profilepics")}
                     alt="Profile Picture"
                     className="dropdown-profile-pic"
                   />
