@@ -24,7 +24,7 @@ export default function Epag_network() {
     const navigate = useNavigate();
 
 
-
+    // Fetch connected and non connected users
     const fetchContacts = async () => {
         try {
             // Fetch connected users
@@ -50,11 +50,13 @@ export default function Epag_network() {
         }
     };
 
+    // On email change fetch the user's contacts
     useEffect(() => {
         fetchContacts();
     }, [user.email]);
 
-
+    
+    // Mark the request as pending
     const isRequestPending = (targetEmail) => {
         return pendingRequests.some(req =>
             (req.sender_email === user.email && req.receiver_email === targetEmail) ||
@@ -62,6 +64,7 @@ export default function Epag_network() {
         );
     };
 
+    // Mark the request as sent
     const hasSentRequest = (targetEmail) => {
         return sentRequests.some(req => req.receiver_email === targetEmail);
     };
@@ -85,10 +88,6 @@ export default function Epag_network() {
     const indexOfFirstConnectedUser = indexOfLastConnectedUser - itemsPerPage;
     const currentConnectedUsers = filteredConnectedUsers.slice(indexOfFirstConnectedUser, indexOfLastConnectedUser);
 
-    // Function to determine if a user has an incoming friend request
-    const hasIncomingRequest = (userEmail) => {
-        return pendingRequests.some(req => req.sender_email === userEmail && req.receiver_email === user.email);
-    };
 
     // Filtering, Sorting, and Pagination for Other Users
     const filteredOtherUsers = useMemo(() => {
@@ -103,8 +102,8 @@ export default function Epag_network() {
         });
     
         return filtered.sort((a, b) => {
-            const aHasRequest = hasIncomingRequest(a.email);
-            const bHasRequest = hasIncomingRequest(b.email);
+            const aHasRequest =isRequestPending (a.email);
+            const bHasRequest = isRequestPending (b.email);
             const aHasSentRequest = hasSentRequest(a.email);
             const bHasSentRequest = hasSentRequest(b.email);
     
@@ -142,6 +141,8 @@ export default function Epag_network() {
         }
     };
 
+
+    // On profile pick navigate to the selected user's profile
     const handleProfileClick = (user) => {
         console.log("email2", user.email);
         navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
@@ -152,9 +153,7 @@ export default function Epag_network() {
     const handleConnectClick = async (targetUserEmail) => {
         if (!isRequestPending(targetUserEmail) && !hasSentRequest(targetUserEmail)) {
             try {
-                console.log(user.email, targetUserEmail)
                 const response = await sendFriendRequest(user.email, targetUserEmail);
-                console.log("FQ:", response);
                 // Update state with new sent request
                 setSentRequests(prev => [...prev, { sender_email: user.email, receiver_email: targetUserEmail, status: 'pending' }]);
             } catch (error) {
@@ -163,42 +162,36 @@ export default function Epag_network() {
         }
     };
 
+    // Handle accept request
     const handleAcceptRequest = async (senderEmail) => {
-
         try {
             // Fetch the friend request
             const friendRequest = await getFriendRequestByEmails(senderEmail, user.email);
 
             if (friendRequest) {
-                // Assuming the friend request has an `id` property
                 await updateFriendRequestStatus(friendRequest.id, 'accepted');
                 await addContact(user.email, senderEmail);
                 await addContact(senderEmail, user.email);
                 await deleteFriendRequest(friendRequest.id);
-
             }
+            // Reload contacts and non-contacts
             fetchContacts();
         } catch (error) {
             console.error('Error accepting friend request:', error);
         }
     };
 
+    // Handle reject request
     const handleRejectRequest = async (senderEmail) => {
         try {
             // Get the friend request by sender and current user email
-            const request = await getFriendRequestByEmails(senderEmail, user.email);
-            if (request) {
-                // Update the friend request status to 'rejected'
-                await updateFriendRequestStatus(request.id, 'rejected');
-
-                // Remove the friend request
-                await deleteFriendRequest(request.id);
-
-                // Reload contacts and non-contacts
-                fetchContacts();
-            } else {
-                console.error('No friend request found to reject');
+            const friendRequest = await getFriendRequestByEmails(senderEmail, user.email);
+            if (friendRequest) {
+                await updateFriendRequestStatus(friendRequest.id, 'rejected');
+                await deleteFriendRequest(friendRequest.id);  
             }
+            // Reload contacts and non-contacts
+            fetchContacts();
         } catch (error) {
             console.error('Error rejecting friend request:', error);
         }
