@@ -12,6 +12,7 @@ const friend_requestsModel = require('./models/friendrequests');
 const experiencesModel = require('./models/experiences');
 const studiesModel = require('./models/studies');
 const skillsModel = require('./models/skills');
+const commentsModel = require('./models/comments');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -181,7 +182,21 @@ app.get('/notarticles/:userId', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch articles' });
     }
 });
-// Delete a user by email
+// Get an articles by its id
+app.get('/article/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const articles = await articlesModel.getArticlesById(id);
+        if (articles) {
+            res.json(articles);
+        }
+    
+    } catch (err) {
+        console.error('Error fetching articles of a user:', err);
+        res.status(500).json({ error: 'Failed to fetch articles' });
+    }
+});
+// Delete a article
 app.delete('/articles/:articleId', upload.none(), async (req, res) => {
     const { articleId } = req.params;
     try {
@@ -521,6 +536,66 @@ app.get('/skills/:userId', async (req, res) => {
     }
 });
 
+// ---------- Comment ROUTES -----------
+// Route to add a comment
+app.post('/comments', async (req, res) => {
+    const { articleId, authorId, text } = req.body;
+    try {
+        const comments = await commentsModel.addComment(articleId, authorId, text);
+        if (!comments || comments.length === 0) {
+            return res.status(404).json({ message: 'No comments found for this article' });
+        }
+        res.status(201).json({ message: 'Comment added successfully' });
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ message: 'Error adding comment', error: error.message });
+    }
+});
+
+// Route to get all comments for a specific article
+app.get('/comments/:articleId', async (req, res) => {
+    const { articleId } = req.params;
+    try {
+        const comments = await commentsModel.getComments(articleId);
+        if (!comments || comments.length === 0) {
+            return res.status(404).json({ message: 'No comments found for this article' });
+        }
+        res.status(200).json(comments);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ message: 'Error fetching comments', error: error.message });
+    }
+});
+
+// Route to get all comments by a specific user
+app.get('/comments/user/:authorId', async (req, res) => {
+    const { authorId } = req.params;
+    try {
+        const comments = await commentsModel.getCommentsOfUser(authorId);
+        if (comments.length === 0) {
+            return res.status(404).json({ message: 'No comments found for this user' });
+        }
+        res.status(200).json(comments);
+    } catch (error) {
+        console.error('Error fetching comments by user:', error);
+        res.status(500).json({ message: 'Error fetching comments by user', error: error.message });
+    }
+});
+
+// Route to delete a comment
+app.delete('/comments/:commentId', async (req, res) => {
+    const { commentId } = req.params;
+    try {
+        const result = await deleteComment(commentId);
+        if (!result.success) {
+            return res.status(404).json({ message: result.message });
+        }
+        res.status(200).json({ message: result.message });
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+        res.status(500).json({ message: 'Error deleting comment', error: error.message });
+    }
+});
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
