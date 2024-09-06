@@ -164,15 +164,16 @@ const getUserInterests = async (userEmail) => {
     try {
         const { data, error } = await supabase
             .from('user_interests')
-            .select('article_id, articles (*)')
+            .select('article_id')
             .eq('user_email', userEmail);
 
         if (error) {
             throw error;
         }
 
-        console.log(data);
-        return data.map(item => item.articles); // Assuming articles are nested in the result
+        const articleIds = data.map(item => item.article_id);
+        return articleIds;
+
     } catch (error) {
         console.error('Error retrieving user interests:', error);
         throw error;

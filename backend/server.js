@@ -241,7 +241,7 @@ app.post('/articles', async (req, res) => {
 app.post('/interests/add', async (req, res) => {
     const { userEmail, articleId } = req.body;
     try {
-        await addInterest(userEmail, articleId);
+        await articlesModel.addInterest(userEmail, articleId);
         res.status(200).json({ message: 'Interest added successfully' });
     } catch (err) {
         console.error('Error adding interest:', err);
@@ -253,7 +253,7 @@ app.post('/interests/add', async (req, res) => {
 app.post('/interests/remove', async (req, res) => {
     const { userEmail, articleId } = req.body;
     try {
-        await removeInterest(userEmail, articleId);
+        await articlesModel.removeInterest(userEmail, articleId);
         res.status(200).json({ message: 'Interest removed successfully' });
     } catch (err) {
         console.error('Error removing interest:', err);
@@ -265,7 +265,7 @@ app.post('/interests/remove', async (req, res) => {
 app.get('/interests/:userEmail', async (req, res) => {
     const { userEmail } = req.params;
     try {
-        const articles = await getUserInterests(userEmail);
+        const articles = await articlesModel.getUserInterests(userEmail);
         if (articles.length > 0) {
             res.json(articles);
         } else {
@@ -540,12 +540,10 @@ app.get('/skills/:userId', async (req, res) => {
 // ---------- Comment ROUTES -----------
 // Route to add a comment
 app.post('/comments', async (req, res) => {
-    const { articleId, authorId, text } = req.body;
+    const { articleId, authorEmail, text } = req.body;
     try {
-        const comments = await commentsModel.addComment(articleId, authorId, text);
-        if (!comments || comments.length === 0) {
-            return res.status(404).json({ message: 'No comments found for this article' });
-        }
+        const comments = await commentsModel.addComment(articleId, authorEmail, text);
+
         res.status(201).json({ message: 'Comment added successfully' });
     } catch (error) {
         console.error('Error adding comment:', error);
@@ -569,10 +567,10 @@ app.get('/comments/:articleId', async (req, res) => {
 });
 
 // Route to get all comments by a specific user
-app.get('/comments/user/:authorId', async (req, res) => {
-    const { authorId } = req.params;
+app.get('/comments/user/:authorEmail', async (req, res) => {
+    const { authorEmail } = req.params;
     try {
-        const comments = await commentsModel.getCommentsOfUser(authorId);
+        const comments = await commentsModel.getCommentsOfUser(authorEmail);
         if (comments.length === 0) {
             return res.status(404).json({ message: 'No comments found for this user' });
         }

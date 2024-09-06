@@ -93,8 +93,9 @@ export default function Epag_Home() {
 
     const handleDeleteArticle = async (articleId) => {
         try {
-            const response = await deleteArticle(articleId);
+            await deleteArticle(articleId);
             console.log('article deleted successfully');
+            await getMyArticles(user_info.email);
         }
         catch (error) {
             console.error('Error deleting article:', error);
@@ -136,13 +137,11 @@ export default function Epag_Home() {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const type = e.target.accept.includes('image') ? 'image' :
-                e.target.accept.includes('video') ? 'video' :
-                    'audio';
+            const type = file.type;
 
             setAttachedFiles((prevFiles) => [
                 ...prevFiles,
-                { type : type, file: file }
+                { type: type, file: file }
             ]);
             console.log(`Attached ${type}:`, file);
         }
@@ -170,30 +169,31 @@ export default function Epag_Home() {
         let articleId;
         try {
             articleId = await addArticle(title, user_info.email, formattedDate, body);
+
+            for (const attachment of attachedFiles) {
+                const { type, file } = attachment;
+
+                try {
+                    await addAttachment(articleId, type, file);
+                    console.log(`Attachment for article ID ${articleId} added successfully.`);
+                } catch (error) {
+                    console.error(`Error adding attachment for article ID ${articleId}:`, error);
+                }
+            }
+
+            await getMyArticles(user_info.email);
+
+            setTitle('');
+            setBody('');
+            setAttachedFiles([]);
+
+
         } catch (error) {
             console.error('Error adding article:', error);
         }
         console.log('created article with id:', articleId);
-        for (const attachment of attachedFiles) {
-            const { type, file } = attachment;
-
-            try {
-                await addAttachment(articleId, type, file);
-                console.log(`Attachment for article ID ${articleId} added successfully.`);
-            } catch (error) {
-                console.error(`Error adding attachment for article ID ${articleId}:`, error);
-            }
-        }
-
-        setTitle('');
-        setBody('');
-        setAttachedFiles([]);
-
-        document.getElementById('attachFileButton').addEventListener('click', (event) => {
-            event.preventDefault();
-            // Code to handle file attachment
-        });
     };
+
 
     return (
         <div>

@@ -1,11 +1,11 @@
 const supabase = require('../supabaseClient');
 
 // Function to add a comment
-const addComment = async (articleId, authorId, text) => {
+const addComment = async (articleId, authorEmail, text) => {
     try {
         const { data, error } = await supabase
             .from('comments')
-            .insert([{ article_id: articleId, author_id: authorId, text }]);
+            .insert([{ article_id: articleId, author_email: authorEmail, text }]);
 
         if (error) {
             throw error;
@@ -37,12 +37,12 @@ const getComments = async (articleId) => {
 };
 
 // Function to get comments of a user
-const getCommentsOfUser = async (authorId) => {
+const getCommentsOfUser = async (authorEmail) => {
     try {
         const { data, error } = await supabase
             .from('comments')
             .select('*')
-            .eq('author_id', authorId);
+            .eq('author_email', authorEmail);
 
         if (error) {
             throw error;
