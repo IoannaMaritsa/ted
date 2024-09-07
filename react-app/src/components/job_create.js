@@ -2,10 +2,10 @@ import React from 'react';
 import { useState , useEffect} from 'react';
 import './job_create.css';
 
-const Job_create = ({ id, onSave }) => {
+const Job_create = ({ c_email, onSave }) => {
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
-    const [speciality, setSpeciality] = useState('');
+    const [profession, setProfession] = useState('');
     const [location, setLocation] = useState('Αθήνα - Κέντρο');
     const [type, setType] = useState('Πλήρης');
     const [experience, setExperience] = useState('');
@@ -37,8 +37,8 @@ const Job_create = ({ id, onSave }) => {
         setCompany(e.target.value);
     };
 
-    const handleSpecialityChange = (e) => {
-        setSpeciality(e.target.value);
+    const handleprofessionChange = (e) => {
+        setProfession(e.target.value);
     };
 
     const handleLocationChange = (event) => {
@@ -50,11 +50,13 @@ const Job_create = ({ id, onSave }) => {
     };
 
     const handleExperienceChange = (e) => {
-        setExperience(e.target.value);
+        if (e.target.value >= 0)
+            setExperience(e.target.value);
     };
 
     const handleSalaryChange = (e) => {
-        setSalary(e.target.value);
+        if (e.target.value >= 0)
+            setSalary(e.target.value);
     };
 
     const handleDetailChange = (e) => {
@@ -63,36 +65,19 @@ const Job_create = ({ id, onSave }) => {
     const handleClick = (e) => {
         e.preventDefault();
         //add date
-        const today = new Date();
-        const date = today.getDate();
-        const month = today.getMonth() + 1;
-        const year = today.getFullYear();
-        const formattedDate = `${year}-${month}-${date}`;
+        const now = new Date();
+        const timestamp = now.toISOString();
 
-        const job = {
-            id: id, 
-            title: title, 
-            company: company, 
-            location: location, 
-            date: formattedDate, 
-            type: type, 
-            specialization: speciality, 
-            experience: experience, 
-            salary: salary, 
-            details: detail, 
-            submissions: [],
-            creator_id: 999
-        }
-        onSave(job)
+        onSave(title, company, location, timestamp, type, profession, experience, salary, detail , c_email)
         // Reset the form
         setTitle('');
         setCompany('');
         setDetail('');
         setExperience('');
-        setLocation('');
+        setLocation('Αθήνα - Κέντρο');
         setSalary('');
-        setSpeciality('');
-        setType('');
+        setProfession('');
+        setType('Πλήρης');
     };
 
     useEffect(() => {
@@ -126,12 +111,12 @@ const Job_create = ({ id, onSave }) => {
                         />
                     </div>
                     <div className="job-input-group">
-                        <label htmlFor="speciality">Ειδικότητα</label>
+                        <label htmlFor="profession">Ειδικότητα</label>
                         <input
                             type="text"
-                            id="speciality"
-                            value={speciality}
-                            onChange={handleSpecialityChange}
+                            id="profession"
+                            value={profession}
+                            onChange={handleprofessionChange}
                             required
                         />
                     </div>

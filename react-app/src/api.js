@@ -550,3 +550,73 @@ export const getAttachments = async (articleId) => {
         throw error;
     }
 };
+
+//Add a new job
+export const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details , creatorEmail) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/jobs`, {title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail});
+        return response.data;
+    } catch (error) {
+        console.error('Error adding job:', error);
+        throw error;
+    }
+};
+
+//Update an existing job
+export const updateJob = async (jobId, updatedData) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/jobs/${jobId}`, updatedData);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating job:', error);
+        throw error;
+    }
+};
+
+//Delete a job
+export const deleteJob = async (jobId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/jobs/${jobId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting job:', error);
+        throw error;
+    }
+};
+
+//Get job adds for a user
+export const getJobsOfUser = async (userEmail) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/jobs/user/${userEmail}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error getting jobs for user:', error);
+        throw error;
+    }
+};
+
+//Add a submission
+export const addSubmission = async (jobId, userEmail, submissionDate) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/submissions`, {
+            jobId,
+            userEmail,
+            submissionDate
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error adding submission:', error);
+        throw error;
+    }
+};
+
+//get all submissions for a job
+export const getSubmissionsForJob = async (jobId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/submissions/job/${jobId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching submissions for job:', error);
+        throw error;
+    }
+};

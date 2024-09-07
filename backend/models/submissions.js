@@ -1,38 +1,50 @@
-const pool = require('../db');
+const supabase = require('../supabaseClient');
 
 // Function to add a submission
-const addSubmission = async (jobId, userId, submissionDate) => {
-    const query = `
-        INSERT INTO submissions (job_id, user_id, submission_date)
-        VALUES ($1, $2, $3)
-        ON CONFLICT (job_id, user_id) DO NOTHING; -- Prevent multiple submissions from the same user for the same job
-    `;
-    const values = [jobId, userId, submissionDate];
-
+const addSubmission = async (jobId, userEmail, submissionDate) => {
     try {
-        await pool.query(query, values);
-        console.log('Submission added successfully.');
+        const { data, error } = await supabase
+            .from('submissions')
+            .insert([{ 
+                job_id: jobId, 
+                user_email: userEmail, 
+                submission_date: submissionDate 
+            }])
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Submission added successfully:', data);
+        return { success: true, submission: data };
     } catch (err) {
         console.error('Error adding submission:', err);
+        return { success: false, message: 'Error adding submission' };
     }
 };
 
 // Function to get all submissions for a job
 const getSubmissionsForJob = async (jobId) => {
-    const query = `
-        SELECT s.id, u.name, s.submission_date
-        FROM submissions s
-        JOIN users u ON s.user_id = u.id
-        WHERE s.job_id = $1;
-    `;
-    const values = [jobId];
-
     try {
-        const res = await pool.query(query, values);
-        console.log('Submissions:', res.rows);
-        return res.rows;
+        const { data, error } = await supabase
+            .from('submissions')
+            .select(`
+                id,
+                submission_date,
+                users (email , name)
+            `)
+            .eq('job_id', jobId)
+            .order('submission_date', { ascending: false });
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Submissions:', data);
+        return { success: true, data: data };
     } catch (err) {
         console.error('Error fetching submissions:', err);
+        return { success: false, message: 'Error fetching submissions' };
     }
 };
 
@@ -40,6 +52,3 @@ module.exports = {
     addSubmission,
     getSubmissionsForJob
 };
-// Example usage
-// addSubmission(1, 2, '2024-08-10');
-//getSubmissionsForJob(1);
