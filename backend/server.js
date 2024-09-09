@@ -14,6 +14,8 @@ const studiesModel = require('./models/studies');
 const skillsModel = require('./models/skills');
 const commentsModel = require('./models/comments');
 const attachmentsModel = require('./models/attachments');
+const jobsModel = require('./models/jobs');
+const submissionsModel = require('./models/submissions');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -241,7 +243,7 @@ app.post('/articles', async (req, res) => {
 app.post('/interests/add', async (req, res) => {
     const { userEmail, articleId } = req.body;
     try {
-        await addInterest(userEmail, articleId);
+        await articlesModel.addInterest(userEmail, articleId);
         res.status(200).json({ message: 'Interest added successfully' });
     } catch (err) {
         console.error('Error adding interest:', err);
@@ -253,7 +255,7 @@ app.post('/interests/add', async (req, res) => {
 app.post('/interests/remove', async (req, res) => {
     const { userEmail, articleId } = req.body;
     try {
-        await removeInterest(userEmail, articleId);
+        await articlesModel.removeInterest(userEmail, articleId);
         res.status(200).json({ message: 'Interest removed successfully' });
     } catch (err) {
         console.error('Error removing interest:', err);
@@ -265,7 +267,7 @@ app.post('/interests/remove', async (req, res) => {
 app.get('/interests/:userEmail', async (req, res) => {
     const { userEmail } = req.params;
     try {
-        const articles = await getUserInterests(userEmail);
+        const articles = await articlesModel.getUserInterests(userEmail);
         if (articles.length > 0) {
             res.json(articles);
         } else {
@@ -540,12 +542,10 @@ app.get('/skills/:userId', async (req, res) => {
 // ---------- Comment ROUTES -----------
 // Route to add a comment
 app.post('/comments', async (req, res) => {
-    const { articleId, authorId, text } = req.body;
+    const { articleId, authorEmail, text } = req.body;
     try {
-        const comments = await commentsModel.addComment(articleId, authorId, text);
-        if (!comments || comments.length === 0) {
-            return res.status(404).json({ message: 'No comments found for this article' });
-        }
+        const comments = await commentsModel.addComment(articleId, authorEmail, text);
+
         res.status(201).json({ message: 'Comment added successfully' });
     } catch (error) {
         console.error('Error adding comment:', error);
@@ -569,10 +569,10 @@ app.get('/comments/:articleId', async (req, res) => {
 });
 
 // Route to get all comments by a specific user
-app.get('/comments/user/:authorId', async (req, res) => {
-    const { authorId } = req.params;
+app.get('/comments/user/:authorEmail', async (req, res) => {
+    const { authorEmail } = req.params;
     try {
-        const comments = await commentsModel.getCommentsOfUser(authorId);
+        const comments = await commentsModel.getCommentsOfUser(authorEmail);
         if (comments.length === 0) {
             return res.status(404).json({ message: 'No comments found for this user' });
         }
@@ -632,6 +632,105 @@ app.get('/attachments/:articleId', async (req, res) => {
     } catch (error) {
         console.error('Error fetching attachments:', error);
         res.status(500).json({ message: 'Error fetching attachments', error: error.message });
+    }
+});
+// ---------- Job ROUTES -----------
+//Adding a job
+app.post('/jobs', async (req, res) => {
+    const { title, company, location, publishDate, type, profession, experience, salary, details , creatorEmail} = req.body;
+
+    try {
+        const job = await jobsModel.addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail);
+        if (!job.success) {
+            return res.status(404).json({ message: 'failed adding job' });
+        }
+        res.status(201).json({ message: 'Job added successfully', job });
+    } catch (error) {
+        console.error('Error adding job:', error);
+        res.status(500).json({ message: 'Error adding job', error: error.message });
+    }
+});
+//updating job
+app.put('/jobs/:jobId', async (req, res) => {
+    const { jobId } = req.params;
+    const updatedData = req.body;
+
+    try {
+        const result = await jobsModel.updateJob(jobId, updatedData);
+
+        if (!result.success) {
+            return res.status(404).json({ message: result.message });
+        }
+
+        res.status(200).json({ message: 'Job updated successfully', job: result.job });
+    } catch (error) {
+        console.error('Error updating job:', error);
+        res.status(500).json({ message: 'Error updating job', error: error.message });
+    }
+});
+//deleting job
+app.delete('/jobs/:jobId', async (req, res) => {
+    const { jobId } = req.params;
+
+    try {
+        const result = await jobsModel.deleteJob(jobId);
+
+        if (!result.success) {
+            return res.status(404).json({ message: result.message });
+        }
+
+        res.status(200).json({ message: result.message });
+    } catch (error) {
+        console.error('Error deleting job:', error);
+        res.status(500).json({ message: 'Error deleting job', error: error.message });
+    }
+});
+//get job adds of a specific user
+app.get('/jobs/user/:userEmail', async (req, res) => {
+    const { userEmail } = req.params;
+
+    try {
+        const jobs = await jobsModel.getJobOfUser(userEmail);
+
+        if (!jobs) {
+            return res.status(404).json({ message: 'No jobs found' });
+        }
+
+        res.status(200).json(jobs);
+    } catch (error) {
+        console.error('Error getting jobs for user:', error);
+        res.status(500).json({ message: 'Error getting jobs for user', error: error.message });
+    }
+});
+// ---------- Job ROUTES -----------
+//Add a submission
+app.post('/submissions', async (req, res) => {
+    const { jobId, userEmail, submissionDate } = req.body;
+
+    try {
+        const result = await submissionsModel.addSubmission(jobId, userEmail, submissionDate);
+        if (!result.success) {
+            return res.status(400).json({ message: 'Failed to add submission' });
+        }
+        res.status(201).json({ message: 'Submission added successfully', submission: result.submission });
+    } catch (error) {
+        console.error('Error adding submission:', error);
+        res.status(500).json({ message: 'Error adding submission', error: error.message });
+    }
+});
+//get all submissions for a job
+app.get('/submissions/job/:jobId', async (req, res) => {
+    const { jobId } = req.params;
+
+    try {
+        const result = await submissionsModel.getSubmissionsForJob(jobId);
+        if (!result.success) {
+            return res.status(404).json({ message: 'No submissions found for this job' });
+        }
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error fetching submissions:', error);
+        res.status(500).json({ message: 'Error fetching submissions', error: error.message });
     }
 });
 

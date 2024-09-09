@@ -1,7 +1,49 @@
 import React from 'react';
 import './job_display.css';
+import { useState , useEffect } from 'react';
+import { addSubmission, getSubmissionsForJob } from '../api';
+import { useAppContext } from "../context/appContext";
 
-const Job = ({ id, title, company, location, date, type, speciality, experience, salary, detail }) => {
+const Job = ({ id, title, company, location, publish_date, type, profession, experience, salary, detail }) => {
+
+    const myuser = useAppContext().user;
+    const [submissions, setSubmissions] = useState([]);
+    const [submitted, setSubmitted] = useState(false);
+
+    const getSubmissions = async (articleId) => {
+        try {
+            const subs = await getSubmissionsForJob(articleId);
+            if (subs.success)
+                setSubmissions(subs.data)
+
+        } catch (error) {
+            console.error('Error getting submissions:', error);
+        }
+    };
+
+    useEffect(() => {
+        setSubmitted(submissions.some(submission => submission.users.email === myuser.email));
+        console.log(submitted);
+    }, [submissions, myuser.email]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const now = new Date();
+        const timestamp = now.toISOString();
+
+        try {
+            await addSubmission(id, myuser.email, timestamp);
+            console.log('added sbmission successfully');
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    }
+
+    useEffect(() => {
+        getSubmissions(id);
+    }, [id]);
+
     return (
         <div className="black-frame">
             <div className='job-display-box'>
@@ -9,7 +51,7 @@ const Job = ({ id, title, company, location, date, type, speciality, experience,
                 <div className='job-display-sector'>
 
                     <div className='job-display-time'>
-                        <h5>{date}</h5>
+                        <h5>{publish_date}</h5>
                     </div>
                     <div className='job-display-info'>
                         <h2>{title}</h2>
@@ -25,7 +67,7 @@ const Job = ({ id, title, company, location, date, type, speciality, experience,
                         </div>
                         <div className='job-display-info'>
                             <img src="/user.png" alt="User Icon" className="icon" />
-                            <h4>{speciality}</h4>
+                            <h4>{profession}</h4>
                         </div>
                     </div>
                 </div>
@@ -47,16 +89,21 @@ const Job = ({ id, title, company, location, date, type, speciality, experience,
                 <div className='job-display-sector'>
                     <div className='job-display-info'>
                         <p>
-                            <h5>Περισσότερες πληροφορίες:</h5>
-                            <h4>{detail}</h4>
+                            <h4>Περισσότερες πληροφορίες:</h4>
+                            <>{detail}</>
                         </p>
                     </div>
                 </div>
             </div>
-            <div className='job-display-buttons'>
-                <button className='job-interest-button'>Με ενδιαφέρει</button>
-                <button className='button-primary'>Αίτηση</button>
-            </div>
+
+            {submitted ? (
+                <div>Έχετε υποβάλει ήδη αίτηση για αυτήν την αγγελία</div>
+            ) : (
+                <div className='send-right'>
+                    <button onClick={(e) => handleSubmit(e)} className='button-primary'>Αίτηση</button>
+                </div>
+            )}
+
         </div>
     );
 };

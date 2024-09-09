@@ -8,8 +8,10 @@ import Job_create from '../components/job_create';
 import Job from '../components/job_display';
 import MyJob from '../components/my_job_display';
 import '../css/Epag_job_ad.css';
+import { useAppContext } from "../context/appContext";
+import { format } from 'date-fns';
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob } from '../api';
 
 export default function Epag_job_ad() {
 
@@ -25,61 +27,52 @@ export default function Epag_job_ad() {
     'Κυψέλη'
   ];
 
-  const user_info = {
-    id: 999,
-    profilePic: '/default-avatar.jpeg',
-    name: 'Λάκης Λαλάκης',
-    profession: 'Πολιτικός Μηχανικός',
-    workplace: 'NASA',
-    location: 'Τρίπολη',
-    birthday: '27-07-1960',
-    email: 'lalakis@example.com',
-    experiences: [{ profession: 'Software Engineer', workplace: 'Google', date: 'Jan 2020 - Dec 2021' }, { profession: 'Frontend Developer', workplace: 'Microsoft', date: 'Jan 2019 - Dec 2019' }],
-    studies: [{ university: 'Ekpa', degree: 'Undergraduate Degree, Software Engineering', date: '2016 - 2020' }, { university: 'Harvard', degree: 'Masters, Comp Sci', date: '2020 - 2024' }],
-    skills: ['Customer Satisfaction', 'C++ Knowledge', 'Python Knowledge', 'React Framework']
-  }
+  //user
+  const user_info = useAppContext().user;
 
-  const users = [
-    {
-      id: 234,
-      profilePic: '/default-avatar.jpeg',
-      name: 'Αννίτα Πάνια',
-    },
-    {
-      id: 700,
-      profilePic: '/default-avatar.jpeg',
-      name: 'Στέφανος Χίος',
-    },
-    {
-      id: 509,
-      profilePic: '/default-avatar.jpeg',
-      name: 'Will Smith',
-    },
-    {
+  //jobs
+  const [jobs, setJobs] = useState([]);
+  const [myjobs, setMyjobs] = useState([]);
 
+  const getJobs = async (userEmail) => {
+    try {
+      const contacts = await getAllContactsByUserEmail(userEmail);
+      for (const contact of contacts) {
+        try {
+          const newjobs = await getJobsOfUser(contact.contact_email);
+          if (newjobs.success) {
+            setJobs(newjobs.data);
+          }
+        } catch (error) {
+          console.error(`Error getting job for user with email ${contact.contact_email}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Error getting jobs:', error);
     }
-  ];
+    console.log('jobs',jobs);
+  };
 
-  const [jobs, setJobs] = useState([
-    { id: 1, title: 'Sample Job Title 1', company: 'Google', location: 'Άνω Πατήσια', date: '2024-07-27', type: 'Πλήρης', specialization: 'Software Engineer', experience: 2, salary: 80000, details: 'Some more info 1', submissions: [], creator_id: 234 },
-    { id: 2, title: 'Sample Job Title 2', company: 'Kotsovolos A.E', location: 'Νέο Ηράκλειο', date: '2024-04-06', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 50000, details: 'Some more info 2', submissions: [], creator_id: 700 },
-    { id: 3, title: 'Sample Job Title 3', company: 'Ekdoseis Tziola', location: 'Ζωγράφου', date: '2024-08-20', type: 'Πλήρης', specialization: 'Delivery', experience: 0, salary: 25000, details: 'Some more info 3', submissions: [], creator_id: 509 },
-    { id: 4, title: 'Sample Job Title 4', company: 'Something1', location: 'Κάτω Πατήσια', date: '2024-04-30', type: 'Εθελοντική', specialization: 'Engineer', experience: 8, salary: 0, details: 'Some more info 4', submissions: [], creator_id: 700 },
-    { id: 5, title: 'Sample Job Title 5', company: 'something 2', location: 'Κυψέλη', date: '2019-09-15', type: 'Πλήρης', specialization: 'Cleaning', experience: 0, salary: 150000, details: 'Some more info 5', submissions: [], creator_id: 234 },
-    { id: 6, title: 'Sample Job Title 6', company: 'Electroholic', location: 'Άνω Πατήσια', date: '2024-08-17', type: 'Εθελοντική', specialization: 'Software Engineer', experience: 2, salary: 0, details: 'Some more info 6', submissions: [{ user: users.find((person) => person.id === 234), date: '2017-02-12' }, { user: users.find((person) => person.id === 509), date: '2021-04-25' }], creator_id: 999 },
-    { id: 7, title: 'Sample Job Title 7', company: 'Vodafone', location: 'Νέο Ηράκλειο', date: '2019-03-15', type: 'Μερική', specialization: 'Customer Service', experience: 4, salary: 100000, details: 'Some more info 7', submissions: [{ user: users.find((person) => person.id === 700), date: '23 / 2 / 2024' }], creator_id: 999 },
-    // Add more articles as needed
-  ]);
+  const getMyJobs = async (userEmail) => {
+    try {
 
-  const [myjobs, setMyjobs] = useState(jobs.filter((i, _) => i.creator_id === user_info.id));
+      const newjobs = await getJobsOfUser(userEmail);
+      console.log(`Got a job successfully.`);
+      if (newjobs.success)
+        setMyjobs(newjobs.data)
 
+    } catch (error) {
+      console.error('Error getting jobs:', error);
+    }
+  };
+
+  //filters
   const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
   const [selectedDateFilter, setSelectedDateFilter] = useState('Δημοσίευση Όλες');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState('Απασχόληση Όλες');
   const [selectedExperienceFilter, setSelectedExperienceFilter] = useState('Εμπειρία Όλες');
   const [selectedSalaryFilter, setSelectedSalaryFilter] = useState('Μισθός Όλες');
   const [selectedLocation, setSelectedLocation] = useState('Περιοχές Όλες');
-
 
   const handleDateFilterChange = (option) => {
     setSelectedDateFilter(option);
@@ -100,35 +93,6 @@ export default function Epag_job_ad() {
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
   };
-
-  const [mysearchQuery, setMysearchQuery] = useState();
-  const [searchQuery, setSearchQuery] = useState();
-
-  const searchJobs = useMemo(() => {
-    const query = (searchQuery || '').toLowerCase();
-    const otherjobs = jobs.filter((i, _) => i.creator_id !== user_info.id);
-    return otherjobs.filter(job => {
-      const title = (job.title || '').toLowerCase();
-      const company = (job.company || '').toLowerCase();
-      const specialization = (job.specialization || '').toLowerCase();
-      return title.includes(query) ||
-        company.includes(query) ||
-        specialization.includes(query);
-    });
-  }, [searchQuery, jobs]);
-
-  const searchMyjobs = useMemo(() => {
-    const query = (mysearchQuery || '').toLowerCase();
-    return myjobs.filter(job => {
-      const title = (job.title || '').toLowerCase();
-      const company = (job.company || '').toLowerCase();
-      const specialization = (job.specialization || '').toLowerCase();
-      return title.includes(query) ||
-        company.includes(query) ||
-        specialization.includes(query);
-    });
-  }, [mysearchQuery, myjobs]);
-
 
   const filterJobs = (jobArray) => {
     return jobArray.filter(job => {
@@ -175,6 +139,34 @@ export default function Epag_job_ad() {
     });
   };
 
+  //search
+  const [mysearchQuery, setMysearchQuery] = useState();
+  const [searchQuery, setSearchQuery] = useState();
+
+  const searchJobs = useMemo(() => {
+    const query = (searchQuery || '').toLowerCase();
+    return jobs.filter(job => {
+      const title = (job.title || '').toLowerCase();
+      const company = (job.company || '').toLowerCase();
+      const profession = (job.profession || '').toLowerCase();
+      return title.includes(query) ||
+        company.includes(query) ||
+        profession.includes(query);
+    });
+  }, [searchQuery, jobs]);
+
+  const searchMyjobs = useMemo(() => {
+    const query = (mysearchQuery || '').toLowerCase();
+    return myjobs.filter(job => {
+      const title = (job.title || '').toLowerCase();
+      const company = (job.company || '').toLowerCase();
+      const profession = (job.profession || '').toLowerCase();
+      return title.includes(query) ||
+        company.includes(query) ||
+        profession.includes(query);
+    });
+  }, [mysearchQuery, myjobs]);
+
   const filteredJobs = filterJobs(searchJobs);
   const myfilteredJobs = filterJobs(searchMyjobs);
 
@@ -182,14 +174,11 @@ export default function Epag_job_ad() {
   //pagination for my jobs
   const [mycurrentPage, setMyCurrentPage] = useState(1);
   const myjobsPerPage = 4;
-
-  // Calculate total pages
   const mytotalPages = Math.ceil(myfilteredJobs.length / myjobsPerPage);
 
-  // Get current contacts
   const myindexOfLastJob = mycurrentPage * myjobsPerPage;
   const myindexOfFirstJob = myindexOfLastJob - myjobsPerPage;
-  const mycurrentJobs = myfilteredJobs.slice(myindexOfFirstJob, myindexOfLastJob).sort((a, b) => new Date(b.date) - new Date(a.date));;
+  const mycurrentJobs = myfilteredJobs.slice(myindexOfFirstJob, myindexOfLastJob);
   const [myselectedJob, setMyselectedJob] = useState(null);
 
   // Handle page change
@@ -200,14 +189,11 @@ export default function Epag_job_ad() {
   //pagination for others' jobs
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 4;
-
-  // Calculate total pages
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
-  // Get current contacts
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob).sort((a, b) => new Date(b.date) - new Date(a.date));;
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
   const [selectedJob, setSelectedJob] = useState(currentJobs[0]);
 
   // Handle page change
@@ -215,15 +201,20 @@ export default function Epag_job_ad() {
     setCurrentPage(pageNumber);
   };
 
-  const handleSave = (updatedJob) => {
 
-    setJobs(prevJobs =>
-      prevJobs.map(job =>
-        job.id === updatedJob.id ? updatedJob : job
-      )
-    );
+  //update job
+  const handleSave = async (jobId, updatedJob) => {
+    try {
+      await updateJob(jobId, updatedJob);
+
+      await getMyJobs(user_info.email);
+
+    } catch (error) {
+      console.error(`Error updating job with id ${jobId}:`, error);
+    }
   };
 
+  //options
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
     setMyselectedJob(null); // Clear myselectedJob when switching options
@@ -238,8 +229,16 @@ export default function Epag_job_ad() {
     setMyselectedJob(job); // This will trigger a re-render with the new job's details
   };
 
-  const AddJob = (job) => {
-    setJobs([...jobs, job]);
+  //add job
+  const HandleAddJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail) => {
+    try {
+      await addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail);
+      console.log(`Added a job successfully.`);
+
+      await getMyJobs(user_info.email);
+    } catch (error) {
+      console.error(`Error adding a job`, error);
+    }
   };
 
   useEffect(() => {
@@ -254,13 +253,22 @@ export default function Epag_job_ad() {
     }
   }, [selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedSalaryFilter, selectedTypeFilter, searchQuery, mysearchQuery, jobs]);
 
-  useEffect(() => {
-    setMyjobs(jobs.filter((i, _) => i.creator_id === user_info.id))
-  }, [jobs]);
+  const handleDeleteClick = async (jobid) => {
+    try {
+      await deleteJob(jobid);
+      console.log('job deleted sucessfully');
 
-  const handleDeleteClick = (jobid) => {
-    setJobs(jobs.filter(job => job.id !== jobid));
+      await getMyJobs(user_info.email);
+    } catch (error) {
+      console.error(`Error adding a job`, error);
+    }
+    setMyselectedJob(null);
   };
+
+  useEffect(() => {
+    getJobs(user_info.email);
+    getMyJobs(user_info.email);
+  }, []);
 
   return (
     <div>
@@ -306,10 +314,10 @@ export default function Epag_job_ad() {
                 {mycurrentJobs.map((job, index) => (
                   <div className="job-display" onClick={() => HandleMyJobSelect(job)}>
                     <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={() => handleDeleteClick(job.id)} />
-                    <div className="job-display-date"> {job.date} </div>
+                    <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
                     <div className="job-display-title">{job.title}</div>
                     <div className="job-display-company">{job.company}</div>
-                    <div className="job-display-company">{job.specialization}</div>
+                    <div className="job-display-company">{job.profession}</div>
                     <div className="job-display-company">{job.type} Απασχόληση</div>
                     <div className="job-display-salary">{job.salary} €</div>
                   </div>
@@ -335,7 +343,7 @@ export default function Epag_job_ad() {
                 )}
               </div>
               <div className="jobs-right-section">
-                <Job_create id={jobs.length + 1} onSave={AddJob} />
+                <Job_create c_email={user_info.email} onSave={HandleAddJob} />
               </div>
             </div>
           }
@@ -352,20 +360,21 @@ export default function Epag_job_ad() {
                   <div>
                     {job.id === myselectedJob.id ? (
                       <div className="job-display-selected" onClick={() => HandleMyJobSelect(job)}>
-                        <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={handleDeleteClick} />
-                        <div className="job-display-date"> {job.date} </div>
+                        <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={() => handleDeleteClick(job.id)} />
+                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.profession}</div>
                         <div className="job-display-company">{job.type} Απασχόληση</div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
                     ) : (
                       <div className="job-display" onClick={() => HandleMyJobSelect(job)}>
-                        <div className="job-display-date"> {job.date} </div>
+                        <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={() => handleDeleteClick(job.id)} />
+                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.profession}</div>
                         <div className="job-display-company">{job.type} Απασχόληση</div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
@@ -400,11 +409,10 @@ export default function Epag_job_ad() {
                   init_company={myselectedJob.company}
                   init_location={myselectedJob.location}
                   init_type={myselectedJob.type}
-                  init_speciality={myselectedJob.specialization}
+                  init_profession={myselectedJob.profession}
                   init_experience={myselectedJob.experience}
                   init_salary={myselectedJob.salary}
                   init_detail={myselectedJob.details}
-                  init_submissions={myselectedJob.submissions}
                   onSave={handleSave}
                 />
               </div>
@@ -417,19 +425,19 @@ export default function Epag_job_ad() {
                   <div>
                     {job.id === selectedJob.id ? (
                       <div className="job-display-selected" onClick={() => HandleJobSelect(job)}>
-                        <div className="job-display-date"> {job.date} </div>
+                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.profession}</div>
                         <div className="job-display-company">{job.type} Απασχόληση</div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
                     ) : (
                       <div className="job-display" onClick={() => HandleJobSelect(job)}>
-                        <div className="job-display-date"> {job.date} </div>
+                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.specialization}</div>
+                        <div className="job-display-company">{job.profession}</div>
                         <div className="job-display-company">{job.type} Απασχόληση</div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
@@ -458,18 +466,19 @@ export default function Epag_job_ad() {
                 )}
               </div>
               <div className="jobs-right-section">
+              {currentJobs.length > 0 && (
                 <Job
                   id={selectedJob.id}
                   title={selectedJob.title}
                   company={selectedJob.company}
                   location={selectedJob.location}
-                  date={selectedJob.date}
+                  publish_date={selectedJob.publish_date}
                   type={selectedJob.type}
-                  speciality={selectedJob.specialization}
+                  profession={selectedJob.profession}
                   experience={selectedJob.experience}
                   salary={selectedJob.salary}
                   detail={selectedJob.details}
-                />
+                />)}
               </div>
             </div>
           }

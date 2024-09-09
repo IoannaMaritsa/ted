@@ -1,95 +1,110 @@
-const pool = require('../db');
+const supabase = require('../supabaseClient');
 
-// Function to add a job
-const addJob = async (title, creatorId, company, location, publishDate, type, profession, experience, salary, details) => {
-    const query = `
-        INSERT INTO jobs (title, creator_id, company, location, publish_date, type, profession, experience, salary, details)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
-    `;
-    const values = [title, creatorId, company, location, publishDate, type, profession, experience, salary, details];
-
+const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail) => {
     try {
-        await pool.query(query, values);
-        console.log('Job added successfully.');
+        const { data, error } = await supabase
+            .from('jobs')
+            .insert([{ 
+                title,  
+                company, 
+                location,  
+                publish_date: publishDate,
+                type, 
+                profession, 
+                experience, 
+                salary, 
+                details ,
+                creator_email: creatorEmail
+            }]);
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Job added successfully:', data);
+        return { success: true, job: data };
     } catch (err) {
         console.error('Error adding job:', err);
+        return { success: false, message: 'error adding job' };
     }
 };
 
-// Function to update a job
 const updateJob = async (jobId, updatedData) => {
     try {
-        const fields = Object.keys(updatedData).map((key, index) => `${key} = $${index + 2}`).join(', ');
-        const values = [jobId, ...Object.values(updatedData)];
+        const { data, error } = await supabase
+            .from('jobs')
+            .update(updatedData)
+            .select('id')
+            .eq('id', jobId)
+            .single();
 
-        const result = await pool.query(
-            `UPDATE jobs SET ${fields} WHERE id = $1 RETURNING *`,
-            values
-        );
+        if (error) {
+            throw error;
+        }
 
-        if (result.rowCount === 0) {
+        if (!data) {
             console.log(`No job with ID ${jobId} found.`);
             return { success: false, message: 'Job not found' };
         }
 
-        console.log(`Job with ID ${jobId} updated.`);
-        return { success: true, job: result.rows[0] };
+        console.log(`Job with ID ${jobId} updated:`, data);
+        return { success: true, job: data };
     } catch (err) {
         console.error('Error updating job:', err);
         return { success: false, message: 'Error updating job' };
-    } finally {
-        pool.release();
     }
 };
 
-// Function to delete a job
 const deleteJob = async (jobId) => {
     try {
-        const result = await pool.query(
-            'DELETE FROM jobs WHERE id = $1 RETURNING *',
-            [jobId]
-        );
+        const { data, error } = await supabase
+            .from('jobs')
+            .delete()
+            .select('id')
+            .eq('id', jobId)
+            .single();
 
-        if (result.rowCount === 0) {
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
             console.log(`No job with ID ${jobId} found.`);
             return { success: false, message: 'Job not found' };
         }
 
-        console.log(`Job with ID ${jobId} deleted.`);
+        console.log(`Job with ID ${jobId} deleted:`, data);
         return { success: true, message: 'Job deleted' };
     } catch (err) {
         console.error('Error deleting job:', err);
         return { success: false, message: 'Error deleting job' };
-    } finally {
-        pool.release();
     }
 };
 
-// Function to get jobs of a specific user
-const getJobOfUser = async (userId) => {
+const getJobOfUser = async (userEmail) => {
     try {
-        const result = await pool.query(
-            'SELECT * FROM jobs WHERE creator_id = $1',
-            [userId]
-        );
+        const { data, error } = await supabase
+            .from('jobs')
+            .select('*')
+            .eq('creator_email', userEmail)
+            .order('publish_date', { ascending: false });
 
-        if (result.rowCount === 0) {
-            console.log(`No jobs found for user with ID ${userId}.`);
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            console.log(`No jobs found for user with ID ${userEmail}.`);
             return { success: false, message: 'No jobs found' };
         }
 
-        console.log(`Found ${result.rowCount} jobs for user with ID ${userId}.`);
-        return result.rows;
+        console.log(`Found jobs for user with ID ${userEmail}:`, data);
+        return { success: true, data: data };
     } catch (err) {
         console.error('Error getting jobs for user:', err);
         return { success: false, message: 'Error getting jobs' };
-    } finally {
-        pool.release();
     }
 };
-
-// Example usage
-// addJob('Software Engineer', 1, 'Tech Solutions', 'San Francisco, CA', '2024-08-01', 'Full-time', 'Software Engineer', 3, 120000, 'Looking for a software engineer with experience in full-stack development.');
 
 module.exports = {
     addJob,
