@@ -278,7 +278,21 @@ app.get('/interests/:userEmail', async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve user interests' });
     }
 });
+// Get all interests of a specific article
+app.get('/articles/:id/interests', async (req, res) => {
+    const articleId = req.params.id;
 
+    try {
+        const interests = await articlesModel.getArticleInterests(articleId);
+        if (!interests) {
+            return res.status(404).json({ message: 'No interests found for this article' });
+        }
+        res.status(200).json(interests);
+    } catch (error) {
+        console.error('Error retrieving user interests:', error);
+        res.status(500).json({ message: 'Error retrieving user interests', error: error.message });
+    }
+});
 // ---------- CONTACT ROUTES -----------
 
 // Get all contacts for a specific user by email

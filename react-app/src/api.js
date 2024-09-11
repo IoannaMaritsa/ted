@@ -203,6 +203,17 @@ export const getUserInterests = async (userEmail) => {
     }
 };
 
+// Get all users interested in a specific article
+export const getArticleInterests = async (articleId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/articles/${articleId}/interests`);
+        return response.data;
+    } catch (error) {
+        console.error('Error retrieving user interests:', error);
+        throw error;
+    }
+};
+
 // Get all contacts for a specific user by email
 export const getAllContactsByUserEmail = async (userEmail) => {
     try {

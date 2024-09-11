@@ -180,6 +180,27 @@ const getUserInterests = async (userEmail) => {
     }
 };
 
+// Get all the users that are interested in an article
+const getArticleInterests = async (articleId) => {
+    try {
+        const { data, error } = await supabase
+            .from('user_interests')
+            .select('*')
+            .eq('article_id', articleId)
+            .order('date', { ascending: false });
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error('Error retrieving user interests:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     addArticle,
     getArticlesByUserEmail,
@@ -187,6 +208,7 @@ module.exports = {
     addInterest,
     removeInterest,
     getUserInterests,
+    getArticleInterests,
     getArticlesNotByUserEmail,
     getArticlesById
 };

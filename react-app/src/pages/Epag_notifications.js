@@ -8,38 +8,32 @@ import { useAppContext } from "../context/appContext";
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { getReceivedFriendRequests, getUser, deleteFriendRequest, getFriendRequestByEmails, updateFriendRequestStatus, addContact,  } from '../api';
+import { getReceivedFriendRequests, getUser, deleteFriendRequest, getFriendRequestByEmails, updateFriendRequestStatus, addContact, getComments, getArticleInterests, getArticle } from '../api';
 import getImageUrl from '../hooks/getImageUrl';
 import { formatRelativeTime } from '../utils/timeUtils'; // Adjust the path as needed
 
 
-const NotificationItem = ({ user, time, status, action, comment, articleId, onAccept, onDecline }) => {
-    const { setOtherProfile, otherProfile, } = useAppContext();
+const NotificationItem = ({ user, time, action, comment, articleId, onAccept, onDecline }) => {
 
     const navigate = useNavigate();
 
-      // On profile pick navigate to the selected user's profile
-      const handleProfileClick = (user) => {
+    // On profile pick navigate to the selected user's profile
+    const handleProfileClick = (user) => {
         console.log("email2", user.email);
         navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
         window.scrollTo(0, 0);
     };
 
-
-    useEffect(() => {
-        console.log('Updated otherProfile:', otherProfile);
-    }, [otherProfile]);
-
     return (
         <div className="notification-item">
-            
-                
-                <div className="notification-text">
-                    <div className="notification-time">{time}</div>
-                    {action === 'sent you a request' ? (
-                        <>
+
+
+            <div className="notification-text">
+                <div className="notification-time">{time}</div>
+                {action === 'sent you a request' ? (
+                    <>
                         <div className='another-div'>
-                        <img src={getImageUrl(user?.profilepic, "profilepics")} alt={`${user?.name}'s profile`} onClick={() => handleProfileClick(user)} className="profile-pic" />
+                            <img src={getImageUrl(user?.profilepic, "profilepics")} alt={`${user?.name}'s profile`} onClick={() => handleProfileClick(user)} className="profile-pic" />
                             <div className="notification-name1" >
                                 <span className="actual-name" onClick={() => handleProfileClick(user)}>{user?.name}</span></div>
 
@@ -48,80 +42,148 @@ const NotificationItem = ({ user, time, status, action, comment, articleId, onAc
                                 <button className="reject-button15" onClick={() => onDecline(user?.email)}>Απόρριψη</button>
                             </div>
                         </div>
-                        </>
-                    ) : (
-                        <span>
-                            <img src={getImageUrl(user?.profilepic, "profilepics")} alt={`${user?.name}'s profile`} className="profile-pic" />
-                            <span>Ο/Η χρήστης </span><span className="notification-name" onClick={() => handleProfileClick(user)}>{user?.name} </span>
-                            {action === 'likes your article' ? (
-                                <span>
-                                    δήλωσε ότι του/της αρέσει η <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας.
-                                </span>
-                            ) : (
-                                <span>
-                                    άφησε ένα σχόλιο στην <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας:
-                                    <div className="comment">
-                                        {comment}
-                                    </div>
-                                </span>
-                            )}
-                        </span>
-                    )}
-                </div>
+                    </>
+                ) : (
+                    <span>
+                        <img src={getImageUrl(user?.profilepic, "profilepics")} alt={`${user?.name}'s profile`} className="profile-pic" onClick={() => handleProfileClick(user)} />
+                        <span>Ο/Η χρήστης </span><span className="notification-name" onClick={() => handleProfileClick(user)}>{user?.name} </span>
+                        {action === 'likes your article' ? (
+                            <span>
+                                δήλωσε ότι του/της αρέσει η <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας.
+                            </span>
+                        ) : (
+                            <span>
+                                άφησε ένα σχόλιο στην <Link to={`/epaggelmatias_notifications/epaggelmatias_article/${articleId}`}>δημοσίευση</Link> σας:
+                                <div className="comment">
+                                    {comment}
+                                </div>
+                            </span>
+                        )}
+                    </span>
+                )}
             </div>
+        </div>
 
     );
 };
 
-const convertTimeToSortableValue = (timeString) => {
-    const now = new Date();
-
-    if (timeString.includes('minutes ago')) {
-        const minutes = parseInt(timeString.split(' ')[0]);
-        return now.getTime() - minutes * 60 * 1000;
-    } else if (timeString.includes('hours ago')) {
-        const hours = parseInt(timeString.split(' ')[0]);
-        return now.getTime() - hours * 60 * 60 * 1000;
-    } else if (timeString.includes('day ago')) {
-        return now.getTime() - 24 * 60 * 60 * 1000;
-    } else if (timeString.includes('days ago')) {
-        const days = parseInt(timeString.split(' ')[0]);
-        return now.getTime() - days * 24 * 60 * 60 * 1000;
-    } else {
-        return now.getTime(); // If the format is unknown, treat as now
-    }
-};
 
 const Epag_notifications = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAppContext();
+    const [articles, setArticles] = useState(null);
+    const [interests, setInterests] = useState([]);
+    const [comments, setComments] = useState([]);
 
-    const users = [
-        {
-            id: 3,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Charlie Brown',
-            profession: 'Product Manager',
-            workplace: 'Innovate Co.',
-        },
-        {
-            id: 4,
-            profilePic: '/default-avatar.jpeg',
-            name: 'David Wilson',
-            profession: 'Marketing Specialist',
-            workplace: 'AdVantage Agency',
-        },
-        {
-            id: 5,
-            profilePic: '/default-avatar.jpeg',
-            name: 'Eve Davis',
-            profession: 'Data Analyst',
-            workplace: 'Data Insights Corp.',
+    useEffect(() => {
+        if (articles === null) {
+            fetchArticles();
         }
-    ];
+    }, [articles]);
 
-    
+    useEffect(() => {
+        if (articles) {
+            fetchInterests();
+            fetchComments();
+        }
+    }, [articles]);
+    const [reactions, setReactions] = useState([]);
+
+
+
+    const fetchArticles = async () => {
+        try {
+            const response = await getArticle(user.email);
+            setArticles(response);
+
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
+
+    const fetchInterests = async () => {
+        if (articles.length === 0) {
+            console.error('No articles available to fetch interests for');
+            return;
+        }
+
+        try {
+            // Fetch all interests for the articles
+            const interests = await Promise.all(
+                articles.map(async (article) => {
+                    const reacts = await getArticleInterests(article.id); // Assuming this returns an array
+                    if (reacts && reacts.length > 0) {
+
+                        // Map through each interest and extract the user_email and date
+                        return await Promise.all(
+                            reacts.map(async (react) => {
+                                const user = await getUser(react.user_email); // Assuming getUser fetches the user by email
+                                return {
+                                    article: article.id,
+                                    user,  // Replace user_email with full user details
+                                    date: new Date(react.date),
+                                    action: 'likes your article'
+                                };
+                            })
+                        );
+                    }
+                    return []; // Return an empty array if there are no interests for this article
+                })
+            );
+
+            const flattenedInterests = interests.flat();
+            setInterests(flattenedInterests);
+        } catch (error) {
+            console.error('Error fetching interests:', error);
+        }
+    };
+
+    const fetchComments = async () => {
+        if (articles.length === 0) {
+            console.error('No articles available to fetch comments for');
+            return;
+        }
+
+        try {
+            const comments = await Promise.all(
+                articles.map(async (article) => {
+                    console.log('Fetching comments for article:', article.id); // Log article IDs
+
+                    try {
+                        const reacts = await getComments(article.id);
+                        if (!reacts || reacts.length === 0) {
+                            console.error(`No comments found for article ${article.id}`);
+                            return [];
+                        }
+
+                        return await Promise.all(
+                            reacts.map(async (react) => {
+                                const user = await getUser(react.author_email);
+                                return {
+                                    article: article.id,
+                                    user,  // Replace user_email with full user details
+                                    date: new Date(react.created_at),
+                                    text: react.text,
+                                };
+                            })
+                        );
+                    } catch (error) {
+                        console.error(`Error fetching comments for article ${article.id}:`, error);
+                        return [];
+                    }
+                })
+            );
+
+            const flattenedComments = comments.flat().filter(comment => comment !== null);
+            setComments(flattenedComments);
+            console.log('Flattened comments:', flattenedComments);
+        } catch (error) {
+            console.error('Error fetching comments', error);
+        }
+    };
+
+
     const fetchFriendRequests = async () => {
         try {
             // Fetch all incoming friend requests
@@ -150,6 +212,22 @@ const Epag_notifications = () => {
     }, []);
 
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await fetchArticles();  // Fetch the articles first
+                await fetchInterests(); // Only fetch interests after articles are available
+                await fetchComments();
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData(); // Call the async function
+    }, []);
+
+
     // Handle accept request
     const handleAcceptRequest = async (senderEmail) => {
         try {
@@ -172,12 +250,12 @@ const Epag_notifications = () => {
     // Handle reject request
     const handleRejectRequest = async (senderEmail) => {
         try {
-            console.log(senderEmail,user.email)
+            console.log(senderEmail, user.email)
             // Get the friend request by sender and current user email
             const friendRequest = await getFriendRequestByEmails(senderEmail, user.email);
             if (friendRequest) {
                 await updateFriendRequestStatus(friendRequest.id, 'rejected');
-                await deleteFriendRequest(friendRequest.id);  
+                await deleteFriendRequest(friendRequest.id);
             }
             // Reload friend requests
             fetchFriendRequests();
@@ -193,16 +271,16 @@ const Epag_notifications = () => {
         return <div>Loading...</div>;
     }
 
-    const reactions = [
-        { user: users.find((person) => person.id === 3), time: '10 days ago', action: 'likes your article', articleId: '1' },
-        { user: users.find((person) => person.id === 4), time: '3 hours ago', action: 'left a comment on your article', comment: 'Great article! Really insightful.', articleId: '2' },
-        { user: users.find((person) => person.id === 5), time: '7 hours ago', action: 'likes your article', articleId: '3' },
-    ];
-
     // Sort requests by timestamp in descending order (newest first)
     const sortedRequests = requests.sort((a, b) => b.time.getTime() - a.time.getTime());
-    const sortedReactions = reactions.sort((a, b) => convertTimeToSortableValue(b.time) - convertTimeToSortableValue(a.time));
 
+    const combinedData = [...interests, ...comments];
+    const sortedReactions = combinedData.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+    console.log('Fetched Articles:', articles);
+    console.log('Interests for article:', interests);
+    console.log('Fetched comments:', comments);
+    console.log('Fetched reactions', reactions);
     return (
         <div>
             <Header variant="professional" />
@@ -233,10 +311,10 @@ const Epag_notifications = () => {
                         <NotificationItem
                             key={index}
                             user={reaction.user}
-                            time={reaction.time}
+                            time={formatRelativeTime(reaction.date)}
                             action={reaction.action}
-                            comment={reaction.comment}
-                            articleId={reaction.articleId}
+                            articleId={reaction.article}
+                            comment={reaction.text}
                         />
                     ))}
                 </div>
