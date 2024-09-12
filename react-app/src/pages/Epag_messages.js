@@ -6,165 +6,109 @@ import '../css/epag-messages.css';
 import Breadcrumbs from "../components/Breadcrumbs";
 import MessageContainer from "../components/MessageContainer";
 import { parseRelativeTime, formatRelativeTime, formatTime } from "../utils/timeUtils";
+import { getAllContactsByUserEmail, getMessagesBetweenUsers, addMessage, getUser } from "../api";
+import getImageUrl from "../hooks/getImageUrl";
+import { useAppContext } from "../context/appContext";
 
 export default function Epag_messages() {
-
-    const [messages, setMessages] = useState({
-        1: [ // John's messages
-            { fromUser: false, text: 'Hi!', timestamp: new Date('2024-08-24T10:00:00') },
-            { fromUser: true, text: 'Hello!', timestamp: new Date('2024-08-24T10:05:00') },
-            { fromUser: true, text: 'Whats up?', timestamp: new Date('2024-08-24T10:05:00') },
-            { fromUser: false, text: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Eros ultrices nec nunc suspendisse inceptos platea viverra. Facilisi placerat viverra, urna donec mauris duis quis vel. Iaculis nulla finibus malesuada scelerisque feugiat ex! Inceptos sociosqu dictumst rutrum facilisis integer; pretium mollis duis. Sed in montes amet hac himenaeos orci maecenas eros.', timestamp: new Date('2024-08-24T10:10:00') },
-        ],
-        2: [ // Jane's messages
-            { fromUser: false, text: 'Good morning!', timestamp: new Date('2024-08-24T09:00:00') },
-            { fromUser: true, text: 'Good morning!', timestamp: new Date('2024-08-24T09:10:00') }
-        ],
-        3: [ // Alice's messages
-            { fromUser: true, text: 'Are you available?', timestamp: new Date('2024-08-24T08:00:00') },
-            { fromUser: false, text: 'Yes, I am!', timestamp: new Date('2024-08-24T08:05:00') }
-        ]
-    });
-
-
-    const [contacts, setContacts] = useState([
-        {
-            id: 1,
-            name: 'John Doe',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        },
-        {
-            id: 2,
-            name: 'Jane Smith',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
-        },
-        {
-            id: 3,
-            name: 'Alice Johnson',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
-        },
-        {
-            id: 4,
-            name: 'Michael Brown',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: new Date(0), // 1 week ago
-        },
-        {
-            id: 5,
-            name: 'Emily Davis',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: new Date(0), // 3 days ago
-        },
-        {
-            id: 6, // Contact with no messages
-            name: 'Lucas Taylor',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: new Date(0), // No messages timestamp
-        },
-        {
-            id: 7, // Another contact with no messages
-            name: 'Emma Wilson',
-            profilePic: '/default-avatar.jpeg',
-            lastMessage: '',
-            timestamp: new Date(0), // No messages timestamp
-        }
-    ]);
-
-
-
-
-    const sortedContacts = useMemo(() => {
-        // Separate contacts with and without messages
-        const contactsWithMessages = contacts.filter(contact => messages[contact.id] && messages[contact.id].length > 0);
-        const contactsWithoutMessages = contacts.filter(contact => !messages[contact.id] || messages[contact.id].length === 0);
-
-        // Sort contacts with messages by timestamp (most recent first)
-        contactsWithMessages.sort((a, b) => b.timestamp - a.timestamp);
-
-        // Combine sorted contacts with messages and contacts without messages
-        return [...contactsWithMessages, ...contactsWithoutMessages];
-    }, [contacts, messages]);
-
-
-
-
+    const { user } = useAppContext();
+    const [contacts, setContacts] = useState([]);
+    const [messages, setMessages] = useState({});
     const [selectedContact, setSelectedContact] = useState(null);
 
-    // Update selected contact when sorted contacts change
-    useEffect(() => {
+   // Fetch contacts and messages
+   const fetchContactsAndMessages = async () => {
+    try {
+        // Fetch connected users
+        const contacts = await getAllContactsByUserEmail(user.email);
+        const contactEmails = contacts.map(contact => contact.contact_email);
+        const contactDetailsPromises = contactEmails.map(email => getUser(email));
+        const contactsData = await Promise.all(contactDetailsPromises);
 
-        if (sortedContacts.length > 0) {
-            setSelectedContact(sortedContacts[0]); // Set the first contact from the sorted list
+        // Fetch messages for all contacts
+        const messagesData = {};
+        for (const contact of contactsData) {
+            const contactMessages = await getMessagesBetweenUsers(contact.email, user.email);
+            messagesData[contact.email] = contactMessages;
         }
-    }, [sortedContacts]);
+        setMessages(messagesData);
 
+        // Sort contacts based on the latest message
+        const sortedContacts = [...contactsData].sort((a, b) => {
+            const lastMessageA = messagesData[a.email]?.[messagesData[a.email].length - 1]?.created_at;
+            const lastMessageB = messagesData[b.email]?.[messagesData[b.email].length - 1]?.created_at;
+            return new Date(lastMessageB) - new Date(lastMessageA);
+        });
 
-    // Update contacts based on new messages
+        setContacts(sortedContacts);
+
+        // Set the first contact as the selected contact
+        const firstContactWithMessages = sortedContacts[0];
+        setSelectedContact(firstContactWithMessages);
+    } catch (error) {
+        console.error('Error fetching contacts and messages:', error);
+    }
+};
     useEffect(() => {
-        setContacts(prevContacts =>
-            prevContacts.map(c => {
-                const contactMessages = messages[c.id] || [];
-                const latestMessage = contactMessages[contactMessages.length - 1]; // Get the most recent message
-                if (latestMessage) {
-                    return {
-                        ...c,
-                        lastMessage: latestMessage.text,
-                        timestamp: latestMessage.timestamp, // Update contact's timestamp
-                    };
+        fetchContactsAndMessages();
+    }, []);
+
+     // Fetch messages for the selected contact if not already present
+     useEffect(() => {
+        if (selectedContact && !messages[selectedContact.email]) {
+            const fetchMessages = async () => {
+                try {
+                    const contactMessages = await getMessagesBetweenUsers(selectedContact.email, user.email);
+                    setMessages(prevMessages => ({ ...prevMessages, [selectedContact.email]: contactMessages }));
+                } catch (err) {
+                    console.error('Error fetching messages:', err);
                 }
-                return c; // Return unchanged contact if no messages
-            })
-        );
-    }, [messages]);
+            };
+            fetchMessages();
+        }
+    }, [selectedContact, messages, user.email]);
+
+   // Ensure that when messages are updated, selectedContact is set correctly
+   useEffect(() => {
+    if (contacts.length > 0 && !selectedContact) {
+        const firstContactWithMessages = contacts.find(contact => messages[contact.email]?.length > 0) || contacts[0];
+        setSelectedContact(firstContactWithMessages);
+    }
+}, [contacts, messages, selectedContact]);
+
 
     // Change the selected contact on contact click
     const handleContactClick = (contact) => {
         setSelectedContact(contact);
     };
 
-
     // Handle message creation
-    const handleNewMessage = (text) => {
+    const handleNewMessage = async (text) => {
         if (!selectedContact) return;
+        const now = new Date().toISOString();
 
-        const now = new Date(); // Get the current date and time
-        const newMessage = { fromUser: true, text, timestamp: now }; // Store timestamp as a Date object
+        const newMessage = { 
+            sender_email: user.email,
+            receiver_email: selectedContact.email,
+            text: text, 
+            created_at: now, 
+        };
 
-        // Update messages with the new message
+        // Simulate adding the message locally
         setMessages(prevMessages => {
             const updatedMessages = { ...prevMessages };
-            if (updatedMessages[selectedContact.id]) {
-                updatedMessages[selectedContact.id].push(newMessage);
+            if (updatedMessages[selectedContact.email]) {
+                updatedMessages[selectedContact.email].push(newMessage);
             } else {
-                updatedMessages[selectedContact.id] = [newMessage];
+                updatedMessages[selectedContact.email] = [newMessage];
             }
             return updatedMessages;
         });
 
-        // Update contacts with the latest message
-        setContacts(prevContacts =>
-            prevContacts.map(c =>
-                c.id === selectedContact.id
-                    ? {
-                        ...c,
-                        lastMessage: text,
-                        timestamp: now, // Store timestamp as a Date object
-                    }
-                    : c
-            )
-        );
+        await addMessage(user.email, selectedContact.email, text, now);
     };
 
-
+    const sortedContacts = contacts;
 
 
     return (
@@ -179,22 +123,26 @@ export default function Epag_messages() {
                     <div className="sidebar">
                         {sortedContacts.map((contact) => (
                             <div
-                                key={contact.id}
-                                className={`contact ${selectedContact && contact.id === selectedContact.id ? 'selected' : ''}`}
+                                key={contact.email}
+                                className={`contact ${selectedContact && contact.email === selectedContact.email ? 'selected' : ''}`}
                                 onClick={() => handleContactClick(contact)}
                             >
-                                <img src={contact.profilePic} alt="Profile" className="contact-pic" />
+                                <img src={getImageUrl(contact.profilepic, "profilepics")} alt="Profile" className="contact-pic" />
                                 <div className="contact-name">{contact.name}</div>
-                                <div className="last-message">{contact.lastMessage}</div>
+                                <div className="last-message">
+                                    {messages[contact.email]?.[messages[contact.email].length - 1]?.text || "No messages yet"}
+                                </div>
                                 <div className="contact-time">
-                                    {contact.timestamp.getTime() !== 0 ? formatRelativeTime(contact.timestamp) : ''}
+                                {messages[contact.email]?.[messages[contact.email].length - 1]?.created_at
+                                        ? formatRelativeTime(new Date(messages[contact.email][messages[contact.email].length - 1].created_at))
+                                        : ""}
                                 </div>
                             </div>
                         ))}
                     </div>
                     {selectedContact ? (
                         <MessageContainer
-                            messages={messages[selectedContact.id]}
+                            messages={messages[selectedContact.email]}
                             contact={selectedContact} // Make sure this is correctly passed
                             onSendMessage={handleNewMessage}
                         />
