@@ -16,6 +16,7 @@ const commentsModel = require('./models/comments');
 const attachmentsModel = require('./models/attachments');
 const jobsModel = require('./models/jobs');
 const submissionsModel = require('./models/submissions');
+const messagesModel = require('./models/messages');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -747,6 +748,33 @@ app.get('/submissions/job/:jobId', async (req, res) => {
     } catch (error) {
         console.error('Error fetching submissions:', error);
         res.status(500).json({ message: 'Error fetching submissions', error: error.message });
+    }
+});
+
+// ---------- MESSAGE ROUTES -----------
+// add a new message
+app.post('/messages', async (req, res) => {
+    const {senderEmail, receiverEmail, message, created_at} = req.body;
+
+    try {
+        const result = await messagesModel.addMessage(senderEmail, receiverEmail, message, created_at);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error('Error adding a message:', err);
+        res.status(500).json({ message: 'Error adding message', error: err.message });
+    }
+});
+
+// get all messages between 2 users
+app.get('/messages', async (req, res) => {
+    const {email1, email2} = req.query;
+    console.log(req.body)
+    try {
+        const result = await messagesModel.getMessagesBetweenUsers(email1,email2);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ message: 'Error fetching messages', error: err.message });
     }
 });
 

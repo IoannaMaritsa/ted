@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import '../css/epag-messages.css'; 
+import '../css/epag-messages.css';
 import { formatTime } from '../utils/timeUtils';
+import { useAppContext } from '../context/appContext';
+import getImageUrl from '../hooks/getImageUrl';
 
 const MessageContainer = ({ contact, messages = [], onSendMessage }) => {
     const [message, setMessage] = useState('');
     const scrollableDivRef = useRef(null); // Ref for scrolling
+    const { user } = useAppContext();
 
     // Handle sending a message
     const handleSendClick = () => {
         if (message.trim()) { // Don't send the message if it's only whitespace
-            onSendMessage(message.trim()); 
+            onSendMessage(message.trim());
             setMessage(''); // Clear input field
         }
     };
@@ -31,38 +34,40 @@ const MessageContainer = ({ contact, messages = [], onSendMessage }) => {
     }, [messages, message]);
 
 
-     return (
+    return (
         <div className="message-container">
             <div className="message-header">
-                <img src={contact.profilePic} alt="Profile" className="header-profile-pic" />
+                <img src={getImageUrl(contact.profilepic, "profilepics")} alt="Profile" className="header-profile-pic" />
                 <span className="header-contact-name">{contact.name}</span>
             </div>
-            <div  ref={scrollableDivRef} className="messages">
+            <div ref={scrollableDivRef} className="messages">
                 {messages.length === 0 ? (
                     <p>No messages yet.</p>
                 ) : (
-                    messages.map((msg, index) => (
-                        <div
-                 
-                            key={index}
-                            className={`message ${msg.fromUser ? 'user' : 'contact'}`}
-                        >
-                            {!msg.fromUser && (
-                                <img
-                                    src={contact?.profilePic || '/default-avatar.jpeg'}
-                                    alt="Profile"
-                                    className="message-pic"
-                                />
-                            )}
-                            <div className="message-content">
-                                <span className="timestamp">{formatTime(msg.timestamp)}</span> 
-                                <span className="msg-text">{msg.text || ''}</span>
+                    messages.map((msg, index) => {
+                        const isFromUser = msg.sender_email === user.email;
+                        return (
+                            <div
+                                key={index}
+                                className={`message ${isFromUser ? 'user' : 'contact'}`}
+                            >
+                                {!isFromUser && (
+                                    <img
+                                        src={getImageUrl(contact?.profilepic)}
+                                        alt="Profile"
+                                        className="message-pic"
+                                    />
+                                )}
+                                <div className="message-content">
+                                    <span className="timestamp"> {formatTime(new Date(msg.created_at))}</span>
+                                    <span className="msg-text">{msg.text || ''}</span>
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 )}
 
-                
+
             </div>
             <div className="message-footer">
                 <input

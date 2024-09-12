@@ -631,3 +631,34 @@ export const getSubmissionsForJob = async (jobId) => {
         throw error;
     }
 };
+
+// add a new message
+export const addMessage = async (senderEmail, receiverEmail, message, created_at) => {
+    try {
+        console.log("hello3", senderEmail,receiverEmail,message, created_at)
+        const response = await axios.post(`${API_BASE_URL}/messages`, {
+           senderEmail,
+           receiverEmail,
+           message,
+           created_at
+        });
+        console.log(response)
+        return response.data;
+    } catch(err) {
+        console.error('Error adding message:', err);
+        throw err;
+    }
+}
+
+// fetch messages between 2 users
+export const getMessagesBetweenUsers = async (email1, email2) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/messages`, {
+            params: { email1, email2 } // Pass emails as query parameters
+        });
+        return response.data;
+    } catch(err){
+        console.error('Error fetching messages:', err);
+        throw err;
+    }
+}
