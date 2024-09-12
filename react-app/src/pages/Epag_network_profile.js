@@ -5,9 +5,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import MainBottom from '../components/MainBottom';
 import '../css/admin.css';
 import { getUser, sendFriendRequest, getSentFriendRequests, getReceivedFriendRequests, updateFriendRequestStatus, addContact, removeContact, getFriendRequestByEmails, getAllContactsByUserEmail, deleteFriendRequest } from "../api";
+import {getArticle, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser } from "../api";
 import Breadcrumbs from "../components/Breadcrumbs";
 import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
+import { format } from 'date-fns';
 
 export default function Epag_network_profile() {
     const location = useLocation();
@@ -18,6 +20,13 @@ export default function Epag_network_profile() {
     const [otherProfile, setOtherProfile] = useState(null); // State for the profile
     const { user } = useAppContext();
     const [contacts, setContacts] = useState([]); // State for the contacts
+    const [workExperience, setWorkExperience] = useState([]);
+    const [studies, setStudies] = useState([]);
+    const [skills, setSkills] = useState([]);
+    const [jobAds, setJobAds] = useState([]);
+    const [articles, setArticles] = useState([])
+
+
 
     // Log the email value for debugging
     useEffect(() => {
@@ -73,41 +82,63 @@ export default function Epag_network_profile() {
         fetchRequests();
     }, [user.email]);
 
+    const getArticles = async () => {
+        try {
+            const response = await getArticle(otherProfile.email);
+            setArticles(response);
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
 
-    const [workExperience, setWorkExperience] = useState([
-        { company: 'Google', role: 'Software Engineer', duration: 'Jan 2020 - Dec 2021' },
-        { company: 'Microsoft', role: 'Frontend Developer', duration: 'Jan 2019 - Dec 2019' },
-        // Add more entries as needed
-    ]);
+    const getExperiences = async () => {
+        try {
+            const response = await getAllExperiencesForUser(otherProfile.id);
+            setWorkExperience(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [studies, setStudies] = useState([
-        { school: "National and Kapodistrian University of Athens", degree: "Undergraduate Degree", major: "Software Engineering", duration: "2016 - 2020" },
-        { school: "Harvard", degree: "Masters", major: "Comp Sci", duration: "2020 - 2024" },
-        // Add more entries as needed
-    ]);
+    const getStudies = async () => {
+        try {
+            const response = await getAllStudiesForUser(otherProfile.id);
+            setStudies(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [skills, setSkills] = useState([
-        { name: "Customer Satisfaction" },
-        { name: "C++ Knowledge" },
-        { name: "Python Knowledge" },
-        { name: "React Framework" },
-        // Add more entries as needed
-    ]);
+    const getSkills = async () => {
+        try {
+            const response = await getAllSkillsForUser(otherProfile.id);
+            setSkills(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [jobAds, setJobAds] = useState([
-        { name: "Ζητείται Software Developer", date: "10/07/2024" },
-        { name: "Ζητείται Backend Developer για μόνιμη απασχόληση", date: "13/02/2020" },
+    const getJobs = async () => {
+        try {
+    
+          const newjobs = await getJobsOfUser(otherProfile.email);
+          console.log(`Got a job successfully.`);
+          if (newjobs.success)
+            setJobAds(newjobs.data)
+    
+        } catch (error) {
+          console.error('Error getting jobs:', error);
+        }
+      };
 
-        // Add more entries as needed
-    ]);
-
-    const [articles, setArticles] = useState([
-        { name: "Τάσεις Ανάπτυξης Λογισμικού για το 2024: Από την Τεχνητή Νοημοσύνη μέχρι την Αυτοματοποίηση", date: "30/11/2023" },
-        { name: "Ο Ρόλος των DevOps στη Σύγχρονη Ανάπτυξη Λογισμικού: Βελτιώνοντας την Απόδοση και τη Συνεργασία", date: "23/09/2019" },
-        { name: "Ανασκόπηση των Νέων Τεχνολογιών: Πώς τα Frameworks και οι Γλώσσες Προγραμματισμού Εξελίσσονται για να Ικανοποιήσουν τις Σύγχρονες Ανάγκες", date: "20/08/2019" }
-
-        // Add more entries as needed
-    ]);
+    useEffect(() => {
+        getArticles();
+        getExperiences();
+        getStudies();
+        getSkills();
+        getJobs();
+        
+    }, [otherProfile]);
 
     const isRequestPending = (targetEmail) => {
         return pendingRequests.some(req =>
@@ -300,9 +331,9 @@ export default function Epag_network_profile() {
                             {workExperience.length > 0 ? (
                                 workExperience.map((experience, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{experience.role}</div>
-                                        <div className="work-company">{experience.company}</div>
-                                        <div className="work-duration">{experience.duration}</div>
+                                        <div className="work-role">{experience.profession}</div>
+                                        <div className="work-company">{experience.workplace}</div>
+                                        <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
                                     </div>
                                 ))
                             ) : (
@@ -316,9 +347,9 @@ export default function Epag_network_profile() {
                             {studies.length > 0 ? (
                                 studies.map((study, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{study.school}</div>
+                                        <div className="work-role">{study.university}</div>
                                         <div className="work-company">{study.degree}, {study.major}</div>
-                                        <div className="work-duration">{study.duration}</div>
+                                        <div className="work-duration"><span>{study.start_date}</span> - <span>{study.end_date}</span></div>
                                     </div>
                                 ))
                             ) : (
@@ -332,7 +363,7 @@ export default function Epag_network_profile() {
                             {skills.length > 0 ? (
                                 skills.map((skill, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{skill.name}</div>
+                                        <div className="work-role">{skill.skill_name}</div>
                                     </div>
                                 ))
                             ) : (
@@ -346,8 +377,9 @@ export default function Epag_network_profile() {
                             {studies.length > 0 ? (
                                 jobAds.map((ad, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{ad.name}</div>
-                                        <div className="work-duration">{ad.date}</div>
+                                        <div className="work-role">{ad.title}</div>
+                                        {ad.publish_date ? <div className="work-duration">{format(ad.publish_date, 'yyyy-MM-dd')}</div> : <span>No date available</span>}
+                                        {/* <div className="work-duration">{ad.publish_date}</div> */}
                                     </div>
                                 ))
                             ) : (
@@ -361,8 +393,9 @@ export default function Epag_network_profile() {
                             {articles.length > 0 ? (
                                 articles.map((article, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{article.name}</div>
-                                        <div className="work-duration">{article.date}</div>
+                                        <div className="work-role">{article.title}</div>
+                                        {article.publish_date ? <div className="work-duration">{format(article.publish_date, 'yyyy-MM-dd')}</div> : <span>No date available</span>}
+                                        {/* <div className="work-duration">{article.publish_date}</div> */}
                                     </div>
                                 ))
                             ) : (
