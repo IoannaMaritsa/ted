@@ -2,10 +2,12 @@ const supabase = require('../supabaseClient');
 
 // Function to add a comment
 const addComment = async (articleId, authorEmail, text) => {
+    const now = new Date();
+
     try {
         const { data, error } = await supabase
             .from('comments')
-            .insert([{ article_id: articleId, author_email: authorEmail, text }]);
+            .insert([{ article_id: articleId, author_email: authorEmail, text , created_at:now}]);
 
         if (error) {
             throw error;

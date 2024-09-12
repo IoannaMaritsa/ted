@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from "../context/appContext";
 import getImageUrl from "../hooks/getImageUrl";
+import { format } from 'date-fns';
 import { addArticle, getArticle, getUser, deleteArticle, getOtherUsersArticles, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, addAttachment } from '../api';
 import '../css/epag-home.css';
 
@@ -160,15 +161,11 @@ export default function Epag_Home() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const today = new Date();
-        const date = today.getDate();
-        const month = today.getMonth() + 1;
-        const year = today.getFullYear();
-        const formattedDate = `${year}-${month}-${date}`;
+        const now = new Date();
         // Handle the form submission logic here
         let articleId;
         try {
-            articleId = await addArticle(title, user_info.email, formattedDate, body);
+            articleId = await addArticle(title, user_info.email, now, body);
 
             for (const attachment of attachedFiles) {
                 const { type, file } = attachment;
@@ -355,7 +352,7 @@ export default function Epag_Home() {
                                 id={article.id}
                                 title={article.title}
                                 author_email={article.author_email}
-                                date={article.publish_date}
+                                date={format(article.publish_date, 'yyyy-MM-dd')}
                                 content={article.content}
                                 onDelete={handleDeleteArticle}
                             />
@@ -370,7 +367,7 @@ export default function Epag_Home() {
                                     id={article.id}
                                     title={article.title}
                                     author_email={article.author_email}
-                                    date={article.publish_date}
+                                    date={format(article.publish_date, 'yyyy-MM-dd')}
                                     content={article.content}
                                 />
                             ))}

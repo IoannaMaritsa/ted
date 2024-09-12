@@ -13,8 +13,7 @@ import getImageUrl from '../hooks/getImageUrl';
 
 const getCurrentTimestamp = () => {
     const now = new Date();
-    const timestamp = now.getTime();
-    return timestamp;
+    return now;
 };
 
 const Epag_article = () => {
@@ -39,6 +38,7 @@ const Epag_article = () => {
         try {
             const response = await getArticleById(id);
             setArticle(response);
+            console.log('response', article);
         } catch (error) {
             console.error('Error getting articles:', error);
         }
@@ -176,7 +176,7 @@ const Epag_article = () => {
                         </div>
                         <div className="article-date">
                             <img src="/calendar.png" alt="Date icon" className="icon" />
-                            <span>{article.publish_date}</span>
+                            {article.publish_date ? <span>{format(article.publish_date, 'yyyy-MM-dd')}</span> : <span>No date available</span>}
                         </div>
                     </div>
                     <p className="article-content">{article.content}</p>

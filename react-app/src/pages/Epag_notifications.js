@@ -76,6 +76,10 @@ const Epag_notifications = () => {
     const [interests, setInterests] = useState([]);
     const [comments, setComments] = useState([]);
 
+    const currentDate = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+
     useEffect(() => {
         if (articles === null) {
             fetchArticles();
@@ -118,15 +122,25 @@ const Epag_notifications = () => {
                         // Map through each interest and extract the user_email and date
                         return await Promise.all(
                             reacts.map(async (react) => {
-                                const user = await getUser(react.user_email); // Assuming getUser fetches the user by email
-                                return {
-                                    article: article.id,
-                                    user,  // Replace user_email with full user details
-                                    date: new Date(react.date),
-                                    action: 'likes your article'
-                                };
+                                const creationdate = new Date(react.date);
+                                if (creationdate < oneMonthAgo) {
+                                    return null;
+                                }
+                                else if (react.user_email === user.email) {
+                                    return null;
+                                }
+                                else {
+                                    const user = await getUser(react.user_email); // Assuming getUser fetches the user by email
+                                    return {
+                                        article: article.id,
+                                        user,  // Replace user_email with full user details
+                                        date: creationdate,
+                                        action: 'likes your article'
+                                    };
+                                }
                             })
-                        );
+                        )
+                        .then(results => results.filter(interest => interest !== null));
                     }
                     return []; // Return an empty array if there are no interests for this article
                 })
@@ -159,15 +173,24 @@ const Epag_notifications = () => {
 
                         return await Promise.all(
                             reacts.map(async (react) => {
-                                const user = await getUser(react.author_email);
+                                const creationdate = new Date(react.created_at);
+                                if (creationdate < oneMonthAgo) {
+                                    return null;
+                                }
+                                else if (react.author_email === user.email) {
+                                    return null;
+                                }
+                                else {const user = await getUser(react.author_email);
                                 return {
                                     article: article.id,
                                     user,  // Replace user_email with full user details
-                                    date: new Date(react.created_at),
+                                    date: creationdate,
                                     text: react.text,
                                 };
+                            }
                             })
-                        );
+                        )
+                        .then(results => results.filter(comment => comment !== null));
                     } catch (error) {
                         console.error(`Error fetching comments for article ${article.id}:`, error);
                         return [];
@@ -275,6 +298,7 @@ const Epag_notifications = () => {
     const sortedRequests = requests.sort((a, b) => b.time.getTime() - a.time.getTime());
 
     const combinedData = [...interests, ...comments];
+    console.log('data', combinedData);
     const sortedReactions = combinedData.sort((a, b) => b.date.getTime() - a.date.getTime());
 
     console.log('Fetched Articles:', articles);
@@ -305,7 +329,7 @@ const Epag_notifications = () => {
 
                 </div>
 
-                <h2>Αντιδράσεις στις δημοσιεύσεις μου</h2>
+                <h2>Αντιδράσεις στις δημοσιεύσεις μου τον τελευταίο μήνα</h2>
                 <div className="notifications-scrollable-list">
                     {sortedReactions.map((reaction, index) => (
                         <NotificationItem

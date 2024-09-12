@@ -51,7 +51,7 @@ const getArticlesByUserEmail = async (userEmail) => {
         return { success: false, message: 'Error retrieving articles' };
     }
 };
-// Function to get all articles by a specific user
+// Function to an article by its id
 const getArticlesById = async (id) => {
     try {
         const { data, error } = await supabase.from('articles').select('*').eq('id', id).single();
@@ -123,10 +123,12 @@ const deleteArticleById = async (articleId) => {
 
 // Add an article to a user's list of interests
 const addInterest = async (userEmail, articleId) => {
+    const now = new Date();
+
     try {
         const { error } = await supabase
             .from('user_interests')
-            .upsert([{ user_email: userEmail, article_id: articleId }], { onConflict: ['user_email', 'article_id'] });
+            .upsert([{ user_email: userEmail, article_id: articleId, date:now}], { onConflict: ['user_email', 'article_id'] });
 
         if (error) {
             throw error;
