@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import "../../css/popup.css"; 
+import "../../css/popup.css";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns'; // Import format function for date formatting
+import getImageUrl from "../../hooks/getImageUrl";
 
 const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
-    const [profilePic, setProfilePic] = useState(currentProfile.profilePic || '');
+    const [profilePic, setProfilePic] = useState();
     const [name, setName] = useState(currentProfile.name || '');
     const [profession, setProfession] = useState(currentProfile.profession || '');
     const [workplace, setWorkplace] = useState(currentProfile.workplace || '');
     const [location, setLocation] = useState(currentProfile.location || '');
-    const [birthday, setBirthday] = useState(currentProfile.birthday ? new Date(currentProfile.birthday) : null);
-    const [imageFile, setImageFile] = useState(null); 
+    const [birthday, setBirthday] = useState(currentProfile.dob ? new Date(currentProfile.dob) : null);
 
 
     if (!isOpen) return null;
@@ -20,24 +20,33 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setImageFile(URL.createObjectURL(file)); // Create a URL for the selected image
-            setProfilePic(URL.createObjectURL(file)); // Update profilePic state with the file URL
+            setProfilePic(file); // Update profilePic state with the file URL
         }
     };
 
-    const handleSave = () => {
-        // Merge the updated data with the existing profile
-        const updatedProfile = {
-            ...currentProfile, // Existing profile data
-            profilePic: profilePic !== currentProfile.profilePic ? profilePic : currentProfile.profilePic,
-            profession: profession !== currentProfile.profession ? profession : currentProfile.profession,
-            workplace: workplace !== currentProfile.workplace ? workplace : currentProfile.workplace,
-            location: location !== currentProfile.location ? location : currentProfile.location,
-            birthday: birthday ? format(birthday, 'yyyy-MM-dd') : currentProfile.birthday,
-        };
+    const handleSave = async () => {
+        // Create a FormData object to hold the data
+        const formData = new FormData();
 
-        onSave(updatedProfile); // Pass the updated profile to the onSave function
-        onClose(); // Close the popup
+        // Append all the fields to the FormData object
+        formData.append('profession', profession !== currentProfile.profession ? profession : currentProfile.profession);
+        formData.append('workplace', workplace !== currentProfile.workplace ? workplace : currentProfile.workplace);
+        formData.append('location', location !== currentProfile.location ? location : currentProfile.location);
+        formData.append('dob', birthday ? format(birthday, 'yyyy-MM-dd') : currentProfile.birthday);
+
+        // Check if the profile picture is a file, and append it to the FormData
+        if (profilePic && typeof profilePic === 'object') {
+            formData.append('profilepic', profilePic);  // Appending the file
+        }
+        else formData.append('profilepic', currentProfile.profilepic);
+
+        // Send the FormData to the backend
+        try {
+            await onSave(formData); // Pass FormData to onSave for backend API call
+            onClose(); // Close the popup
+        } catch (error) {
+            console.error('Error saving profile:', error);
+        }
     };
 
     return (
@@ -47,7 +56,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                     <div className="add-work-experience-modal-title">Επεξεργασία Προφίλ</div>
                     <img
                         className="add-work-experience-modal-close-btn"
-                        src="/close-icon.png" 
+                        src="/close-icon.png"
                         onClick={onClose}
                         alt="Close"
                     />
@@ -55,13 +64,17 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                 <div className="add-work-experience-modal-body">
                     <div className="details-section">
                         <div className="form-group2">
-                            <span className= "span2" htmlFor="profilePic">Φωτογραφία Προφίλ</span>
+                            <span className="span2" htmlFor="profilePic">Φωτογραφία Προφίλ</span>
                             <div className="profile-pic-container">
-                                <img
-                                    src={profilePic}
-                                    alt="Profile"
-                                    className="profile-pic-preview"
-                                />
+                                {!profilePic ? (<img src={getImageUrl(currentProfile?.profilepic, "profilepics")} alt="Profile" className="profile-pic-preview" />) :
+
+                                    (<img
+                                        src={profilePic ? URL.createObjectURL(profilePic) : 'default-avatar.jpeg'}
+                                        alt="Profile"
+                                        className="profile-pic-preview"
+                                    />)
+                                }
+
                                 <div className="profile-pic-controls">
                                     <input
                                         id="profilePicInput"
@@ -84,7 +97,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                     <div className="details-section">
                         <div className="form-group2">
 
-                            <span className= "span2" htmlFor="profession">Όνοματεπώνυμο</span>
+                            <span className="span2" htmlFor="profession">Όνοματεπώνυμο</span>
                             <input
                                 id="name"
                                 type="text"
@@ -97,7 +110,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                     <div className="details-section">
                         <div className="form-group2">
 
-                            <span className= "span2" htmlFor="profession">Ιδιότητα</span>
+                            <span className="span2" htmlFor="profession">Ιδιότητα</span>
                             <input
                                 id="profession"
                                 type="text"
@@ -109,7 +122,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                     </div>
                     <div className="details-section2">
                         <div className="form-group2">
-                            <span className= "span2">Πληροφορίες</span>
+                            <span className="span2">Πληροφορίες</span>
                             <div className="form-group-label">
                                 <img src="/work-icon.png" alt="Workplace Icon" className="form-group-icon" />
                                 <span>Εργασιακός Χώρος</span>
@@ -142,7 +155,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                             </div>
                             <DatePicker
                                 id="birthday"
-                                className ="datepicker1"
+                                className="datepicker1"
                                 selected={birthday}
                                 onChange={(date) => setBirthday(date)}
                                 dateFormat="yyyy-MM-dd"

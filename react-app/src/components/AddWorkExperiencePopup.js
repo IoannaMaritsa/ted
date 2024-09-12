@@ -9,30 +9,26 @@ const AddWorkExperiencePopup = ({ isOpen, onClose, onAddExperience }) => {
     const [company, setCompany] = useState('');
     const [start, setStart] = useState('');
     const [end, setEnd] = useState('');
-    const [duration, setDuration] = useState('');
 
     if (!isOpen) return null;
 
-    const calculateDuration = (start, end) => {
-        if (!start || !end) return '';
-
-        const startMonth = format(start, 'MMM yyyy');
-        const endMonth = format(end, 'MMM yyyy');
-
-        return `${startMonth} - ${endMonth}`;
-    };
-
     const handleAddClick = () => {
-        if (role && company && duration) {
-            const cduration = calculateDuration(start, end);
-            onAddExperience({ role, company, duration: cduration });
+        if (role && company && start && end) {
+            onAddExperience({ profession: role, workplace: company, start_date:start, end_date:end });
             setRole('');
             setCompany('');
             setStart(null);
             setEnd(null);
-            setDuration('');
             onClose();
-        } else {
+        }
+        else if (role && company && start){
+            onAddExperience({ profession: role, workplace: company, start_date:start});
+            setRole('');
+            setCompany('');
+            setStart(null);
+            onClose();
+        } 
+        else {
             alert('Please fill in all fields');
         }
     };
@@ -77,9 +73,6 @@ const AddWorkExperiencePopup = ({ isOpen, onClose, onAddExperience }) => {
                             selected={start}
                             onChange={(date) => {
                                 setStart(date);
-                                if (end) {
-                                    setDuration(calculateDuration(date, end));
-                                }
                             }}
                             dateFormat="MM/yyyy"
                             showMonthYearPicker
@@ -93,9 +86,6 @@ const AddWorkExperiencePopup = ({ isOpen, onClose, onAddExperience }) => {
                             selected={end}
                             onChange={(date) => {
                                 setEnd(date);
-                                if (start) {
-                                    setDuration(calculateDuration(start, date));
-                                }
                             }}
                             dateFormat="MM/yyyy"
                             showMonthYearPicker

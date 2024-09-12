@@ -182,30 +182,33 @@ const deleteUser = async (email) => {
 };
 
 // Update a user by email
-const updateUser = async (email, updates) => {
+const updateUser = async (email, profession, workplace, location, dob, profilepic) => {
     try {
-        // Fetch the current user's details to get their current profile picture path
-        const { data: currentUser, error: fetchError } = await supabase
-            .from('users')
-            .select('profilepic')
-            .eq('email', email)
-            .single();
-        if (fetchError) {
-            console.error('Error fetching image:', fetchError);
-            throw fetchError;
-        }
+        let profilePicUrl = null;
 
-        // Check if a new profile picture is provided and handle the full path
-        if (updates.profilepic) {
-            // Assuming profilepic in updates is a relative path or filename
-            const newProfilePic = updates.profilepic;
-            updates.profilepic = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${newProfilePic}`;
+        if (profilepic) {
+            // Upload profile picture and get its URL
+            if (typeof profilepic === 'string') {
+                profilePicUrl = profilepic;
+            } else if (profilepic.buffer) {
+                const profilePicPath = await uploadProfilePic(profilepic.buffer, profilepic.originalname);
+                console.log(profilePicPath);
+                profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${profilePicPath}`;
+            }
+        } else {
+            profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/default-avatar.jpeg`;
         }
 
         // Proceed to update the user in the database
         const { data: updatedUser, error: updateError } = await supabase
             .from('users')
-            .update(updates)
+            .update({
+                profession: profession || null,
+                workplace: workplace || null,
+                location: location || null,
+                dob: dob || null,
+                profilepic: profilePicUrl, // Use the new profile picture URL
+            })
             .eq('email', email)
             .single();
         if (updateError) {
@@ -213,25 +216,6 @@ const updateUser = async (email, updates) => {
             throw updateError;
         }
         console.log(`User with email ${email} updated successfully.`);
-
-        // Extract the file name from the current profilepic URL
-        const oldFileName = currentUser.profilepic.split('/').pop();
-        const filePath = new URL(currentUser.profilepic).pathname.replace('/storage/v1/object/', '');
-
-        // Handle old profile picture deletion if a new profile picture is provided
-        if (updates.profilepic && updates.profilepic !== oldFileName && oldFileName !== 'default-avatar.jpeg') {
-            // Delete the old profile picture from Supabase Storage
-            const { error: deleteFileError } = await supabase
-                .storage
-                .from('profilepics')
-                .remove([filePath]);
-
-            if (deleteFileError) {
-                console.error('Error deleting image:', deleteFileError);
-                throw deleteFileError;
-            }
-            console.log(`Old profile picture deleted for user with email ${email}`);
-        }
 
         return updatedUser;
     } catch (err) {
@@ -306,7 +290,7 @@ const getUnconnectedUsers = async (userId) => {
         const contactIds = contacts.map(contact => contact.contact_id);
 
         // Filter out the user themselves and their contacts
-        const unconnectedUsers = allUsers.filter(user => 
+        const unconnectedUsers = allUsers.filter(user =>
             user.id !== userId && !contactIds.includes(user.id)
         );
 

@@ -109,11 +109,13 @@ app.delete('/users/:email', upload.none(), async (req, res) => {
 
 
 // Update user information
-app.put('/users/:email', async (req, res) => {
+app.put('/users/:email', upload.single('profilepic'), async (req, res) => {
     const { email } = req.params;
-    const updates = req.body;
+    const { profession, workplace, location, dob } = req.body;
+    const profilepic = req.file; // The uploaded file will be available in req.file
+
     try {
-        const updatedUser = await usersModel.updateUser(email, updates);
+        const updatedUser = await usersModel.updateUser(email, profession, workplace, location, dob, profilepic);
         if (updatedUser) {
             res.json(updatedUser);
         } else {

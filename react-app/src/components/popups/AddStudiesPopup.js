@@ -7,7 +7,6 @@ import { format } from 'date-fns';
 const AddStudiesPopup = ({ isOpen, onClose, onAddStudies }) => {
     const [school, setSchool] = useState('');
     const [degree, setDegree] = useState('');
-    const [major, setMajor] = useState('');
     const [start, setStart] = useState('');
     const [end, setEnd] = useState('');
     const [duration, setDuration] = useState('');
@@ -24,12 +23,11 @@ const AddStudiesPopup = ({ isOpen, onClose, onAddStudies }) => {
     };
 
     const handleAddClick = () => {
-        if (school && degree && major && duration) {
+        if (school && degree && duration) {
             const cduration = calculateDuration(start, end);
-            onAddStudies({ school, degree, major, duration: cduration });
+            onAddStudies({ university:school, degree:degree, start_date:format(start, 'yyyy'), end_date:format(end, 'yyyy') });
             setSchool('');
             setDegree('');
-            setMajor('');
             setStart(null);
             setEnd(null);
             setDuration('');
@@ -70,16 +68,6 @@ const AddStudiesPopup = ({ isOpen, onClose, onAddStudies }) => {
                             value={degree}
                             onChange={(e) => setDegree(e.target.value)}
                             placeholder='π.χ. Προπτυχιακό'
-                        />
-                    </div>
-                    <div className="form-group2">
-                        <label htmlFor="major">Πεδίο Σπουδών</label>
-                        <input
-                            id="major"
-                            type="text"
-                            value={major}
-                            onChange={(e) => setMajor(e.target.value)}
-                            placeholder='π.χ. Επιστήμη Υπολογιστών'
                         />
                     </div>
                     <div className="form-group2">

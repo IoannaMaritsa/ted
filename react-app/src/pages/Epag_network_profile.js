@@ -348,7 +348,7 @@ export default function Epag_network_profile() {
                                 studies.map((study, index) => (
                                     <div key={index} className="work-experience-row">
                                         <div className="work-role">{study.university}</div>
-                                        <div className="work-company">{study.degree}, {study.major}</div>
+                                        <div className="work-company">{study.degree}</div>
                                         <div className="work-duration"><span>{study.start_date}</span> - <span>{study.end_date}</span></div>
                                     </div>
                                 ))

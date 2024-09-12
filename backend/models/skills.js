@@ -26,12 +26,10 @@ async function addSkillToUser(userId, skillName) {
             skillId = insertSkillData.id;
         }
 
-        // Add the skill to the user
+        // Add the skill to the user using upsert to handle conflicts
         const { error: userSkillError } = await supabase
             .from('user_skills')
-            .insert({ user_id: userId, skill_id: skillId })
-            .onConflict(['user_id', 'skill_id'])
-            .ignore();
+            .upsert({ user_id: userId, skill_id: skillId }, { onConflict: ['user_id', 'skill_id'] });
 
         if (userSkillError) throw userSkillError;
 
@@ -53,7 +51,7 @@ const deleteSkillFromUser = async (userId, skillId) => {
             .select('*');
 
         if (error) {
-            console.log(`Skill with ID ${studyId} not found.`);
+            console.log(`Skill with ID ${skillId} not found.`);
             return { success: false, message: 'Skill not found' };
         }
 
@@ -87,7 +85,7 @@ const getAllSkillsForUser = async (userId) => {
         // Fetch skill names based on the skill IDs
         const { data: skills, error: skillsError } = await supabase
             .from('skills')
-            .select('skill_name')
+            .select('*')
             .in('id', skillIds); // Use .in to match multiple IDs
 
         if (skillsError) {

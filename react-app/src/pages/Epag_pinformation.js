@@ -9,53 +9,49 @@ import AddWorkExperiencePopup from "../components/AddWorkExperiencePopup";
 import AddStudiesPopup from "../components/popups/AddStudiesPopup";
 import AddSkillsPopup from "../components/popups/AddSkillsPopup";
 import EditPopup from "../components/popups/EditPopup";
+import { useAppContext } from "../context/appContext";
+import { useEffect } from "react";
+import {getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, updateUser , addExperience , deleteExperience , addStudy , deleteStudy , addSkillToUser , deleteSkillFromUser} from "../api";
+import getImageUrl from "../hooks/getImageUrl";
 
 export default function Epag_pinformation() {
-    const [profile, setProfile] = useState({
-        name: 'John Doe',
-        profilePic: '/default-avatar.jpeg', 
-        profession: 'Software Developer',
-        email: 'johndoe@gmail.com',
-        birthday: '12/12/2002',
-        location: 'Athens, Greece',
-        workplace: 'Google',
+    const { user } = useAppContext();
+    const [workExperience, setWorkExperience] = useState([]);
+    const [studies, setStudies] = useState([]);
+    const [skills, setSkills] = useState([]);
 
-    });
+    const getExperiences = async () => {
+        try {
+            const response = await getAllExperiencesForUser(user.id);
+            setWorkExperience(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [workExperience, setWorkExperience] = useState([
-        { company: 'Google', role: 'Software Engineer', duration: 'Jan 2020 - Dec 2021' },
-        { company: 'Microsoft', role: 'Frontend Developer', duration: 'Jan 2019 - Dec 2019' },
-        // Add more entries as needed
-    ]);
+    const getStudies = async () => {
+        try {
+            const response = await getAllStudiesForUser(user.id);
+            setStudies(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [studies, setStudies] = useState([
-        { school: "National and Kapodistrian University of Athens", degree: "Undergraduate Degree", major: "Software Engineering", duration: "2016 - 2020" },
-        { school: "Harvard", degree: "Masters", major: "Comp Sci", duration: "2020 - 2024" },
-        // Add more entries as needed
-    ]);
+    const getSkills = async () => {
+        try {
+            const response = await getAllSkillsForUser(user.id);
+            setSkills(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [skills, setSkills] = useState([
-        { name: "Customer Satisfaction" },
-        { name: "C++ Knowledge" },
-        { name: "Python Knowledge" },
-        { name: "React Framework" },
-        // Add more entries as needed
-    ]);
-
-    const [jobAds, setJobAds] = useState([
-        { name: "Ζητείται Software Developer", date: "10/07/2024" },
-        { name: "Ζητείται Backend Developer για μόνιμη απασχόληση", date: "13/02/2020" },
-
-        // Add more entries as needed
-    ]);
-
-    const [articles, setArticles] = useState([
-        { name: "Τάσεις Ανάπτυξης Λογισμικού για το 2024: Από την Τεχνητή Νοημοσύνη μέχρι την Αυτοματοποίηση", date: "30/11/2023" },
-        { name: "Ο Ρόλος των DevOps στη Σύγχρονη Ανάπτυξη Λογισμικού: Βελτιώνοντας την Απόδοση και τη Συνεργασία", date: "23/09/2019" },
-        { name: "Ανασκόπηση των Νέων Τεχνολογιών: Πώς τα Frameworks και οι Γλώσσες Προγραμματισμού Εξελίσσονται για να Ικανοποιήσουν τις Σύγχρονες Ανάγκες", date: "20/08/2019" }
-
-        // Add more entries as needed
-    ]);
+    useEffect(() => {
+        getExperiences();
+        getStudies();
+        getSkills();        
+    }, [user]);
 
 
     const [privacySettings, setPrivacySettings] = useState({
@@ -116,22 +112,31 @@ export default function Epag_pinformation() {
     };
 
     // Delete handlers
-    const handleDeleteExperience = (indexToRemove) => {
-        setWorkExperience((prevExperiences) =>
-            prevExperiences.filter((_, index) => index !== indexToRemove)
-        );
+    const handleDeleteExperience = async (id) => {
+        try {
+            await deleteExperience(id);
+        } catch (error) {
+            console.error('Error deleting experience:', error);
+        }
+        getExperiences();
     };
 
-    const handleDeleteStudies = (indexToRemove) => {
-        setStudies((prevStudies) =>
-            prevStudies.filter((_, index) => index !== indexToRemove)
-        );
+    const handleDeleteStudies = async (id) => {
+        try {
+            await deleteStudy(id);
+        } catch (error) {
+            console.error('Error deleting study:', error);
+        }
+        getStudies();
     };
 
-    const handleDeleteSkills = (indexToRemove) => {
-        setSkills((prevSkills) =>
-            prevSkills.filter((_, index) => index !== indexToRemove)
-        );
+    const handleDeleteSkills = async (userid, skillid) => {
+        try {
+            await deleteSkillFromUser(userid, skillid);
+        } catch (error) {
+            console.error('Error deleting skill:', error);
+        }
+        getSkills();
     };
 
     // Functions for closing and opening the modals
@@ -168,22 +173,42 @@ export default function Epag_pinformation() {
 
 
     // Functions to add new rows
-    const handleAddExperience = (newExperience) => {
-        setWorkExperience([...workExperience, newExperience]);
+    const handleAddExperience = async (newExperience) => {
+        try {
+            await addExperience(user.id, newExperience.profession, newExperience.workplace, newExperience.start_date, newExperience.end_date);
+        } catch (error) {
+            console.error('Error adding experience:', error);
+        }
+        getExperiences();
     };
 
-    const handleAddStudies = (newStudy) => {
-        setStudies([...studies, newStudy]);
+    const handleAddStudies = async (newStudy) => {
+        try {
+            await addStudy(user.id, newStudy.university, newStudy.degree, newStudy.start_date, newStudy.end_date);
+        } catch (error) {
+            console.error('Error adding study:', error);
+        }
+        getStudies();
     };
 
 
-    const handleAddSkills = (newSkills) => {
-        setSkills([...skills, newSkills]);
+    const handleAddSkills = async (newSkills) => {
+        try {
+            await addSkillToUser(user.id, newSkills.name);
+        } catch (error) {
+            console.error('Error adding skill:', error);
+        }
+        getSkills();
     };
     
     // Function to update the profile
-    const handleSaveProfile = (updatedProfile) => {
-        setProfile(updatedProfile);
+    const handleSaveProfile = async (updatedProfile) => {
+        try {
+            await updateUser(user.email, updatedProfile);
+            console.log('new profile', updatedProfile);
+        } catch (error) {
+            console.error('Error adding experience:', error);
+        }
     };
 
     return (
@@ -195,10 +220,10 @@ export default function Epag_pinformation() {
                     <div className="inner-container">
                         <div class="a-container">
                             <div class="a-square-div">
-                                <div class="a-profile-pic"> <img src={profile.profilePic} alt="Profile"></img></div>
+                                <div class="a-profile-pic"> <img src={getImageUrl(user?.profilepic, "profilepics")} alt="Profile" /></div>
                                 <div class="user-text">
-                                    <div class="a-name">{profile.name}</div>
-                                    <div class="a-profession">{profile.profession}</div>
+                                    <div class="a-name">{user.name}</div>
+                                    <div class="a-profession">{user.profession}</div>
                                 </div>
                                 <div className="button-1-cont">
 
@@ -208,7 +233,7 @@ export default function Epag_pinformation() {
                             <div class="a-square-div4">
                                 <div class="a-icon-text1">
                                     <img class="a-icon1" src="/work-icon.png" alt="Icon 1" />
-                                    <span class="a-text1">{profile.workplace}</span>
+                                    <span class="a-text1">{user.workplace}</span>
                                     <img
                                         className="a-icon-right"
                                         src={getPrivacyIcon(privacySettings.work)}
@@ -218,7 +243,7 @@ export default function Epag_pinformation() {
                                 </div>
                                 <div class="a-icon-text1">
                                     <img class="a-icon1" src="/location.png" alt="Icon 2" />
-                                    <span class="a-text1">{profile.location}</span>
+                                    <span class="a-text1">{user.location}</span>
                                     <img
                                         className="a-icon-right"
                                         src={getPrivacyIcon(privacySettings.location)}
@@ -228,7 +253,7 @@ export default function Epag_pinformation() {
                                 </div>
                                 <div class="a-icon-text1">
                                     <img class="a-icon1" src="/birthday.png" alt="Icon 3" />
-                                    <span class="a-text1">{profile.birthday}</span>
+                                    <span class="a-text1">{user.dob}</span>
                                     <img
                                         className="a-icon-right"
                                         src={getPrivacyIcon(privacySettings.birthday)}
@@ -238,7 +263,7 @@ export default function Epag_pinformation() {
                                 </div>
                                 <div class="a-icon-text1">
                                     <img class="a-icon1" src="/email.png" alt="Icon 4" />
-                                    <span class="a-text1">{profile.email}</span>
+                                    <span class="a-text1">{user.email}</span>
                                     <img
                                         className="a-icon-right"
                                         src={getPrivacyIcon(privacySettings.email)}
@@ -265,15 +290,15 @@ export default function Epag_pinformation() {
                                 workExperience.map((experience, index) => (
                                     <div key={index} className="work-experience-row2">
                                         <div className="work-experience-info">
-                                            <div className="work-role">{experience.role}</div>
-                                            <div className="work-company">{experience.company}</div>
-                                            <div className="work-duration">{experience.duration}</div>
+                                            <div className="work-role">{experience.profession}</div>
+                                            <div className="work-company">{experience.workplace}</div>
+                                            <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
                                         </div>
                                         <img
                                             className="delete-icon"
                                             src="/trash.png" 
                                             alt="Delete"
-                                            onClick={() => handleDeleteExperience(index)}  
+                                            onClick={() => handleDeleteExperience(experience.id)}  
                                         />
                                     </div>
 
@@ -300,15 +325,15 @@ export default function Epag_pinformation() {
                                 studies.map((study, index) => (
                                     <div key={index} className="work-experience-row2">
                                         <div className="work-experience-info">
-                                            <div className="work-role">{study.school}</div>
-                                            <div className="work-company">{study.degree}, {study.major}</div>
-                                            <div className="work-duration">{study.duration}</div>
+                                            <div className="work-role">{study.university}</div>
+                                            <div className="work-company">{study.degree}</div>
+                                            <div className="work-duration"><span>{study.start_date}</span> - <span>{study.end_date}</span></div>
                                         </div>
                                         <img
                                             className="delete-icon"
                                             src="/trash.png"  
                                             alt="Delete"
-                                            onClick={() => handleDeleteStudies(index)}  
+                                            onClick={() => handleDeleteStudies(study.id)}  
                                         />
                                     </div>
                                 ))
@@ -334,13 +359,13 @@ export default function Epag_pinformation() {
                                 skills.map((skill, index) => (
                                     <div key={index} className="work-experience-row2">
                                         <div className="work-experience-info">
-                                        <div className="work-role">{skill.name}</div>
+                                        <div className="work-role">{skill.skill_name}</div>
                                         </div>
                                         <img
                                             className="delete-icon"
                                             src="/trash.png"  
                                             alt="Delete"
-                                            onClick={() => handleDeleteSkills(index)}  
+                                            onClick={() => handleDeleteSkills(user.id, skill.id)}  
                                         />
                                     </div>
                                 ))
@@ -352,36 +377,7 @@ export default function Epag_pinformation() {
                                 <span className="footer-text" onClick={openAddSkillsModal}  >Προσθήκη Δεξιοτήτων</span>
                             </div>
                         </div>
-                        <div className="work-experience-container">
-                            <div className="work-experience-row-title">
-                                Αγγελίες
-                            </div>
-                            {studies.length > 0 ? (
-                                jobAds.map((ad, index) => (
-                                    <div key={index} className="work-experience-row">
-                                        <div className="work-role">{ad.name}</div>
-                                        <div className="work-duration">{ad.date}</div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No job ads available</p>
-                            )}
-                        </div>
-                        <div className="work-experience-container">
-                            <div className="work-experience-row-title">
-                                Άρθρα
-                            </div>
-                            {articles.length > 0 ? (
-                                articles.map((article, index) => (
-                                    <div key={index} className="work-experience-row">
-                                        <div className="work-role">{article.name}</div>
-                                        <div className="work-duration">{article.date}</div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No articles available</p>
-                            )}
-                        </div>
+
 
                     </div>
                 </div>
@@ -390,7 +386,7 @@ export default function Epag_pinformation() {
                 )
                 }
                 {isEditModalOpen && (
-                    <EditPopup isOpen={isEditModalOpen} onClose={closeEditModal} currentProfile={profile} onSave={handleSaveProfile} />
+                    <EditPopup isOpen={isEditModalOpen} onClose={closeEditModal} currentProfile={user} onSave={handleSaveProfile} />
                 )
                 }
                 {isAddExperienceModalOpen && (
