@@ -1,4 +1,5 @@
 const supabase = require('../supabaseClient');
+const { getAttachments } = require('./attachments');
 
 // Function to insert a new article
 const addArticle = async (title, authorEmail, publishDate, content) => {
@@ -98,6 +99,30 @@ const getArticlesNotByUserEmail = async (userEmail) => {
 // Function to delete an article by its ID
 const deleteArticleById = async (articleId) => {
     try {
+
+        const attachments = await getAttachments(articleId);
+
+        if (attachments) {
+            for (const attachment of attachments) {
+                
+                const filePath = new URL(attachment.url).pathname.replace('/storage/v1/object/attachments/', '');
+                console.log('found attachment with filepath', filePath);
+
+                // Delete the attachment picture from Supabase Storage
+                const { error: deleteFileError } = await supabase
+                    .storage
+                    .from('attachments')
+                    .remove([filePath]);
+
+                if (deleteFileError) {
+                    console.error('Error deleting image:', deleteFileError);
+                    throw deleteFileError;
+                }
+                console.log(`Attachment picture deleted for article with id ${articleId}`);
+
+            }
+        }
+
         const { data, error } = await supabase
             .from('articles')
             .delete()
@@ -112,6 +137,8 @@ const deleteArticleById = async (articleId) => {
             console.log(`Article with ID ${articleId} not found.`);
             return { success: false, message: 'Article not found' };
         }
+
+
 
         console.log(`Article with ID ${articleId} deleted.`);
         return { success: true, message: 'Article deleted successfully' };
@@ -128,7 +155,7 @@ const addInterest = async (userEmail, articleId) => {
     try {
         const { error } = await supabase
             .from('user_interests')
-            .upsert([{ user_email: userEmail, article_id: articleId, date:now}], { onConflict: ['user_email', 'article_id'] });
+            .upsert([{ user_email: userEmail, article_id: articleId, date: now }], { onConflict: ['user_email', 'article_id'] });
 
         if (error) {
             throw error;

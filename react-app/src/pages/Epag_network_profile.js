@@ -24,7 +24,7 @@ export default function Epag_network_profile() {
     const [studies, setStudies] = useState([]);
     const [skills, setSkills] = useState([]);
     const [jobAds, setJobAds] = useState([]);
-    const [articles, setArticles] = useState([])
+    const [articles, setArticles] = useState([]);
     const [privacySettings, setPrivacySettings] = useState([]);
 
 

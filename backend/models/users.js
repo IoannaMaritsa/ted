@@ -145,7 +145,7 @@ const deleteUser = async (email) => {
         }
 
         const fileName = currentUser.profilepic.split('/').pop();
-        const filePath = new URL(currentUser.profilepic).pathname.replace('/storage/v1/object/', '');
+        const filePath = new URL(currentUser.profilepic).pathname.replace('/storage/v1/object/profilepics', '');
 
         // Handle profile picture deletion if it's not the default
         if (fileName !== 'default-avatar.jpeg') {
@@ -160,16 +160,6 @@ const deleteUser = async (email) => {
                 throw deleteFileError;
             }
             console.log(`Profile picture deleted for user with email ${email}`);
-        }
-        // Delete the profile pic from the storage
-        const { error: deleteImageError } = await supabase
-            .storage
-            .from('profilepics')
-            .remove([filePath]);
-        if (deleteImageError) {
-            console.error('Error deleting image from storage:', deleteImageError);
-        } else {
-            console.log('Image deleted successfully');
         }
 
         // Delete the user
@@ -218,6 +208,24 @@ const updateUser = async (email, name, profession, workplace, location, dob, pre
         if (updateError) {
             console.error('Error updating user:', updateError);
             throw updateError;
+        }
+
+        const fileName = previousPic.split('/').pop();
+        const filePath = new URL(previousPic).pathname.replace('/storage/v1/object/profilepics/', '');
+
+        // Handle profile picture deletion if it's not the default
+        if (fileName !== 'default-avatar.jpeg') {
+            // Delete the old profile picture from Supabase Storage
+            const { error: deleteFileError } = await supabase
+                .storage
+                .from('profilepics')
+                .remove([filePath]);
+
+            if (deleteFileError) {
+                console.error('Error deleting image:', deleteFileError);
+                throw deleteFileError;
+            }
+            console.log(`Profile picture deleted for user with email ${email}`);
         }
         console.log(`User with email ${email} updated successfully.`);
 

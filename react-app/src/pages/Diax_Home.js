@@ -6,6 +6,8 @@ import { useAppContext } from "../context/appContext";
 import '../css/admin.css';
 import {exportData} from '../utils/exportUtils';
 import UserRow from "../components/UserRow";
+import { getAllUsers } from "../api";
+import { useNavigate } from 'react-router-dom';
 
 export default function Diax_Home() {
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'ascending' });
@@ -22,21 +24,20 @@ export default function Diax_Home() {
 }, [searchQuery]);
 
   // Initial users state
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Alice', email: 'alice@example.com', registrationDate: '2023-01-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 2, name: 'Bob', email: 'bob@example.com', registrationDate: '2023-02-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 3, name: 'Charlie', email: 'charlie@example.com', registrationDate: '2023-03-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 4, name: 'David', email: 'david@example.com', registrationDate: '2023-04-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 5, name: 'Eve', email: 'eve@example.com', registrationDate: '2023-05-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 6, name: 'Frank', email: 'frank@example.com', registrationDate: '2023-06-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 7, name: 'Grace', email: 'grace@example.com', registrationDate: '2023-07-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 8, name: 'Hannah', email: 'hannah@example.com', registrationDate: '2023-08-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 9, name: 'Ian', email: 'ian@example.com', registrationDate: '2023-09-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 10, name: 'Jack', email: 'jack@example.com', registrationDate: '2023-10-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 11, name: 'Kara', email: 'kara@example.com', registrationDate: '2023-11-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-    { id: 12, name: 'Liam', email: 'liam@example.com', registrationDate: '2023-12-01', profilePic: 'default-avatar.jpeg', isSelected: false },
-  ]);
+  const [users, setUsers] = useState([]);
+
+  const getUsers = async () => {
+    try {
+        const response = await getAllUsers();
+        setUsers(response);
+    } catch (error) {
+        console.error('Error getting all the users:', error);
+    }
+};
   
+useEffect(() => {
+  getUsers();
+}, []);
 
   // Filter and sort users
   const filteredUsers = useMemo(() => {
@@ -118,11 +119,12 @@ export default function Diax_Home() {
   };
   
 
-
+  const navigate = useNavigate();
 
   const handleProfileClick = (user) => {
-    console.log(user);
-    setUserProfile(user);
+    console.log('click', user.email);
+    navigate('/admin_user', { state: { userEmail: user.email } });
+    window.scrollTo(0, 0);
   }
 
   const handleSort = (key) => {
@@ -185,7 +187,7 @@ export default function Diax_Home() {
                 Email {sortConfig.key === 'email' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
               </th>
               <th style={{ width: '20%' }} onClick={() => handleSort('registrationDate')} className={sortConfig.key === 'registrationDate' ? 'sortable active' : 'sortable'}>
-                Ημερομηνία Εγγραφής {sortConfig.key === 'registrationDate' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                Επάγγελμα {sortConfig.key === 'registrationDate' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
               </th>
             </tr>
           </thead>
