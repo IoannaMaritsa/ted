@@ -15,6 +15,7 @@ export default function Epag_network_profile() {
     const location = useLocation();
     const navigate = useNavigate();
     const { userEmail } = location.state || {};
+    const [loading, setLoading] = useState(true);
     const [sentRequests, setSentRequests] = useState([]);
     const [pendingRequests, setPendingRequests] = useState([]);
     const [otherProfile, setOtherProfile] = useState(null); // State for the profile
@@ -26,9 +27,10 @@ export default function Epag_network_profile() {
     const [jobAds, setJobAds] = useState([]);
     const [articles, setArticles] = useState([]);
     const [privacySettings, setPrivacySettings] = useState([]);
+    const [iscontact, setIscontact] = useState(false);
+    const [othercontacts, setOthercontacts] = useState([]);
 
 
-    
 
     // Log the email value for debugging
     useEffect(() => {
@@ -40,6 +42,9 @@ export default function Epag_network_profile() {
         const fetchProfile = async () => {
             console.error("email", userEmail);
             if (userEmail) {
+                if (userEmail === user.email) {
+                    navigate(`/epaggelmatias_personal_info`);
+                }
                 try {
 
                     const profileData = await getUser(userEmail); // Assuming getUser returns a Promise
@@ -55,6 +60,7 @@ export default function Epag_network_profile() {
 
 
     useEffect(() => {
+        //fetch the my contacts
         const fetchContacts = async () => {
             try {
                 const contacts = await getAllContactsByUserEmail(user.email);
@@ -63,9 +69,30 @@ export default function Epag_network_profile() {
                 console.error('Error fetching contacts:', error);
             }
         };
+        //fetch the contacts of the picked user
+        const fetchOthercontacts = async () => {
+            try {
+                const contacts = await getAllContactsByUserEmail(otherProfile.email);
+                const contactEmails = contacts.map(contact => contact.contact_email);
+                const contactDetailsPromises = contactEmails.map(email => getUser(email));
+                const contactsData = await Promise.all(contactDetailsPromises);
+
+                setOthercontacts(contactsData); // Store the full contact details in state
+            } catch (error) {
+                console.error('Error getting articles:', error);
+            }
+        };
 
         fetchContacts();
-    }, [userEmail]);
+        fetchOthercontacts();
+        console.log(othercontacts);
+    }, [userEmail, otherProfile]);
+
+    const handleProfileClick = (user) => {
+        console.log("email2", user.email);
+        navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
+        window.scrollTo(0, 0);
+    };
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -143,13 +170,27 @@ export default function Epag_network_profile() {
     };
 
     useEffect(() => {
-        getArticles();
-        getExperiences();
-        getStudies();
-        getSkills();
-        getJobs();
-        getPrivacy();
-        
+        const fetchData = async () => {
+            setIscontact(isAlreadyContact(otherProfile?.email));
+            try {
+                await Promise.all([
+                    getArticles(),
+                    getExperiences(),
+                    getStudies(),
+                    getSkills(),
+                    getJobs(),
+                    getPrivacy()
+                ]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (otherProfile) {
+            fetchData();
+        }
     }, [otherProfile]);
 
     const isRequestPending = (targetEmail) => {
@@ -246,14 +287,14 @@ export default function Epag_network_profile() {
         if (isAlreadyContact(otherProfile?.email)) {
             return (
                 <div className="button-2-cont">
-                <button className="unfriend-button" onClick={() => handleUnfriendClick(otherProfile?.email)}>
-                    Αφαίρεση Σύνδεσης
-                    <img src="/unfriend.png" alt="Unfriend" className="unfriend-ic" />
-                </button>
-                <button className="message-button2" onClick={() => handleMessageClick()}>Μήνυμα
-                    <img src="/mess-icon.png" alt="Message" className="mess-icon2" />
-                </button>
-            </div>
+                    <button className="unfriend-button" onClick={() => handleUnfriendClick(otherProfile?.email)}>
+                        Αφαίρεση Σύνδεσης
+                        <img src="/unfriend.png" alt="Unfriend" className="unfriend-ic" />
+                    </button>
+                    <button className="message-button2" onClick={() => handleMessageClick()}>Μήνυμα
+                        <img src="/mess-icon.png" alt="Message" className="mess-icon2" />
+                    </button>
+                </div>
 
             );
         } else if (isRequestPending(otherProfile?.email)) {
@@ -285,6 +326,9 @@ export default function Epag_network_profile() {
             );
         }
     };
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>
@@ -312,10 +356,10 @@ export default function Epag_network_profile() {
                                 </div>
                                 <div>
                                     {renderConnectionButton()}
-                                    
+
                                 </div>
                             </div>
-                            {isAlreadyContact(otherProfile?.email) ? (
+                            {iscontact ? (
                                 <div className="a-square-div2">
                                     <div className="a-icon-text">
                                         <img className="a-icon" src="/work-icon.png" alt="Icon 1" />
@@ -367,7 +411,7 @@ export default function Epag_network_profile() {
                                 </>
                             )}
                         </div>
-                        {(isAlreadyContact(otherProfile?.email) || (!privacySettings[0]?.workExperience_private)) && (
+                        {(iscontact || (!privacySettings[0]?.workExperience_private)) && (
                             <div className="work-experience-container">
                                 <div className="work-experience-row-title">
                                     Επαγγελματική Εμπειρία
@@ -385,7 +429,7 @@ export default function Epag_network_profile() {
                                 )}
                             </div>
                         )}
-                        {(isAlreadyContact(otherProfile?.email) || (!privacySettings[0]?.studies_private)) && (
+                        {(iscontact || (!privacySettings[0]?.studies_private)) && (
                             <div className="work-experience-container">
                                 <div className="work-experience-row-title">
                                     Σπουδές
@@ -403,7 +447,7 @@ export default function Epag_network_profile() {
                                 )}
                             </div>
                         )}
-                        {(isAlreadyContact(otherProfile?.email) || (!privacySettings[0]?.skills_private)) && (
+                        {(iscontact || (!privacySettings[0]?.skills_private)) && (
                             <div className="work-experience-container">
                                 <div className="work-experience-row-title">
                                     Δεξιότητες
@@ -451,6 +495,23 @@ export default function Epag_network_profile() {
                                 <p>Δεν υπάρχουν διαθέσιμα άρθρα</p>
                             )}
                         </div>
+                        {iscontact && (
+                            <div className="work-experience-container">
+                                <div className="work-experience-row-title">
+                                    Συνδέσεις
+                                </div>
+                                <div className="contacts-page">
+                                    <ul className="contacts-list">
+                                        {othercontacts?.map((contact, index) => (
+                                            <div className="contact" onClick={() => handleProfileClick(contact)}>
+                                                <img src={getImageUrl(contact.profilepic, "profilepics")} alt="contact-pic" className="contact-icon" />
+                                                <li className="profile-sect-contact" key={index}>{contact.name} </li>
+                                            </div>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
 
                     </div>
 
