@@ -144,7 +144,6 @@ export default function Epag_network() {
 
     // On profile pick navigate to the selected user's profile
     const handleProfileClick = (user) => {
-        console.log("email2", user.email);
         navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
         window.scrollTo(0, 0);
     };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from "../context/appContext";
 import { useState, useEffect } from 'react';
 import { getAllUsers } from '../api';
@@ -9,6 +9,7 @@ import './article_display.css';
 
 const Article = ({ id, title, author_email, date, content, onDelete }) => {
 
+  const navigate = useNavigate();
   const user_info = useAppContext().user;
   const [users, setUsers] = useState([]);
 
@@ -31,25 +32,33 @@ const Article = ({ id, title, author_email, date, content, onDelete }) => {
     getUsers();
   }, []);
 
+  const handleProfileClick = () => {
+    navigate('/epaggelmatias_network/user_profile', { state: { userEmail: author_email } });
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="article">
-      <Link to={`/epaggelmatias_article/${id}`} className="link">
-        <h2 className="article-title">{title}</h2>
-      </Link>
+
       <div className="article-meta">
-        <div className="article-author">
-          <img src="/user.png" alt="User Icon" className="icon" />
-          <span>{author}</span>
-        </div>
+        <Link to={`/epaggelmatias_article/${id}`} className="link">
+          <h2 className="article-title">{title}</h2>
+        </Link>
         <div className="article-date">
-          <img src="/calendar.png" alt="Date icon" className="icon" />
+          <img src="/calendar.png" alt="Date icon" className="iconp" />
           <span>{date}</span>
         </div>
       </div>
+      <div className="article-author">
+        <img src="/user.png" alt="User Icon" className="iconp" />
+        <span onClick={handleProfileClick}>{author}</span>
+      </div>
       <p className="article-content">{content.substring(0, 250)}...</p>
       {author_email === user_info.email && (
-        <div className='send-right'>
-          <img src="/remove.png" alt="Image Icon" className='big-icon' onClick={handleDeleteClick} />
+        <div className='send-right2'>
+          <div className='icon-circle2'>
+          <img src="/trash.png" alt="Image Icon" className='icontr' onClick={handleDeleteClick} />
+          </div>
         </div>
       )}
     </div>

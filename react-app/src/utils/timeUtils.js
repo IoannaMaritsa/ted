@@ -42,7 +42,6 @@ const formatRelativeTime = (date) => {
     const diffInMonths = Math.floor(diffInDays / 30);
     const diffInYears = Math.floor(diffInDays / 365);
 
-    console.log(date, now, diff)
     if (diffInYears > 0) {
         return `${diffInYears}y`;
     } else if (diffInMonths > 0) {

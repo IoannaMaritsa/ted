@@ -12,6 +12,7 @@ export const ContextProvider = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
+    const [messageContact, setMessageContact] = useState(null)
 
     const fetchUserData = async (email) => {
         try {
@@ -73,6 +74,8 @@ export const ContextProvider = ({ children }) => {
         isLoggedIn,
         logIn,
         logOut,
+        messageContact,
+        setMessageContact,
     };
 
     return (

@@ -6,10 +6,12 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAppContext } from "../context/appContext";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../components/article_display.css'
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { getArticleById, getComments, getUser, getAttachments, addInterest, removeInterest, getUserInterests, addComment } from '../api';
 import getImageUrl from '../hooks/getImageUrl';
+import { formatRelativeTime } from '../utils/timeUtils';
 
 const getCurrentTimestamp = () => {
     const now = new Date();
@@ -161,21 +163,22 @@ const Epag_article = () => {
             <Header variant="professional" />
             <Breadcrumbs />
             <div className='main'>
-                <div className="article-container">
+                <div className="article-container2">
                     <div className='interest-box'>
-                        {interested === false ? (<button className='interest-button' onClick={handleInterestChange}>Με ενδιαφέρει</button>
-                        ) : (<button className='interest-button' onClick={handleInterestChange}>Δεν με ενδιαφέρει</button>)}
+
                     </div>
-                    <div className="article-text">
-                        <h1>{article.title}</h1>
+                    <div className="article-title45">
+                        <span>{article.title}</span>
+                        {interested === false ? (<button className='interest-button36' onClick={handleInterestChange}>Με ενδιαφέρει <img src="/yellow-heart23.png" alt="heart" className='iconp'></img></button>
+                        ) : (<button className='interest-button36' onClick={handleInterestChange}>Δεν με ενδιαφέρει</button>)}
                     </div>
                     <div className="article-meta">
                         <div className="article-author1" onClick={() => handleProfileClick(author.email)}>
-                            <img src={getImageUrl(author?.profilepic, "profilepics")} alt="User Icon" className="icon" />
+                            <img src={getImageUrl(author?.profilepic, "profilepics")} alt="User Icon" className="pp12" />
                             <span>{author.name}</span>
                         </div>
                         <div className="article-date">
-                            <img src="/calendar.png" alt="Date icon" className="icon" />
+                            <img src="/calendar.png" alt="Date icon" className="iconp" />
                             {article.publish_date ? <span>{format(article.publish_date, 'yyyy-MM-dd')}</span> : <span>No date available</span>}
                         </div>
                     </div>
@@ -205,7 +208,7 @@ const Epag_article = () => {
                                     return (
                                         <div key={index}>
                                             <audio controls>
-                                                <source src={getImageUrl(url, 'attachments')}  type={type} />
+                                                <source src={getImageUrl(url, 'attachments')} type={type} />
                                                 Your browser does not support the audio element.
                                             </audio>
                                         </div>
@@ -255,13 +258,12 @@ const Epag_article = () => {
                                     <div className='notification-item'>
                                         <img src={getImageUrl(comment.user.profilepic, 'profilepics')} alt={`${comment.user.name}'s profile`} className='profile-pic' />
                                         <div className='notification-text'>
-                                            {format(comment.created_at, 'yyyy-MM-dd') === format(getCurrentTimestamp(), 'yyyy-MM-dd') ? (
-                                                <div className="notification-time">{format(comment.created_at, 'HH:mm:ss')}</div>
-                                            ) : (
-                                                <div className="notification-time">{format(comment.created_at, 'yyyy-MM-dd')}</div>
-                                            )}
-
-                                            <span className="notification-name" onClick={() => handleProfileClick(comment.author_email)}>{comment.user.name}</span>
+                                            <div className="row-text12">
+                                                <span className="notification-name2" onClick={() => handleProfileClick(comment.author_email)}>{comment.user.name}</span>
+                                                <span className="author-date12">
+                                                    {formatRelativeTime(comment.created_at)}
+                                                </span>
+                                            </div>
                                             <span>{comment.text}</span>
                                         </div>
                                     </div>
@@ -280,7 +282,7 @@ const Epag_article = () => {
                             />
                         </div>
                         <div className='interest-box'>
-                            <button type='submit' className="article-comment-button">Ανάρτηση</button>
+                            <button type='submit' className="article-comment-button2">Ανάρτηση</button>
                         </div>
                     </form>
                 </div>
