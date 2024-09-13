@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/admin.css';
 import {exportDataProfile} from '../utils/exportUtils';
 import Breadcrumbs from "../components/Breadcrumbs";
-import { getUser, getArticle, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser, getCommentsOfUser, getUserInterests, getArticleById} from "../api";
+import { getUser, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser, getCommentsOfUser, getUserInterests, getArticleById} from "../api";
 import getImageUrl from "../hooks/getImageUrl";
 import { format } from 'date-fns';
 
@@ -25,6 +25,7 @@ export default function Diax_Home() {
     const [articles, setArticles] = useState([]);
     const [comments, setComments] = useState([]);
     const [interests, setInterests] = useState([]);
+    const [contacts, setContacts] = useState([]);
 
     useEffect(() => {
         console.log('Location state:', location.state);
@@ -154,6 +155,19 @@ export default function Diax_Home() {
         }
     };
 
+    const getContacts = async () => {
+        try {
+            const contacts = await getAllContactsByUserEmail(otherProfile.email);
+            const contactEmails = contacts.map(contact => contact.contact_email);
+            const contactDetailsPromises = contactEmails.map(email => getUser(email));
+            const contactsData = await Promise.all(contactDetailsPromises);
+
+            setContacts(contactsData); // Store the full contact details in state
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
+
     useEffect(() => {
         getArticles();
         getExperiences();
@@ -162,6 +176,7 @@ export default function Diax_Home() {
         getJobs();
         getComments();
         getInterest();
+        getContacts();
         
     }, [otherProfile]);
 
@@ -253,7 +268,7 @@ export default function Diax_Home() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No work experience available</p>
+                                <p>Δεν υπάρχει διαθέσιμη επαγγελματική εμπειρία</p>
                             )}
                         </div>
                         <div className="work-experience-container">
@@ -269,7 +284,7 @@ export default function Diax_Home() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No studies available</p>
+                                <p>Δεν υπάρχουν διαθέσιμες σπουδές</p>
                             )}
                         </div>
                         <div className="work-experience-container">
@@ -283,7 +298,7 @@ export default function Diax_Home() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No skills available</p>
+                                <p>Δεν υπάρχουν διαθέσιμες δεξιότητες</p>
                             )}
                         </div>
                         <div className="work-experience-container">
@@ -298,7 +313,7 @@ export default function Diax_Home() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No job ads available</p>
+                                <p>Δεν υπάρχουν διαθέσιμες αγγελίες</p>
                             )}
                         </div>
                         <div className="work-experience-container">
@@ -313,7 +328,7 @@ export default function Diax_Home() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No articles available</p>
+                                <p>Δεν υπάρχουν διαθέσιμα άρθρα</p>
                             )}
                         </div>
                         <div class="a-container">
@@ -331,7 +346,7 @@ export default function Diax_Home() {
                                         </div>
                                     ))
                                 ) : (
-                                    <p>No comments available</p>
+                                    <p>Δεν υπάρχουν διαθέσιμα σχόλια</p>
                                 )}
                             </div>
                             <div class="a-square-div4">
@@ -347,10 +362,30 @@ export default function Diax_Home() {
                                         </div>
                                     ))
                                 ) : (
-                                    <p>No interests available</p>
+                                    <p>Δεν υπάρχουν διαθέσιμες σημειώσεις ενδιαφέροντος</p>
                                 )}
                             </div>
                         </div>
+                        <div class="a-square-div3">
+                                <div className="work-experience-row-title">
+                                    Συνδέσεις
+                                    <img src="/community.png" alt="Comments Icon"></img>
+                                </div>
+                                {(contacts && contacts.length > 0) ? (
+                                    <div className="contacts-page" >
+                                    <ul className="contacts-list" >
+                                        {contacts?.map((contact, index) => (
+                                            <div className="contact" style={{ cursor: 'default' }}>
+                                                <img src={getImageUrl(contact.profilepic, "profilepics")} alt="contact-pic" className="contact-icon" />
+                                                <li className="profile-sect-contact" key={index}>{contact.name} </li>
+                                            </div>
+                                        ))}
+                                    </ul>
+                                </div>
+                                ) : (
+                                    <p>Δεν υπάρχουν διαθέσιμες συνδέσεις</p>
+                                )}
+                            </div>
                     </div>
                 </div>
             </main>

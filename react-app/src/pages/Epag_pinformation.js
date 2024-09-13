@@ -96,6 +96,7 @@ export default function Epag_pinformation() {
         }
         closePrivacyModal();
         await getPrivacy();
+        window.location.reload();
     };
 
 
