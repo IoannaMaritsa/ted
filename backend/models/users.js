@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const supabase = require('../supabaseClient');
 const path = require('path');
+const {addPrivacy} = require('./privacy');
 
 // Get all users
 const getAllUsers = async () => {
@@ -71,6 +72,8 @@ const uploadProfilePic = async (buffer, originalname) => {
     return timestampedFilename; // Return the file path or key for the uploaded file
 };
 
+
+
 // Add a new user
 const addUser = async (name, email, password, location, dob, profilepic) => {
     try {
@@ -115,6 +118,10 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
             console.error('Error adding user:', error);
             throw error;
         }
+        await addPrivacy(user.email);
+
+        console.log(`Privacy record created for user with email ${user.email}`);
+
         console.log('User added');
         return true;
     } catch (err) {
@@ -182,27 +189,24 @@ const deleteUser = async (email) => {
 };
 
 // Update a user by email
-const updateUser = async (email, profession, workplace, location, dob, profilepic) => {
+const updateUser = async (email, name, profession, workplace, location, dob, previousPic, profilepic) => {
     try {
         let profilePicUrl = null;
 
         if (profilepic) {
             // Upload profile picture and get its URL
-            if (typeof profilepic === 'string') {
-                profilePicUrl = profilepic;
-            } else if (profilepic.buffer) {
-                const profilePicPath = await uploadProfilePic(profilepic.buffer, profilepic.originalname);
-                console.log(profilePicPath);
-                profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${profilePicPath}`;
-            }
+            const profilePicPath = await uploadProfilePic(profilepic.buffer, profilepic.originalname);
+            console.log(profilePicPath);
+            profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${profilePicPath}`;
         } else {
-            profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/default-avatar.jpeg`;
+            profilePicUrl = previousPic;
         }
 
         // Proceed to update the user in the database
         const { data: updatedUser, error: updateError } = await supabase
             .from('users')
             .update({
+                name: name || null,
                 profession: profession || null,
                 workplace: workplace || null,
                 location: location || null,
@@ -290,7 +294,7 @@ const getUnconnectedUsers = async (userId) => {
         const contactIds = contacts.map(contact => contact.contact_id);
 
         // Filter out the user themselves and their contacts
-        const unconnectedUsers = allUsers.filter(user =>
+        const unconnectedUsers = allUsers.filter(user => 
             user.id !== userId && !contactIds.includes(user.id)
         );
 

@@ -17,6 +17,7 @@ const attachmentsModel = require('./models/attachments');
 const jobsModel = require('./models/jobs');
 const submissionsModel = require('./models/submissions');
 const messagesModel = require('./models/messages');
+const privacyModel = require('./models/privacy');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -112,11 +113,11 @@ app.delete('/users/:email', upload.none(), async (req, res) => {
 // Update user information
 app.put('/users/:email', upload.single('profilepic'), async (req, res) => {
     const { email } = req.params;
-    const { profession, workplace, location, dob } = req.body;
+    const { name, profession, workplace, location, dob, previousPic } = req.body;
     const profilepic = req.file; // The uploaded file will be available in req.file
 
     try {
-        const updatedUser = await usersModel.updateUser(email, profession, workplace, location, dob, profilepic);
+        const updatedUser = await usersModel.updateUser(email, name, profession, workplace, location, dob, previousPic, profilepic);
         if (updatedUser) {
             res.json(updatedUser);
         } else {
@@ -775,6 +776,39 @@ app.get('/messages', async (req, res) => {
     } catch (err) {
         console.error('Error fetching messages:', err);
         res.status(500).json({ message: 'Error fetching messages', error: err.message });
+    }
+});
+// ---------- PRIVACY ROUTES -----------
+
+// Get privacy settings for a user
+app.get('/privacy/:userEmail', async (req, res) => {
+    const { userEmail } = req.params;
+    console.log(`Fetching privacy settings`);
+    try {
+        const privacy = await privacyModel.getPrivacySettings(userEmail);
+        if (!privacy) {
+            return res.status(404).json({ message: 'No settings found' });
+        }
+        res.status(200).json(privacy);
+    } catch (error) {
+        console.error('Error fetching settings:', error);
+        res.status(500).json({ message: 'Error fetching settings', error: error.message });
+    }
+});
+
+app.put('/api/users/privacy', async (req, res) => {
+    const { email, privacyField, newValue } = req.body;
+
+    if (!email || !privacyField || newValue === undefined) {
+        return res.status(400).json({ error: 'Missing email, privacy field, or new value' });
+    }
+
+    try {
+        await privacyModel.updatePrivacy(email, privacyField, newValue);
+        res.status(200).json({ message: `Privacy field '${privacyField}' updated successfully.` });
+    } catch (error) {
+        console.error('Error updating privacy field:', error);
+        res.status(500).json({ error: 'Failed to update privacy field' });
     }
 });
 

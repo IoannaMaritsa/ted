@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
@@ -11,7 +11,7 @@ import AddSkillsPopup from "../components/popups/AddSkillsPopup";
 import EditPopup from "../components/popups/EditPopup";
 import { useAppContext } from "../context/appContext";
 import { useEffect } from "react";
-import {getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, updateUser , addExperience , deleteExperience , addStudy , deleteStudy , addSkillToUser , deleteSkillFromUser} from "../api";
+import { getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, updateUser, addExperience, deleteExperience, addStudy, deleteStudy, addSkillToUser, deleteSkillFromUser, getPrivacySettings, updatePrivacy } from "../api";
 import getImageUrl from "../hooks/getImageUrl";
 
 export default function Epag_pinformation() {
@@ -19,6 +19,7 @@ export default function Epag_pinformation() {
     const [workExperience, setWorkExperience] = useState([]);
     const [studies, setStudies] = useState([]);
     const [skills, setSkills] = useState([]);
+    const [privacySettings, setPrivacySettings] = useState([]);
 
     const getExperiences = async () => {
         try {
@@ -47,24 +48,24 @@ export default function Epag_pinformation() {
         }
     };
 
+    const getPrivacy = async () => {
+        try {
+            const response = await getPrivacySettings(user.email);
+            setPrivacySettings(response);
+        } catch (error) {
+            console.error('Error getting privacy settings:', error);
+        }
+    };
+
     useEffect(() => {
         getExperiences();
         getStudies();
-        getSkills();        
+        getSkills();
+        getPrivacy();
+        console.log('information', privacySettings);
     }, [user]);
 
-
-    const [privacySettings, setPrivacySettings] = useState({
-        work: "private",
-        location: "private",
-        birthday: "private",
-        email: "private",
-        workExperience: "private",
-        studies: "private",
-        skills: "private",
-    });
     
-
 
     // States to manage modal visibility
     const [isModalOpen, setModalOpen] = useState(false);
@@ -86,29 +87,25 @@ export default function Epag_pinformation() {
     };
 
     // Function to update privacy settings
-    const changePrivacySetting = (newPrivacy) => {
-        setPrivacySettings((prevSettings) => {
-            const updatedSettings = {
-                ...prevSettings,
-                [currentField]: newPrivacy,
-            };
-            return updatedSettings;
-        });
+    const changePrivacySetting = async (newPrivacy) => {
+        console.log('user', user.email, 'field', currentField, 'value', newPrivacy);
+        try {
+            updatePrivacy(user.email, currentField, newPrivacy);
+        } catch (error) {
+            console.error('Error updating privacy settings:', error);
+        }
         closePrivacyModal();
+        await getPrivacy();
     };
 
 
     // Function to get icon based on privacy setting
     const getPrivacyIcon = (privacy) => {
-        switch (privacy) {
-            case "public":
-                return "/planet.png";
-            case "friends":
-                return "/friends.png";
-            case "private":
-            default:
-                return "/private.png";
-        }
+        if (privacy)
+            return "/private.png";
+        else 
+            return "/planet.png";
+
     };
 
     // Delete handlers
@@ -200,7 +197,7 @@ export default function Epag_pinformation() {
         }
         getSkills();
     };
-    
+
     // Function to update the profile
     const handleSaveProfile = async (updatedProfile) => {
         try {
@@ -236,9 +233,9 @@ export default function Epag_pinformation() {
                                     <span class="a-text1">{user.workplace}</span>
                                     <img
                                         className="a-icon-right"
-                                        src={getPrivacyIcon(privacySettings.work)}
+                                        src={getPrivacyIcon(privacySettings[0]?.work_private)}
                                         alt="Privacy Icon"
-                                        onClick={() => openPrivacyModal("work")}
+                                        onClick={() => openPrivacyModal("work_private")}
                                     />
                                 </div>
                                 <div class="a-icon-text1">
@@ -246,9 +243,9 @@ export default function Epag_pinformation() {
                                     <span class="a-text1">{user.location}</span>
                                     <img
                                         className="a-icon-right"
-                                        src={getPrivacyIcon(privacySettings.location)}
+                                        src={getPrivacyIcon(privacySettings[0]?.location_private)}
                                         alt="Privacy Icon"
-                                        onClick={() => openPrivacyModal("location")}
+                                        onClick={() => openPrivacyModal("location_private")}
                                     />
                                 </div>
                                 <div class="a-icon-text1">
@@ -256,9 +253,9 @@ export default function Epag_pinformation() {
                                     <span class="a-text1">{user.dob}</span>
                                     <img
                                         className="a-icon-right"
-                                        src={getPrivacyIcon(privacySettings.birthday)}
+                                        src={getPrivacyIcon(privacySettings[0]?.birthday_private)}
                                         alt="Privacy Icon"
-                                        onClick={() => openPrivacyModal("birthday")}
+                                        onClick={() => openPrivacyModal("birthday_private")}
                                     />
                                 </div>
                                 <div class="a-icon-text1">
@@ -266,9 +263,9 @@ export default function Epag_pinformation() {
                                     <span class="a-text1">{user.email}</span>
                                     <img
                                         className="a-icon-right"
-                                        src={getPrivacyIcon(privacySettings.email)}
+                                        src={getPrivacyIcon(privacySettings[0]?.email_private)}
                                         alt="Privacy Icon"
-                                        onClick={() => openPrivacyModal("email")}
+                                        onClick={() => openPrivacyModal("email_private")}
                                     />
                                 </div>
                             </div>
@@ -281,9 +278,9 @@ export default function Epag_pinformation() {
                                 Επαγγελματική Εμπειρία
                                 <img
                                     className="work-experience-privacy-icon"
-                                    src={getPrivacyIcon(privacySettings.workExperience)}  
+                                    src={getPrivacyIcon(privacySettings[0]?.workExperience_private)}
                                     alt="Privacy Icon"
-                                    onClick={() => openPrivacyModal("workExperience")}  
+                                    onClick={() => openPrivacyModal("workExperience_private")}
                                 />
                             </div>
                             {workExperience.length > 0 ? (
@@ -296,9 +293,9 @@ export default function Epag_pinformation() {
                                         </div>
                                         <img
                                             className="delete-icon"
-                                            src="/trash.png" 
+                                            src="/trash.png"
                                             alt="Delete"
-                                            onClick={() => handleDeleteExperience(experience.id)}  
+                                            onClick={() => handleDeleteExperience(experience.id)}
                                         />
                                     </div>
 
@@ -307,7 +304,7 @@ export default function Epag_pinformation() {
                                 <p></p>
                             )}
                             <div className="work-experience-footer" >
-                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddExperienceModal} /> 
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddExperienceModal} />
                                 <span className="footer-text" onClick={openAddExperienceModal}  >Προσθήκη Επαγγελματικών Εμπειριών</span>
                             </div>
                         </div>
@@ -316,9 +313,9 @@ export default function Epag_pinformation() {
                                 Σπουδές
                                 <img
                                     className="work-experience-privacy-icon2"
-                                    src={getPrivacyIcon(privacySettings.studies)}  
+                                    src={getPrivacyIcon(privacySettings[0]?.studies_private)}
                                     alt="Privacy Icon"
-                                    onClick={() => openPrivacyModal("studies")} 
+                                    onClick={() => openPrivacyModal("studies_private")}
                                 />
                             </div>
                             {studies.length > 0 ? (
@@ -331,9 +328,9 @@ export default function Epag_pinformation() {
                                         </div>
                                         <img
                                             className="delete-icon"
-                                            src="/trash.png"  
+                                            src="/trash.png"
                                             alt="Delete"
-                                            onClick={() => handleDeleteStudies(study.id)}  
+                                            onClick={() => handleDeleteStudies(study.id)}
                                         />
                                     </div>
                                 ))
@@ -341,7 +338,7 @@ export default function Epag_pinformation() {
                                 <p></p>
                             )}
                             <div className="work-experience-footer" >
-                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddStudiesModal} /> 
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddStudiesModal} />
                                 <span className="footer-text" onClick={openAddStudiesModal}  >Προσθήκη Σπουδών</span>
                             </div>
                         </div>
@@ -350,30 +347,30 @@ export default function Epag_pinformation() {
                                 Δεξιότητες
                                 <img
                                     className="work-experience-privacy-icon3"
-                                    src={getPrivacyIcon(privacySettings.skills)}  
+                                    src={getPrivacyIcon(privacySettings[0]?.skills_private)}
                                     alt="Privacy Icon"
-                                    onClick={() => openPrivacyModal("skills")} 
+                                    onClick={() => openPrivacyModal("skills_private")}
                                 />
                             </div>
                             {skills.length > 0 ? (
                                 skills.map((skill, index) => (
                                     <div key={index} className="work-experience-row2">
                                         <div className="work-experience-info">
-                                        <div className="work-role">{skill.skill_name}</div>
+                                            <div className="work-role">{skill.skill_name}</div>
                                         </div>
                                         <img
                                             className="delete-icon"
-                                            src="/trash.png"  
+                                            src="/trash.png"
                                             alt="Delete"
-                                            onClick={() => handleDeleteSkills(user.id, skill.id)}  
+                                            onClick={() => handleDeleteSkills(user.id, skill.id)}
                                         />
                                     </div>
                                 ))
                             ) : (
                                 <p></p>
                             )}
-                             <div className="work-experience-footer" >
-                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddSkillsModal} /> 
+                            <div className="work-experience-footer" >
+                                <img src="/yellow-add.png" alt="Icon" className="footer-icon" onClick={openAddSkillsModal} />
                                 <span className="footer-text" onClick={openAddSkillsModal}  >Προσθήκη Δεξιοτήτων</span>
                             </div>
                         </div>
@@ -382,7 +379,7 @@ export default function Epag_pinformation() {
                     </div>
                 </div>
                 {isModalOpen && (
-                    <PrivacyPopup isOpen={isModalOpen} onClose={closePrivacyModal} onChangePrivacySetting={changePrivacySetting} currentPrivacy={privacySettings[currentField]} />
+                    <PrivacyPopup isOpen={isModalOpen} onClose={closePrivacyModal} onChangePrivacySetting={changePrivacySetting} currentPrivacy={privacySettings.find(setting => setting.hasOwnProperty(currentField))?.[currentField]} />
                 )
                 }
                 {isEditModalOpen && (
@@ -392,7 +389,7 @@ export default function Epag_pinformation() {
                 {isAddExperienceModalOpen && (
                     <AddWorkExperiencePopup isOpen={isAddExperienceModalOpen} onClose={closeAddExperienceModal} onAddExperience={handleAddExperience} />
                 )}
-                 {isAddStudiesModalOpen && (
+                {isAddStudiesModalOpen && (
                     <AddStudiesPopup isOpen={isAddStudiesModalOpen} onClose={closeAddStudiesModal} onAddStudies={handleAddStudies} />
                 )}
                 {isAddSkillsModalOpen && (

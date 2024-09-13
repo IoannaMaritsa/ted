@@ -29,16 +29,18 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
         const formData = new FormData();
 
         // Append all the fields to the FormData object
+        formData.append('name', name !== currentProfile.name ? name : currentProfile.name);
         formData.append('profession', profession !== currentProfile.profession ? profession : currentProfile.profession);
         formData.append('workplace', workplace !== currentProfile.workplace ? workplace : currentProfile.workplace);
         formData.append('location', location !== currentProfile.location ? location : currentProfile.location);
         formData.append('dob', birthday ? format(birthday, 'yyyy-MM-dd') : currentProfile.birthday);
+        formData.append('previousPic', currentProfile.profilepic);
 
         // Check if the profile picture is a file, and append it to the FormData
         if (profilePic && typeof profilePic === 'object') {
             formData.append('profilepic', profilePic);  // Appending the file
+            console.log('pic', profilePic);
         }
-        else formData.append('profilepic', currentProfile.profilepic);
 
         // Send the FormData to the backend
         try {

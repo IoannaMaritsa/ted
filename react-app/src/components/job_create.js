@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState , useEffect} from 'react';
+import { default_locations } from "../context/locations";
 import './job_create.css';
 
 const Job_create = ({ c_email, onSave }) => {
@@ -12,16 +13,7 @@ const Job_create = ({ c_email, onSave }) => {
     const [salary, setSalary] = useState('');
     const [detail, setDetail] = useState('');
 
-    const locations = [
-        'Αθήνα - Κέντρο',
-        'Πειραιάς',
-        'Ηράκλειο Κρήτης',
-        'Άνω Πατήσια',
-        'Νέο Ηράκλειο',
-        'Ζωγράφου',
-        'Κάτω Πατήσια',
-        'Κυψέλη'
-      ];
+    const locations = default_locations;
 
     const types = [
         'Πλήρης',
