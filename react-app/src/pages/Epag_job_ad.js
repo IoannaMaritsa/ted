@@ -9,23 +9,14 @@ import Job from '../components/job_display';
 import MyJob from '../components/my_job_display';
 import '../css/Epag_job_ad.css';
 import { useAppContext } from "../context/appContext";
+import { default_locations } from "../context/locations";
 import { format } from 'date-fns';
 import { useState, useMemo, useEffect } from 'react';
 import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob } from '../api';
 
 export default function Epag_job_ad() {
 
-  const locations = [
-    'Περιοχές Όλες',
-    'Αθήνα - Κέντρο',
-    'Πειραιάς',
-    'Ηράκλειο Κρήτης',
-    'Άνω Πατήσια',
-    'Νέο Ηράκλειο',
-    'Ζωγράφου',
-    'Κάτω Πατήσια',
-    'Κυψέλη'
-  ];
+  const locations = ['Περιοχές Όλες', ...default_locations];
 
   //user
   const user_info = useAppContext().user;

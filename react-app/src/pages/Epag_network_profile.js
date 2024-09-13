@@ -4,8 +4,8 @@ import Footer from '../components/Footer';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MainBottom from '../components/MainBottom';
 import '../css/admin.css';
-import { getUser, sendFriendRequest, getSentFriendRequests, getReceivedFriendRequests, updateFriendRequestStatus, addContact, removeContact, getFriendRequestByEmails, getAllContactsByUserEmail, deleteFriendRequest } from "../api";
-import {getArticle, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser } from "../api";
+import { getUser, sendFriendRequest, getSentFriendRequests, getReceivedFriendRequests, updateFriendRequestStatus, addContact, removeContact, getFriendRequestByEmails, getAllContactsByUserEmail, deleteFriendRequest, getPrivacySettings } from "../api";
+import { getArticle, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser } from "../api";
 import Breadcrumbs from "../components/Breadcrumbs";
 import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
@@ -25,6 +25,7 @@ export default function Epag_network_profile() {
     const [skills, setSkills] = useState([]);
     const [jobAds, setJobAds] = useState([]);
     const [articles, setArticles] = useState([])
+    const [privacySettings, setPrivacySettings] = useState([]);
 
 
 
@@ -120,16 +121,25 @@ export default function Epag_network_profile() {
 
     const getJobs = async () => {
         try {
-    
-          const newjobs = await getJobsOfUser(otherProfile.email);
-          console.log(`Got a job successfully.`);
-          if (newjobs.success)
-            setJobAds(newjobs.data)
-    
+
+            const newjobs = await getJobsOfUser(otherProfile.email);
+            console.log(`Got a job successfully.`);
+            if (newjobs.success)
+                setJobAds(newjobs.data)
+
         } catch (error) {
-          console.error('Error getting jobs:', error);
+            console.error('Error getting jobs:', error);
         }
-      };
+    };
+
+    const getPrivacy = async () => {
+        try {
+            const response = await getPrivacySettings(otherProfile.email);
+            setPrivacySettings(response);
+        } catch (error) {
+            console.error('Error getting privacy settings:', error);
+        }
+    };
 
     useEffect(() => {
         getArticles();
@@ -137,6 +147,7 @@ export default function Epag_network_profile() {
         getStudies();
         getSkills();
         getJobs();
+        getPrivacy();
         
     }, [otherProfile]);
 
@@ -206,8 +217,7 @@ export default function Epag_network_profile() {
         }
     };
 
-    const handleMessageClick = () =>
-    {
+    const handleMessageClick = () => {
         console.log("Navigating...")
         navigate('/epaggelmatias_messages');
     };
@@ -230,8 +240,8 @@ export default function Epag_network_profile() {
             console.error('Error rejecting friend request:', error);
         }
 
-        
-        
+
+
     };
 
     const renderConnectionButton = () => {
@@ -272,8 +282,6 @@ export default function Epag_network_profile() {
         }
     };
 
-
-    
     return (
         <div>
             <Header variant="professional" />
@@ -299,77 +307,116 @@ export default function Epag_network_profile() {
                                     <div className="a-profession">{otherProfile?.profession}</div>
                                 </div>
                                 <div className="button-2-cont">
-                                {renderConnectionButton()}
-                                    <button className="message-button2"  onClick={() => handleMessageClick()}>Μήνυμα
+                                    {renderConnectionButton()}
+                                    <button className="message-button2" onClick={() => handleMessageClick()}>Μήνυμα
                                         <img src="/mess-icon.png" alt="Message" className="mess-icon2" />
                                     </button>
                                 </div>
                             </div>
-                            <div className="a-square-div2">
-                                <div className="a-icon-text">
-                                    <img className="a-icon" src="/work-icon.png" alt="Icon 1" />
-                                    <span className="a-text">{otherProfile?.workplace}</span>
-                                </div>
-                                <div className="a-icon-text">
-                                    <img className="a-icon" src="/location.png" alt="Icon 2" />
-                                    <span className="a-text">{otherProfile?.location}</span>
-                                </div>
-                                <div className="a-icon-text">
-                                    <img className="a-icon" src="/birthday.png" alt="Icon 3" />
-                                    <span className="a-text">{otherProfile?.dob}</span>
-                                </div>
-                                <div className="a-icon-text">
-                                    <img className="a-icon" src="/email.png" alt="Icon 3" />
-                                    <span className="a-text">{otherProfile?.email}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="work-experience-container">
-                            <div className="work-experience-row-title">
-                                Επαγγελματική Εμπειρία
-                            </div>
-                            {workExperience.length > 0 ? (
-                                workExperience.map((experience, index) => (
-                                    <div key={index} className="work-experience-row">
-                                        <div className="work-role">{experience.profession}</div>
-                                        <div className="work-company">{experience.workplace}</div>
-                                        <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
+                            {isAlreadyContact(otherProfile?.email) ? (
+                                <div className="a-square-div2">
+                                    <div className="a-icon-text">
+                                        <img className="a-icon" src="/work-icon.png" alt="Icon 1" />
+                                        <span className="a-text">{otherProfile?.workplace}</span>
                                     </div>
-                                ))
+                                    <div className="a-icon-text">
+                                        <img className="a-icon" src="/location.png" alt="Icon 2" />
+                                        <span className="a-text">{otherProfile?.location}</span>
+                                    </div>
+                                    <div className="a-icon-text">
+                                        <img className="a-icon" src="/birthday.png" alt="Icon 3" />
+                                        <span className="a-text">{otherProfile?.dob}</span>
+                                    </div>
+                                    <div className="a-icon-text">
+                                        <img className="a-icon" src="/email.png" alt="Icon 3" />
+                                        <span className="a-text">{otherProfile?.email}</span>
+                                    </div>
+                                </div>
                             ) : (
-                                <p>No work experience available</p>
+                                <>
+                                    {(!privacySettings[0]?.work_private || !privacySettings[0]?.location_private || !privacySettings[0]?.birthday_private || !privacySettings[0]?.email_private) && (
+                                        <div className="a-square-div2">
+                                            {(!privacySettings[0]?.work_private) && (
+                                                <div className="a-icon-text">
+                                                    <img className="a-icon" src="/work-icon.png" alt="Icon 1" />
+                                                    <span className="a-text">{otherProfile?.workplace}</span>
+                                                </div>
+                                            )}
+                                            {(!privacySettings[0]?.location_private) && (
+                                                <div className="a-icon-text">
+                                                    <img className="a-icon" src="/location.png" alt="Icon 2" />
+                                                    <span className="a-text">{otherProfile?.location}</span>
+                                                </div>
+                                            )}
+                                            {(!privacySettings[0]?.birthday_private) && (
+                                                <div className="a-icon-text">
+                                                    <img className="a-icon" src="/birthday.png" alt="Icon 3" />
+                                                    <span className="a-text">{otherProfile?.dob}</span>
+                                                </div>
+                                            )}
+                                            {(!privacySettings[0]?.email_private) && (
+                                                <div className="a-icon-text">
+                                                    <img className="a-icon" src="/email.png" alt="Icon 3" />
+                                                    <span className="a-text">{otherProfile?.email}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
-                        <div className="work-experience-container">
-                            <div className="work-experience-row-title">
-                                Σπουδές
+                        {(isAlreadyContact(otherProfile?.email) || (!privacySettings[0]?.workExperience_private)) && (
+                            <div className="work-experience-container">
+                                <div className="work-experience-row-title">
+                                    Επαγγελματική Εμπειρία
+                                </div>
+                                {workExperience.length > 0 ? (
+                                    workExperience.map((experience, index) => (
+                                        <div key={index} className="work-experience-row">
+                                            <div className="work-role">{experience.profession}</div>
+                                            <div className="work-company">{experience.workplace}</div>
+                                            <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Δεν υπάρχει διαθέσιμη εργασιακή εμπειρία</p>
+                                )}
                             </div>
-                            {studies.length > 0 ? (
-                                studies.map((study, index) => (
-                                    <div key={index} className="work-experience-row">
-                                        <div className="work-role">{study.university}</div>
-                                        <div className="work-company">{study.degree}</div>
-                                        <div className="work-duration"><span>{study.start_date}</span> - <span>{study.end_date}</span></div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No studies available</p>
-                            )}
-                        </div>
-                        <div className="work-experience-container">
-                            <div className="work-experience-row-title">
-                                Δεξιότητες
+                        )}
+                        {(isAlreadyContact(otherProfile?.email) || (!privacySettings[0]?.studies_private)) && (
+                            <div className="work-experience-container">
+                                <div className="work-experience-row-title">
+                                    Σπουδές
+                                </div>
+                                {studies.length > 0 ? (
+                                    studies.map((study, index) => (
+                                        <div key={index} className="work-experience-row">
+                                            <div className="work-role">{study.university}</div>
+                                            <div className="work-company">{study.degree}</div>
+                                            <div className="work-duration"><span>{study.start_date}</span> - <span>{study.end_date}</span></div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Δεν υπάρχουν διαθέσιμες σπουδές</p>
+                                )}
                             </div>
-                            {skills.length > 0 ? (
-                                skills.map((skill, index) => (
-                                    <div key={index} className="work-experience-row">
-                                        <div className="work-role">{skill.skill_name}</div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No skills available</p>
-                            )}
-                        </div>
+                        )}
+                        {(isAlreadyContact(otherProfile?.email) || (!privacySettings[0]?.skills_private)) && (
+                            <div className="work-experience-container">
+                                <div className="work-experience-row-title">
+                                    Δεξιότητες
+                                </div>
+                                {skills.length > 0 ? (
+                                    skills.map((skill, index) => (
+                                        <div key={index} className="work-experience-row">
+                                            <div className="work-role">{skill.skill_name}</div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Δεν υπάρχουν διαθέσιμα προσόντα</p>
+                                )}
+                            </div>
+                        )}
                         <div className="work-experience-container">
                             <div className="work-experience-row-title">
                                 Αγγελίες
@@ -383,7 +430,7 @@ export default function Epag_network_profile() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No job ads available</p>
+                                <p>Δεν υπάρχουν διαθέσιμες αγγελίες</p>
                             )}
                         </div>
                         <div className="work-experience-container">
@@ -399,7 +446,7 @@ export default function Epag_network_profile() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No articles available</p>
+                                <p>Δεν υπάρχουν διαθέσιμα άρθρα</p>
                             )}
                         </div>
 

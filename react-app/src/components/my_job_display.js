@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from "../context/appContext";
+import { default_locations } from "../context/locations";
 import { getSubmissionsForJob } from '../api';
 import { format } from 'date-fns';
 import './job_display.css';
@@ -80,16 +81,7 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
         }
     }, [type]);
 
-    const locations = [
-        'Αθήνα - Κέντρο',
-        'Πειραιάς',
-        'Ηράκλειο Κρήτης',
-        'Άνω Πατήσια',
-        'Νέο Ηράκλειο',
-        'Ζωγράφου',
-        'Κάτω Πατήσια',
-        'Κυψέλη'
-    ];
+    const locations = default_locations;
 
     const types = [
         'Πλήρης',

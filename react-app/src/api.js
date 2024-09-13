@@ -662,3 +662,39 @@ export const getMessagesBetweenUsers = async (email1, email2) => {
         throw err;
     }
 }
+
+// Get privacy settings for a user
+export const getPrivacySettings = async (userEmail) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/privacy/${userEmail}`);
+        console.log('Settings fetched successfully:', response.data); // Added logging
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Server responded with an error:', error.response.data);
+        } else if (error.request) {
+            // No response received
+            console.error('No response received from server:', error.request);
+        } else {
+            // Error setting up request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error; // Rethrow to handle higher up if necessary
+    }
+};
+
+//update a field of privacy for a specific user
+export const updatePrivacy = async (email, privacyField, newValue) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/api/users/privacy`, {
+            email,
+            privacyField,
+            newValue,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating privacy:', error);
+        throw error;
+    }
+};
