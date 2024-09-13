@@ -662,3 +662,4 @@ export const getMessagesBetweenUsers = async (email1, email2) => {
         throw err;
     }
 }
+

@@ -43,7 +43,9 @@ const addMessage = async(senderEmail, receiverEmail, message, created_at) => {
     }
 }
 
+
 module.exports = {
     getMessagesBetweenUsers,
-    addMessage
+    addMessage,
+
 };

@@ -132,8 +132,8 @@ app.put('/users/:email', upload.single('profilepic'), async (req, res) => {
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     console.log("Incoming user data:", {
-            email, password
-        });
+        email, password
+    });
     try {
         const user = await usersModel.getUser(email);
         console.log("User found:", user)
@@ -169,7 +169,7 @@ app.get('/articles/:userEmail', async (req, res) => {
         if (articles) {
             res.json(articles);
         }
-    
+
     } catch (err) {
         console.error('Error fetching articles of a user:', err);
         res.status(500).json({ error: 'Failed to fetch articles' });
@@ -180,7 +180,7 @@ app.get('/notarticles/:userEmail', async (req, res) => {
     const { userEmail } = req.params;
     try {
         const articles = await articlesModel.getArticlesNotByUserEmail(userEmail);
-        if (articles){ 
+        if (articles) {
             res.json(articles);
         }
     } catch (err) {
@@ -227,14 +227,14 @@ app.post('/articles', async (req, res) => {
         });
 
         const result = await articlesModel.addArticle(title, authorEmail, publishDate, content);
-        if(result){
+        if (result) {
             // If user creation is successful, send a 201 status
             res.status(201).json(result);
         }
         else {
             res.status(404).json({ error: 'Article not created' });
         }
-        
+
     } catch (err) {
         console.error('Error adding user:', err);
         res.status(500).json({ error: 'Failed to add user' });
@@ -403,7 +403,7 @@ app.patch('/friendrequests/:id', async (req, res) => {
 // Route to get a friend request by two emails
 app.get('/friend-request', async (req, res) => {
     const { email1, email2 } = req.query;
-    
+
     console.log("serverside", email1, email2)
     if (!email1 || !email2) {
         return res.status(400).json({ error: 'Missing email parameters' });
@@ -418,7 +418,7 @@ app.get('/friend-request', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
-    } 
+    }
 });
 // ---------- EXPERIENCE ROUTES -----------
 
@@ -441,9 +441,9 @@ app.get('/experiences/:userId', async (req, res) => {
 
 // Add an experience for a user by id
 app.post('/experiences', async (req, res) => {
-    const { userId, profession , workplace , start_date , end_date } = req.body;
+    const { userId, profession, workplace, start_date, end_date } = req.body;
     try {
-        await experiencesModel.addExperience(userId,profession,workplace,start_date,end_date);
+        await experiencesModel.addExperience(userId, profession, workplace, start_date, end_date);
         res.status(201).json({ message: 'Experience added successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error adding experience', error });
@@ -530,9 +530,9 @@ app.delete('/skills', async (req, res) => {
     const { userId, skillId } = req.body;
     try {
         const result = await skillsModel.deleteSkillFromUser(userId, skillId);
-        if (!result){ 
+        if (!result) {
             res.status(404).json({ message: 'skills not found' });
-        }    
+        }
         res.status(200).json({ message: 'Skill deleted successfully' });
     } catch (error) {
         console.error('Error deleting skill:', error);
@@ -654,7 +654,7 @@ app.get('/attachments/:articleId', async (req, res) => {
 // ---------- Job ROUTES -----------
 //Adding a job
 app.post('/jobs', async (req, res) => {
-    const { title, company, location, publishDate, type, profession, experience, salary, details , creatorEmail} = req.body;
+    const { title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail } = req.body;
 
     try {
         const job = await jobsModel.addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail);
@@ -754,7 +754,7 @@ app.get('/submissions/job/:jobId', async (req, res) => {
 // ---------- MESSAGE ROUTES -----------
 // add a new message
 app.post('/messages', async (req, res) => {
-    const {senderEmail, receiverEmail, message, created_at} = req.body;
+    const { senderEmail, receiverEmail, message, created_at } = req.body;
 
     try {
         const result = await messagesModel.addMessage(senderEmail, receiverEmail, message, created_at);
@@ -767,16 +767,17 @@ app.post('/messages', async (req, res) => {
 
 // get all messages between 2 users
 app.get('/messages', async (req, res) => {
-    const {email1, email2} = req.query;
+    const { email1, email2 } = req.query;
     console.log(req.body)
     try {
-        const result = await messagesModel.getMessagesBetweenUsers(email1,email2);
+        const result = await messagesModel.getMessagesBetweenUsers(email1, email2);
         res.status(200).json(result);
     } catch (err) {
         console.error('Error fetching messages:', err);
         res.status(500).json({ message: 'Error fetching messages', error: err.message });
     }
 });
+
 
 // Start server
 app.listen(PORT, () => {

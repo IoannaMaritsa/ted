@@ -82,12 +82,23 @@
     border-bottom: 1px solid var(--border-color);
     align-items: center;
     padding: 20px;
+    padding-left: 15px;
     position: relative; /* For absolute positioning of name */
     cursor: pointer;
    
 }
 
 
+.contact2 {
+    display: flex;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+    padding: 0px;
+    padding-left: 15px;
+    position: relative; /* For absolute positioning of name */
+   
+}
 
 .contact:last-child {
     border-bottom: none; /* Remove border from the last contact */
@@ -102,10 +113,12 @@
 }
 
 .contact-name {
-    font-size: 16px;
+    font-size: 14px;
     color: #333;
+    width: 150px;
     font-family: var(--font-basic);
     font-weight: 700;
+    text-align: left;
     margin: 0; /* Remove margin to align text close to image */
     position: absolute; /* Position the text absolutely */
     left: 110px; /* Adjust to align text starting point */
@@ -122,11 +135,12 @@
     font-size: 14px;
     color: #666;
     white-space: nowrap;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 10px;
+    margin-top: 20px;
     text-align: left; /* Align text to the left */
-    margin-left: 10px; /* Adjust margin to position relative to other elements */
+    margin-left: 15px; /* Adjust margin to position relative to other elements */
     flex-grow: 1; /* Allow last-message to grow and take available space */
 }
 
@@ -136,7 +150,7 @@
     color: #999;
     position: absolute; /* Position relative to the contact */
     right: 10px; /* Align to the right of the contact */
-    top: 20px;
+    top: 23px;
 }
 
 .contact-read {
@@ -228,7 +242,7 @@
     border: none;
 }
 
-.message.contact {
+.message.contact2 {
     justify-content: flex-start;
 }
 
@@ -262,7 +276,7 @@
     max-width: 70%;
 }
 
-.message.contact .message-content {
+.message.contact2 .message-content {
     background-color: #f3f3f3;
 
 }
@@ -286,4 +300,14 @@
     border-radius: 15px;
     word-wrap: break-word; /* Ensure words break and wrap */
     white-space: normal; /* Allow normal text wrapping */
+}
+
+.no-contacts-message {
+    font-family: var(--font-basic);
+    padding: 20px;
+    text-align: center;
+    margin: auto;
+    font-size: 18px;
+    margin-top: 40px;
+
 }

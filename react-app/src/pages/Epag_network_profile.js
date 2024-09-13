@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import MainBottom from '../components/MainBottom';
 import '../css/admin.css';
 import { getUser, sendFriendRequest, getSentFriendRequests, getReceivedFriendRequests, updateFriendRequestStatus, addContact, removeContact, getFriendRequestByEmails, getAllContactsByUserEmail, deleteFriendRequest } from "../api";
-import {getArticle, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser } from "../api";
+import { getArticle, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser } from "../api";
 import Breadcrumbs from "../components/Breadcrumbs";
 import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
@@ -120,16 +120,16 @@ export default function Epag_network_profile() {
 
     const getJobs = async () => {
         try {
-    
-          const newjobs = await getJobsOfUser(otherProfile.email);
-          console.log(`Got a job successfully.`);
-          if (newjobs.success)
-            setJobAds(newjobs.data)
-    
+
+            const newjobs = await getJobsOfUser(otherProfile.email);
+            console.log(`Got a job successfully.`);
+            if (newjobs.success)
+                setJobAds(newjobs.data)
+
         } catch (error) {
-          console.error('Error getting jobs:', error);
+            console.error('Error getting jobs:', error);
         }
-      };
+    };
 
     useEffect(() => {
         getArticles();
@@ -137,7 +137,7 @@ export default function Epag_network_profile() {
         getStudies();
         getSkills();
         getJobs();
-        
+
     }, [otherProfile]);
 
     const isRequestPending = (targetEmail) => {
@@ -206,8 +206,7 @@ export default function Epag_network_profile() {
         }
     };
 
-    const handleMessageClick = () =>
-    {
+    const handleMessageClick = () => {
         console.log("Navigating...")
         navigate('/epaggelmatias_messages');
     };
@@ -230,17 +229,22 @@ export default function Epag_network_profile() {
             console.error('Error rejecting friend request:', error);
         }
 
-        
-        
+
+
     };
 
     const renderConnectionButton = () => {
         if (isAlreadyContact(otherProfile?.email)) {
             return (
-                <button className="unfriend-button" onClick={() => handleUnfriendClick(otherProfile?.email)}>
-                    Αφαίρεση Σύνδεσης
-                    <img src="/unfriend.png" alt="Unfriend" className="unfriend-ic" />
-                </button>
+                <div className="button-2-cont">
+                    <button className="unfriend-button" onClick={() => handleUnfriendClick(otherProfile?.email)}>
+                        Αφαίρεση Σύνδεσης
+                        <img src="/unfriend.png" alt="Unfriend" className="unfriend-ic" />
+                    </button>
+                    <button className="message-button2" onClick={() => handleMessageClick()}>Μήνυμα
+                        <img src="/mess-icon.png" alt="Message" className="mess-icon2" />
+                    </button>
+                </div>
             );
         } else if (isRequestPending(otherProfile?.email)) {
             return (
@@ -273,7 +277,7 @@ export default function Epag_network_profile() {
     };
 
 
-    
+
     return (
         <div>
             <Header variant="professional" />
@@ -298,12 +302,10 @@ export default function Epag_network_profile() {
                                     <div className="a-name">{otherProfile?.name}</div>
                                     <div className="a-profession">{otherProfile?.profession}</div>
                                 </div>
-                                <div className="button-2-cont">
+
                                 {renderConnectionButton()}
-                                    <button className="message-button2"  onClick={() => handleMessageClick()}>Μήνυμα
-                                        <img src="/mess-icon.png" alt="Message" className="mess-icon2" />
-                                    </button>
-                                </div>
+
+
                             </div>
                             <div className="a-square-div2">
                                 <div className="a-icon-text">
