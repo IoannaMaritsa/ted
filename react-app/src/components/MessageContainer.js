@@ -49,15 +49,9 @@ const MessageContainer = ({ contact, messages = [], onSendMessage }) => {
                         return (
                             <div
                                 key={index}
-                                className={`message ${isFromUser ? 'user' : 'contact'}`}
+                                className={`message ${isFromUser ? 'user' : 'contact2'}`}
                             >
-                                {!isFromUser && (
-                                    <img
-                                        src={getImageUrl(contact?.profilepic)}
-                                        alt="Profile"
-                                        className="message-pic"
-                                    />
-                                )}
+                     
                                 <div className="message-content">
                                     <span className="timestamp"> {formatTime(new Date(msg.created_at))}</span>
                                     <span className="msg-text">{msg.text || ''}</span>

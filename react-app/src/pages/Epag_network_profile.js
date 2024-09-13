@@ -18,7 +18,7 @@ export default function Epag_network_profile() {
     const [sentRequests, setSentRequests] = useState([]);
     const [pendingRequests, setPendingRequests] = useState([]);
     const [otherProfile, setOtherProfile] = useState(null); // State for the profile
-    const { user } = useAppContext();
+    const { user, setMessageContact } = useAppContext();
     const [contacts, setContacts] = useState([]); // State for the contacts
     const [workExperience, setWorkExperience] = useState([]);
     const [studies, setStudies] = useState([]);
@@ -28,6 +28,7 @@ export default function Epag_network_profile() {
     const [privacySettings, setPrivacySettings] = useState([]);
 
 
+    
 
     // Log the email value for debugging
     useEffect(() => {
@@ -218,8 +219,8 @@ export default function Epag_network_profile() {
     };
 
     const handleMessageClick = () => {
-        console.log("Navigating...")
-        navigate('/epaggelmatias_messages');
+        setMessageContact(otherProfile)
+        navigate(`/epaggelmatias_messages`);
     };
 
     const handleRejectRequest = async (senderEmail) => {
@@ -239,18 +240,21 @@ export default function Epag_network_profile() {
         } catch (error) {
             console.error('Error rejecting friend request:', error);
         }
-
-
-
     };
 
     const renderConnectionButton = () => {
         if (isAlreadyContact(otherProfile?.email)) {
             return (
+                <div className="button-2-cont">
                 <button className="unfriend-button" onClick={() => handleUnfriendClick(otherProfile?.email)}>
                     Αφαίρεση Σύνδεσης
                     <img src="/unfriend.png" alt="Unfriend" className="unfriend-ic" />
                 </button>
+                <button className="message-button2" onClick={() => handleMessageClick()}>Μήνυμα
+                    <img src="/mess-icon.png" alt="Message" className="mess-icon2" />
+                </button>
+            </div>
+
             );
         } else if (isRequestPending(otherProfile?.email)) {
             return (
@@ -306,11 +310,9 @@ export default function Epag_network_profile() {
                                     <div className="a-name">{otherProfile?.name}</div>
                                     <div className="a-profession">{otherProfile?.profession}</div>
                                 </div>
-                                <div className="button-2-cont">
+                                <div>
                                     {renderConnectionButton()}
-                                    <button className="message-button2" onClick={() => handleMessageClick()}>Μήνυμα
-                                        <img src="/mess-icon.png" alt="Message" className="mess-icon2" />
-                                    </button>
+                                    
                                 </div>
                             </div>
                             {isAlreadyContact(otherProfile?.email) ? (

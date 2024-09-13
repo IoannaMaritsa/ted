@@ -11,50 +11,79 @@ import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
 
 export default function Epag_messages() {
-    const { user } = useAppContext();
+    const { user, messageContact, setMessageContact } = useAppContext();
     const [contacts, setContacts] = useState([]);
     const [messages, setMessages] = useState({});
     const [selectedContact, setSelectedContact] = useState(null);
 
-   // Fetch contacts and messages
-   const fetchContactsAndMessages = async () => {
-    try {
-        // Fetch connected users
-        const contacts = await getAllContactsByUserEmail(user.email);
-        const contactEmails = contacts.map(contact => contact.contact_email);
-        const contactDetailsPromises = contactEmails.map(email => getUser(email));
-        const contactsData = await Promise.all(contactDetailsPromises);
-
-        // Fetch messages for all contacts
-        const messagesData = {};
-        for (const contact of contactsData) {
-            const contactMessages = await getMessagesBetweenUsers(contact.email, user.email);
-            messagesData[contact.email] = contactMessages;
-        }
-        setMessages(messagesData);
-
-        // Sort contacts based on the latest message
-        const sortedContacts = [...contactsData].sort((a, b) => {
-            const lastMessageA = messagesData[a.email]?.[messagesData[a.email].length - 1]?.created_at;
-            const lastMessageB = messagesData[b.email]?.[messagesData[b.email].length - 1]?.created_at;
-            return new Date(lastMessageB) - new Date(lastMessageA);
-        });
-
-        setContacts(sortedContacts);
-
-        // Set the first contact as the selected contact
-        const firstContactWithMessages = sortedContacts[0];
-        setSelectedContact(firstContactWithMessages);
-    } catch (error) {
-        console.error('Error fetching contacts and messages:', error);
-    }
-};
     useEffect(() => {
+        console.log("message contact", messageContact);
+
+        // Fetch contacts and messages
         fetchContactsAndMessages();
+
+        // Polling messages every 5 seconds
+        const interval = setInterval(() => {
+            fetchMessages();
+        }, 5000);
+
+        return () => clearInterval(interval);
     }, []);
 
-     // Fetch messages for the selected contact if not already present
-     useEffect(() => {
+    const fetchContactsAndMessages = async () => {
+        try {
+            // Fetch connected users
+            const contacts = await getAllContactsByUserEmail(user.email);
+            const contactEmails = contacts.map(contact => contact.contact_email);
+            const contactDetailsPromises = contactEmails.map(email => getUser(email));
+            const contactsData = await Promise.all(contactDetailsPromises);
+
+            // Fetch messages for all contacts
+            const messagesData = {};
+            for (const contact of contactsData) {
+                const contactMessages = await getMessagesBetweenUsers(contact.email, user.email);
+                messagesData[contact.email] = contactMessages;
+            }
+            setMessages(messagesData);
+
+            // Sort contacts based on the latest message
+            const sortedContacts = [...contactsData].sort((a, b) => {
+                const lastMessageA = messagesData[a.email]?.[messagesData[a.email].length - 1]?.created_at;
+                const lastMessageB = messagesData[b.email]?.[messagesData[b.email].length - 1]?.created_at;
+                return new Date(lastMessageB) - new Date(lastMessageA);
+            });
+
+            setContacts(sortedContacts);
+
+            // Set selected contact
+            if (messageContact) {
+                const contact = sortedContacts.find(contact => contact.email === messageContact.email);
+                setSelectedContact(contact || sortedContacts[0]);
+                setMessageContact(null);
+            } else {
+                setSelectedContact(sortedContacts[0]);
+            }
+        } catch (error) {
+            console.error('Error fetching contacts and messages:', error);
+        }
+    };
+
+    const fetchMessages = async () => {
+        try {
+            if (selectedContact) {
+                const contactMessages = await getMessagesBetweenUsers(selectedContact.email, user.email);
+                setMessages(prevMessages => ({
+                    ...prevMessages,
+                    [selectedContact.email]: contactMessages
+                }));
+            }
+        } catch (err) {
+            console.log("Error fetching messages");
+        }
+    }
+
+    // Fetch messages for the selected contact if not already present
+    useEffect(() => {
         if (selectedContact && !messages[selectedContact.email]) {
             const fetchMessages = async () => {
                 try {
@@ -68,33 +97,22 @@ export default function Epag_messages() {
         }
     }, [selectedContact, messages, user.email]);
 
-   // Ensure that when messages are updated, selectedContact is set correctly
-   useEffect(() => {
-    if (contacts.length > 0 && !selectedContact) {
-        const firstContactWithMessages = contacts.find(contact => messages[contact.email]?.length > 0) || contacts[0];
-        setSelectedContact(firstContactWithMessages);
-    }
-}, [contacts, messages, selectedContact]);
-
-
-    // Change the selected contact on contact click
     const handleContactClick = (contact) => {
-        setSelectedContact(contact);
+        if (contact.email !== selectedContact?.email) {
+            setSelectedContact(contact);
+        }
     };
 
-    // Handle message creation
     const handleNewMessage = async (text) => {
         if (!selectedContact) return;
         const now = new Date().toISOString();
-
-        const newMessage = { 
+        const newMessage = {
             sender_email: user.email,
             receiver_email: selectedContact.email,
-            text: text, 
-            created_at: now, 
+            text: text,
+            created_at: now,
         };
 
-        // Simulate adding the message locally
         setMessages(prevMessages => {
             const updatedMessages = { ...prevMessages };
             if (updatedMessages[selectedContact.email]) {
@@ -108,9 +126,6 @@ export default function Epag_messages() {
         await addMessage(user.email, selectedContact.email, text, now);
     };
 
-    const sortedContacts = contacts;
-
-
     return (
         <div>
             <Header variant="professional" />
@@ -121,36 +136,42 @@ export default function Epag_messages() {
                 </header>
                 <main className="main-content-mess">
                     <div className="sidebar">
-                        {sortedContacts.map((contact) => (
-                            <div
-                                key={contact.email}
-                                className={`contact ${selectedContact && contact.email === selectedContact.email ? 'selected' : ''}`}
-                                onClick={() => handleContactClick(contact)}
-                            >
-                                <img src={getImageUrl(contact.profilepic, "profilepics")} alt="Profile" className="contact-pic" />
-                                <div className="contact-name">{contact.name}</div>
-                                <div className="last-message">
-                                    {messages[contact.email]?.[messages[contact.email].length - 1]?.text || "No messages yet"}
+                        {contacts.length > 0 ? (
+                            contacts.map((contact) => (
+                                <div
+                                    key={contact.email}
+                                    className={`contact ${selectedContact && contact.email === selectedContact?.email ? 'selected' : ''}`}
+                                    onClick={() => handleContactClick(contact)}
+                                >
+                                    <img src={getImageUrl(contact.profilepic, "profilepics")} alt="Profile" className="contact-pic" />
+                                    <div className="contact-name">{contact.name}</div>
+                                    <div className="last-message">
+                                        {messages[contact.email]?.[messages[contact.email].length - 1]?.text || "No messages yet"}
+                                    </div>
+                                    <div className="contact-time">
+                                        {messages[contact.email]?.[messages[contact.email].length - 1]?.created_at
+                                            ? formatRelativeTime(new Date(messages[contact.email][messages[contact.email].length - 1].created_at))
+                                            : ""}
+                                    </div>
                                 </div>
-                                <div className="contact-time">
-                                {messages[contact.email]?.[messages[contact.email].length - 1]?.created_at
-                                        ? formatRelativeTime(new Date(messages[contact.email][messages[contact.email].length - 1].created_at))
-                                        : ""}
-                                </div>
+                            ))
+                        ) : (
+                            <div className="no-contacts-message">
+                                No contacts found.
                             </div>
-                        ))}
+                        )}
                     </div>
                     {selectedContact ? (
                         <MessageContainer
-                            messages={messages[selectedContact.email]}
+                            messages={messages[selectedContact?.email]}
                             contact={selectedContact} // Make sure this is correctly passed
                             onSendMessage={handleNewMessage}
                         />
                     ) : (
                         <div></div>
                     )}
-
                 </main>
+
             </div>
 
             <MainBottom />
