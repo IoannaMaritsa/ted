@@ -2,103 +2,209 @@ import React, { useState, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
-import { useAppContext } from "../context/appContext";
+//import { useAppContext } from "../context/appContext";
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/admin.css';
 import {exportDataProfile} from '../utils/exportUtils';
 import Breadcrumbs from "../components/Breadcrumbs";
+import { getUser, getArticle, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser, getCommentsOfUser, getUserInterests, getArticleById} from "../api";
+import getImageUrl from "../hooks/getImageUrl";
+import { format } from 'date-fns';
 
 export default function Diax_Home() {
-    const { userProfile, isAdmin, setIsAdmin } = useAppContext();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { userEmail } = location.state || {};
+    const [otherProfile, setOtherProfile] = useState(null);
+    //const { isAdmin, setIsAdmin } = useAppContext();
     const [exportFormat, setExportFormat] = useState('json');
-
+    const [workExperience, setWorkExperience] = useState([]);
+    const [studies, setStudies] = useState([]);
+    const [skills, setSkills] = useState([]);
+    const [jobAds, setJobAds] = useState([]);
+    const [articles, setArticles] = useState([]);
+    const [comments, setComments] = useState([]);
+    const [interests, setInterests] = useState([]);
 
     useEffect(() => {
-        // Check user role or some condition to set admin status
-        const checkUserRole = async () => {
-            // Fetch user role or some condition to determine admin status
-            const isUserAdmin = true; // This should be set based on your logic
+        console.log('Location state:', location.state);
+    }, [location]);
 
-            // Set the admin status
-            setIsAdmin(isUserAdmin);
+    useEffect(() => {
+        console.log("userEmail from state:", userEmail);
+    }, [userEmail]);
+
+    // Fetch the user's profile data based on the email
+    useEffect(() => {
+        const fetchProfile = async () => {
+            console.error("email", userEmail);
+            if (userEmail) {
+                try {
+
+                    const profileData = await getUser(userEmail); // Assuming getUser returns a Promise
+                    setOtherProfile(profileData);
+                } catch (error) {
+                    console.error("Error fetching profile:", error);
+                }
+            }
         };
-        checkUserRole();
-    }, [setIsAdmin]);
 
-    const [workExperience, setWorkExperience] = useState([
-        { company: 'Google', role: 'Software Engineer', duration: 'Jan 2020 - Dec 2021' },
-        { company: 'Microsoft', role: 'Frontend Developer', duration: 'Jan 2019 - Dec 2019' },
-        // Add more entries as needed
-    ]);
+        fetchProfile();
+    }, [userEmail]);
 
-    const [studies, setStudies] = useState([
-        { school: "National and Kapodistrian University of Athens", degree: "Undergraduate Degree", major: "Software Engineering", duration: "2016 - 2020" },
-        { school: "Harvard", degree: "Masters", major: "Comp Sci", duration: "2020 - 2024" },
-        // Add more entries as needed
-    ]);
+    const getArticles = async () => {
+        try {
+            const response = await getArticle(otherProfile.email);
+            setArticles(response);
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
 
-    const [skills, setSkills] = useState([
-        { name: "Customer Satisfaction" },
-        { name: "C++ Knowledge" },
-        { name: "Python Knowledge" },
-        { name: "React Framework" },
-        // Add more entries as needed
-    ]);
+    const getExperiences = async () => {
+        try {
+            const response = await getAllExperiencesForUser(otherProfile.id);
+            setWorkExperience(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [jobAds, setJobAds] = useState([
-        { name: "Ζητείται Software Developer", date: "10/07/2024" },
-        { name: "Ζητείται Backend Developer για μόνιμη απασχόληση", date: "13/02/2020" },
+    const getStudies = async () => {
+        try {
+            const response = await getAllStudiesForUser(otherProfile.id);
+            setStudies(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-        // Add more entries as needed
-    ]);
+    const getSkills = async () => {
+        try {
+            const response = await getAllSkillsForUser(otherProfile.id);
+            setSkills(response);
+        } catch (error) {
+            console.error('Error getting experiences:', error);
+        }
+    };
 
-    const [articles, setArticles] = useState([
-        { name: "Τάσεις Ανάπτυξης Λογισμικού για το 2024: Από την Τεχνητή Νοημοσύνη μέχρι την Αυτοματοποίηση", date: "30/11/2023" },
-        { name: "Ο Ρόλος των DevOps στη Σύγχρονη Ανάπτυξη Λογισμικού: Βελτιώνοντας την Απόδοση και τη Συνεργασία", date: "23/09/2019" },
-        { name: "Ανασκόπηση των Νέων Τεχνολογιών: Πώς τα Frameworks και οι Γλώσσες Προγραμματισμού Εξελίσσονται για να Ικανοποιήσουν τις Σύγχρονες Ανάγκες", date: "20/08/2019" }
+    const getJobs = async () => {
+        try {
 
-        // Add more entries as needed
-    ]);
+            const newjobs = await getJobsOfUser(otherProfile.email);
+            console.log(`Got a job successfully.`);
+            if (newjobs.success)
+                setJobAds(newjobs.data)
 
-    const [comments, setComments] = useState([
-        { name: "Η Σημασία της Ανάπτυξης Κώδικα με Σκεπτικό: Tips για Ενίσχυση της Κωδικοποίησης σας", comment: "Συμφωνώ απόλυτα με την σημασία του καθαρού κώδικα. Εφαρμόζουμε την τεχνική του Code Review για να εξασφαλίσουμε την ποιότητα και την αναγνωσιμότητα του κώδικα μας. Εξαιρετική ανάρτηση, ευχαριστούμε για τις χρήσιμες συμβουλές!", date: "20/01/2020" },
-        { name: "Η Ανάπτυξη Λογισμικού με Χρήση Agile Μεθόδων: Πώς να Αυξήσετε την Ευελιξία και την Αποτελεσματικότητα", comment: "Συμφωνώ απόλυτα με την σημασία του καθαρού κώδικα. Εφαρμόζουμε την τεχνική του Code Review για να εξασφαλίσουμε την ποιότητα και την αναγνωσιμότητα του κώδικα μας. Εξαιρετική ανάρτηση, ευχαριστούμε για τις χρήσιμες συμβουλές! Αυτό είναι κάτι που πρέπει να συζητήσουμε περαιτέρω, καθώς η συνεχής βελτίωση είναι το κλειδί για την επιτυχία...", date: "02/12/2019" },
-    ])
+        } catch (error) {
+            console.error('Error getting jobs:', error);
+        }
+    };
 
-    const [likes, setLikes] = useState([
-        { name: "Η Σημασία της Ανάπτυξης Κώδικα με Σκεπτικό: Tips για Ενίσχυση της Κωδικοποίησης σας", type: "Άρθρο", date: "20/01/2020" },
-        { name: "Η Σημασία της Συνεχούς Εκπαίδευσης στον Τομέα της Ανάπτυξης Λογισμικού", type: "Άρθρο", date: "23/09/2019" },
-        { name: "Τα Οφέλη της Χρήσης DevOps για Μικρές Ομάδες Ανάπτυξης", type: "Ανάρτηση", date: "20/08/2019" }
+    const getArticle = async (id) => {
+        try {
+            const article = await getArticleById(id);
+            return(article.title);
+        } catch (error) {
+            console.error('Error getting articles:', error);
+        }
+    };
 
-        // Add more entries as needed
-    ]);
+    const getComments = async () => {
+        try {
+            const comments = await getCommentsOfUser(otherProfile.email);
+            
+            const comments2 = await Promise.all(
+                comments.map(async (comment) => {
+                    const article_name = await getArticle(comment.article_id); // Await here to get the resolved value
+                    
+                    return {
+                        article_name,
+                        text: comment.text,
+                        date: format(new Date(comment.created_at), 'yyyy-MM-dd hh:mm:ss')
+                    };
+                })
+            );
+    
+            setComments(comments2);
+    
+        } catch (error) {
+            console.error('Error getting comments:', error);
+        }
+    };
+
+    const getInterest = async () => {
+        try {
+            const interests = await getUserInterests(otherProfile.email);
+            console.log('got interests', interests);
+            const interests2 = await Promise.all(
+                interests.map(async (interest) => {
+                    const article_name = await getArticle(interest.article_id); // Await here to get the resolved value
+                    
+                    return {
+                        article_name,
+                        date: format(new Date(interest.date), 'yyyy-MM-dd hh:mm:ss')
+                    };
+                })
+            );
+    
+            setInterests(interests2);
+        } catch (error) {
+            console.error('Error getting interests:', error);
+        }
+    };
+
+    useEffect(() => {
+        getArticles();
+        getExperiences();
+        getStudies();
+        getSkills();
+        getJobs();
+        getComments();
+        getInterest();
+        
+    }, [otherProfile]);
+
 
     const handleExport = () => {
         const data = {
-            userProfile,
+            otherProfile,
             workExperience,
             studies,
             skills,
             jobAds,
             articles,
             comments,
-            likes
+            interests
         };
         exportDataProfile(data, exportFormat, 'export');
       };
+
+    const handleBackClick = () => {
+        navigate(-1); // Navigate to the previous page
+    };
     
     return (
         <div>
             <Header variant="admin" />
-            <Breadcrumbs />
+            <nav className="breadcrumbs"> <img src="/home.png" className='home-icon' alt="Home" style={{ cursor: 'pointer' }} onClick={handleBackClick}/> &nbsp; / Προφίλ Χρήστη</nav>
             <main className="adminu-main-div">
                 <div className="main-container">
+                <div className="back-icon-container">
+                        <img
+                            src="/back-icon.png" // Replace with your icon path
+                            alt="Back"
+                            className="back-icon"
+                            onClick={handleBackClick}
+                        />
+                    </div>
                     <div className="inner-container">
                         <div class="a-container">
                             <div class="a-square-div">
-                                <div class="a-profile-pic"> <img src={userProfile.profilePic} alt ="Profile"></img></div>
+                                <div class="a-profile-pic"> <img src={getImageUrl(otherProfile?.profilepic, "profilepics")} alt ="Profile"></img></div>
                                 <div class="user-text">
-                                    <div class="a-name">{userProfile.name}</div>
-                                    <div class="a-profession">Software Engineer</div>
+                                    <div class="a-name">{otherProfile?.name}</div>
+                                    <div class="a-profession">{otherProfile?.profession}</div>
                                 </div>
                                 <select
                                     value={exportFormat}
@@ -114,23 +220,23 @@ export default function Diax_Home() {
                             <div class="a-square-div2">
                                 <div class="a-icon-text">
                                     <img class="a-icon" src="work-icon.png" alt="Icon 1" />
-                                    <span class="a-text">Google</span>
+                                    <span class="a-text">{otherProfile?.workplace}</span>
                                 </div>
                                 <div class="a-icon-text">
                                     <img class="a-icon" src="location.png" alt="Icon 2" />
-                                    <span class="a-text" >Athens, Greece</span>
+                                    <span class="a-text" >{otherProfile?.location}</span>
                                 </div>
                                 <div class="a-icon-text">
                                     <img class="a-icon" src="birthday.png" alt="Icon 3" />
-                                    <span class="a-text">2002-12-12</span>
+                                    <span class="a-text">{otherProfile?.dob}</span>
                                 </div>
                                 <div class="a-icon-text">
                                     <img class="a-icon" src="regdate.png" alt="Icon 3" />
-                                    <span class="a-text">{userProfile.registrationDate}</span>
+                                    <span class="a-text">{otherProfile?.profession}</span>
                                 </div>
                                 <div class="a-icon-text">
                                     <img class="a-icon" src="email.png" alt="Icon 3" />
-                                    <span class="a-text">{userProfile.email}</span>
+                                    <span class="a-text">{otherProfile?.email}</span>
                                 </div>
                             </div>
                         </div>
@@ -138,12 +244,12 @@ export default function Diax_Home() {
                             <div className="work-experience-row-title">
                                 Επαγγελματική Εμπειρία
                             </div>
-                            {workExperience.length > 0 ? (
+                            {(workExperience && workExperience.length > 0) ? (
                                 workExperience.map((experience, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{experience.role}</div>
-                                        <div className="work-company">{experience.company}</div>
-                                        <div className="work-duration">{experience.duration}</div>
+                                        <div className="work-role">{experience.profession}</div>
+                                        <div className="work-company">{experience.workplace}</div>
+                                        <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
                                     </div>
                                 ))
                             ) : (
@@ -154,12 +260,12 @@ export default function Diax_Home() {
                             <div className="work-experience-row-title">
                                 Σπουδές
                             </div>
-                            {studies.length > 0 ? (
+                            {(studies && studies.length > 0) ? (
                                 studies.map((study, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{study.school}</div>
-                                        <div className="work-company">{study.degree}, {study.major}</div>
-                                        <div className="work-duration">{study.duration}</div>
+                                        <div className="work-role">{study.university}</div>
+                                        <div className="work-company">{study.degree}</div>
+                                        <div className="work-duration"><span>{study.start_date}</span> - <span>{study.end_date}</span></div>
                                     </div>
                                 ))
                             ) : (
@@ -170,10 +276,10 @@ export default function Diax_Home() {
                             <div className="work-experience-row-title">
                                 Δεξιότητες
                             </div>
-                            {skills.length > 0 ? (
+                            {(skills && skills.length > 0) ? (
                                 skills.map((skill, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{skill.name}</div>
+                                        <div className="work-role">{skill.skill_name}</div>
                                     </div>
                                 ))
                             ) : (
@@ -184,11 +290,11 @@ export default function Diax_Home() {
                             <div className="work-experience-row-title">
                                 Αγγελίες
                             </div>
-                            {studies.length > 0 ? (
+                            {(studies && studies.length > 0) ? (
                                 jobAds.map((ad, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{ad.name}</div>
-                                        <div className="work-duration">{ad.date}</div>
+                                        <div className="work-role">{ad.title}</div>
+                                        <div className="work-duration">{format(ad.publish_date, 'yyyy-MM-dd')}</div>
                                     </div>
                                 ))
                             ) : (
@@ -199,11 +305,11 @@ export default function Diax_Home() {
                             <div className="work-experience-row-title">
                                 Άρθρα
                             </div>
-                            {articles.length > 0 ? (
+                            {(articles && articles.length > 0) ? (
                                 articles.map((article, index) => (
                                     <div key={index} className="work-experience-row">
-                                        <div className="work-role">{article.name}</div>
-                                        <div className="work-duration">{article.date}</div>
+                                        <div className="work-role">{article.title}</div>
+                                        <div className="work-duration">{format(article.publish_date, 'yyyy-MM-dd')}</div>
                                     </div>
                                 ))
                             ) : (
@@ -216,11 +322,11 @@ export default function Diax_Home() {
                                     Σχόλια
                                     <img src="comments.png" alt="Comments Icon"></img>
                                 </div>
-                                {comments.length > 0 ? (
+                                {(comments && comments.length > 0) ? (
                                     comments.map((comment, index) => (
                                         <div key={index} className="work-experience-row">
-                                            <div className="post-name">{comment.name}</div>
-                                            <div className="comment1">"{comment.comment}"</div>
+                                            <div className="post-name">{comment.article_name}</div>
+                                            <div className="comment1">"{comment.text}"</div>
                                             <div className="work-duration">{comment.date}</div>
                                         </div>
                                     ))
@@ -233,16 +339,15 @@ export default function Diax_Home() {
                                     Σημειώσεις Ενδιαφέροντος
                                     <img src="heart.png" alt="Heart Icon"></img>
                                 </div>
-                                {likes.length > 0 ? (
-                                    likes.map((like, index) => (
+                                {(interests && interests.length > 0 ) ? (
+                                    interests.map((like, index) => (
                                         <div key={index} className="work-experience-row">
-                                            <div className="post-name">{like.name}</div>
-                                            <div className="work-company">{like.type}</div>
+                                            <div className="post-name">{like.article_name}</div>
                                             <div className="work-duration">{like.date}</div>
                                         </div>
                                     ))
                                 ) : (
-                                    <p>No likes available</p>
+                                    <p>No interests available</p>
                                 )}
                             </div>
                         </div>

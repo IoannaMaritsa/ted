@@ -12,24 +12,24 @@ const UserRow = ({ user, onProfileClick, onCheckboxChange }) => {
         />
       </td>
       <td>
-        <Link to='/admin_user' className="custom-link" onClick={() => onProfileClick(user)}>
-          <img src={user.profilePic} alt={`${user.name}'s profile`} className="profile-pic" />
-        </Link>
+        <div className="custom-link" onClick={() => onProfileClick(user)}>
+          <img src={user.profilepic} alt={`${user.name}'s profile`} className="profile-pic" />
+        </div>
       </td>
       <td>
-        <Link to='/admin_user' className="custom-link" onClick={() => onProfileClick(user)}>
+        <div className="custom-link" onClick={() => onProfileClick(user)}>
           <span className="user-name">{user.name}</span>
-        </Link>
+        </div>
       </td>
       <td>
-        <Link to='/admin_user' className="custom-link" onClick={() => onProfileClick(user)}>
+        <div className="custom-link" onClick={() => onProfileClick(user)}>
           {user.email}
-        </Link>
+        </div>
       </td>
       <td>
-        <Link to='/admin_user' className="custom-link" onClick={() => onProfileClick(user)}>
-          {user.registrationDate}
-        </Link>
+        <div className="custom-link" onClick={() => onProfileClick(user)}>
+          {user.profession}
+        </div>
       </td>
     </tr>
   );
