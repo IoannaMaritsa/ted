@@ -7,7 +7,6 @@ import ProtectedRoute from './components/ProtectedRoute.js';
 import HomePage from "./pages/HomePage.js";
 import Login from "./pages/Login.js";
 import Register from "./pages/Register.js";
-import ForgotPass from "./pages/ForgotPass.js";
 import Epag_Home from "./pages/Epag_Home.js";
 import Epag_article from "./pages/Epag_article.js";
 import Epag_job_ad from "./pages/Epag_job_ad.js";
@@ -16,7 +15,6 @@ import Epag_network from "./pages/Epag_network.js";
 import Epag_network_profile from "./pages/Epag_network_profile.js";
 import Epag_notifications from "./pages/Epag_notifications.js";
 import Epag_pinformation from "./pages/Epag_pinformation.js";
-import Epag_profile from "./pages/Epag_profile.js";
 import Epag_settings from "./pages/Epag_settings.js";
 import Diax_Home from "./pages/Diax_Home.js";
 import About from "./pages/About.js";
@@ -40,7 +38,6 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/forgot_password" element={<ForgotPass />} />
             <Route path="/communication" element={<Communication />} />
             <Route path="/community_policies" element={<CooPolicy />} />
             <Route path="/FAQ" element={<FAQ />} />
@@ -68,7 +65,6 @@ export default function App() {
             <Route path="/epaggelmatias_notifications/user_profile" element={<ProtectedRoute element={Epag_network_profile} requiredRole="user"/>} />
             <Route path="/epaggelmatias_notifications/epaggelmatias_article/:id" element={<ProtectedRoute element={Epag_article} requiredRole="user"/>} />
             <Route path="/epaggelmatias_personal_info" element={<ProtectedRoute element={Epag_pinformation} requiredRole="user"/>} />
-            <Route path="/epaggelmatias_profile" element={<ProtectedRoute element={Epag_profile} requiredRole="user"/>} />
             <Route path="/epaggelmatias_settings" element={<ProtectedRoute element={Epag_settings} requiredRole="user"/>} />
           </Routes>
         </BrowserRouter>

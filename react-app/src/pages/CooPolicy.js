@@ -11,16 +11,16 @@ export default function CooPolicy() {
   return(
     <div>
       <Header variant="homepage" />
-      <div className="article-container">
+      <div className="help-main-section">
       
-      <div className="article-text">
+      <div className="help-main-container">
         <h2>Θέλουμε το CareerHive να αντικατοπτρίζει την καλύτερη εκδοχή της επαγγελματικής ζωής</h2>
         <p>Αυτή είναι μια κοινότητα όπου αντιμετωπίζουμε ο ένας τον άλλον με σεβασμό και βοηθάμε ο ένας τον άλλον να πετύχει.</p>
         <br></br>
         <div className="community-frame">
             <div className="community-box">
               <h5>Μείνετε ασφαλείς</h5>
-              <h6>Φέρτε μόνο ασφαλείς συνομιλίες στο CareerHive.</h6>
+              <h6>Ξεκινήστε μόνο ασφαλείς συνομιλίες στο CareerHive.</h6>
             </div>
             <div className="community-box">
               <h5>Να είστε αξιόπιστοι</h5>
@@ -43,9 +43,7 @@ export default function CooPolicy() {
         </ol>
         <div className="split-page">
           <img src="/danger.png" alt="icon1" className="icon" />
-          <div className="text-section">
-            <p>Η παραβίαση των πολιτικών της κοινότητάς μας μπορεί να οδηγήσει σε ενέργειες κατά του λογαριασμού ή του περιεχομένου σας</p>
-          </div>
+            <p style={{marginLeft:'20px', fontStyle:'italic'}}>Η παραβίαση των πολιτικών της κοινότητάς μας μπορεί να οδηγήσει σε ενέργειες κατά του λογαριασμού ή του περιεχομένου σας</p>
         </div>
         
       </div>

@@ -47,6 +47,8 @@ export default function Help() {
   return(
     <div>
       <Header variant="homepage" />
+      <div className="help-secondary-section">
+      <div className="help-main-container">
       <div className="help-split">
         <div className="article-text">
             <br></br>
@@ -96,6 +98,8 @@ export default function Help() {
                 </div>}
             </div>
         </div>
+      </div>
+      </div>
       </div>
       <MainBottom />
       <Footer />
