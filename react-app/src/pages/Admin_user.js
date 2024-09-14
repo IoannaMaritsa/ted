@@ -6,17 +6,17 @@ import MainBottom from '../components/MainBottom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/admin.css';
 import {exportDataProfile} from '../utils/exportUtils';
-import Breadcrumbs from "../components/Breadcrumbs";
+
 import { getUser, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser, getCommentsOfUser, getUserInterests, getArticleById} from "../api";
 import getImageUrl from "../hooks/getImageUrl";
-import { format } from 'date-fns';
+import { format} from 'date-fns';
+import { formatDateRange } from "../utils/timeUtils";
 
 export default function Diax_Home() {
     const location = useLocation();
     const navigate = useNavigate();
     const { userEmail } = location.state || {};
     const [otherProfile, setOtherProfile] = useState(null);
-    //const { isAdmin, setIsAdmin } = useAppContext();
     const [exportFormat, setExportFormat] = useState('json');
     const [workExperience, setWorkExperience] = useState([]);
     const [studies, setStudies] = useState([]);
@@ -26,14 +26,6 @@ export default function Diax_Home() {
     const [comments, setComments] = useState([]);
     const [interests, setInterests] = useState([]);
     const [contacts, setContacts] = useState([]);
-
-    useEffect(() => {
-        console.log('Location state:', location.state);
-    }, [location]);
-
-    useEffect(() => {
-        console.log("userEmail from state:", userEmail);
-    }, [userEmail]);
 
     // Fetch the user's profile data based on the email
     useEffect(() => {
@@ -246,10 +238,6 @@ export default function Diax_Home() {
                                     <span class="a-text">{otherProfile?.dob}</span>
                                 </div>
                                 <div class="a-icon-text">
-                                    <img class="a-icon" src="regdate.png" alt="Icon 3" />
-                                    <span class="a-text">{otherProfile?.profession}</span>
-                                </div>
-                                <div class="a-icon-text">
                                     <img class="a-icon" src="email.png" alt="Icon 3" />
                                     <span class="a-text">{otherProfile?.email}</span>
                                 </div>
@@ -264,7 +252,7 @@ export default function Diax_Home() {
                                     <div key={index} className="work-experience-row">
                                         <div className="work-role">{experience.profession}</div>
                                         <div className="work-company">{experience.workplace}</div>
-                                        <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
+                                        <div className="work-duration"><span>{formatDateRange(experience.start_date, experience.end_date)}</span></div>
                                     </div>
                                 ))
                             ) : (

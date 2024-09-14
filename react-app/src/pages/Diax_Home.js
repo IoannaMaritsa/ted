@@ -45,18 +45,14 @@ useEffect(() => {
     return users
       .filter(user =>
         user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query)
+        user.email.toLowerCase().includes(query) ||
+        user.profession.toLowerCase().includes(query)
       )
       .sort((a, b) => {
-        if (sortConfig.key === 'registrationDate') {
-          const dateA = new Date(a.registrationDate);
-          const dateB = new Date(b.registrationDate);
-          return sortConfig.direction === 'ascending' ? dateA - dateB : dateB - dateA;
-        } else {
           if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
           if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
           return 0;
-        }
+        
       });
   }, [searchQuery, sortConfig, users]);
 
@@ -88,7 +84,7 @@ useEffect(() => {
     const data = selectedUsers.map(user => ({
       name: user.name,
       email: user.email,
-      registrationDate: user.registrationDate
+      profession: user.profession
     }));
   
     // Export the selected users
@@ -186,8 +182,8 @@ useEffect(() => {
               <th style={{ width: '25%' }} onClick={() => handleSort('email')} className={sortConfig.key === 'email' ? 'sortable active' : 'sortable'}>
                 Email {sortConfig.key === 'email' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
               </th>
-              <th style={{ width: '20%' }} onClick={() => handleSort('registrationDate')} className={sortConfig.key === 'registrationDate' ? 'sortable active' : 'sortable'}>
-                Επάγγελμα {sortConfig.key === 'registrationDate' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+              <th style={{ width: '20%' }} onClick={() => handleSort('profession')} className={sortConfig.key === 'profession' ? 'sortable active' : 'sortable'}>
+                Επάγγελμα {sortConfig.key === 'profession' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
               </th>
             </tr>
           </thead>

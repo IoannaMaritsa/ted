@@ -13,38 +13,43 @@ export const ContextProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
     const [messageContact, setMessageContact] = useState(null)
+    const [loading, setLoading] = useState(true);
 
     const fetchUserData = async (email) => {
         try {
-            const userData = await getUser(email);
-            console.log('User Data:', userData);
-            setUser(userData);
+            const userData = await getUser(email);  // Fetch user profile
+            setUser(userData);  // Set user data to state
+            setIsLoggedIn(true); // Set login state
         } catch (error) {
             console.error('Error fetching user:', error);
+            setIsLoggedIn(false);
+        } finally {
+            setLoading(false);  // Finished loading
         }
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');  // Check if token exists in localStorage
         if (token) {
             try {
-                const decodedUser = jwtDecode(token);
-                console.log('Decoded user email:', decodedUser.email);
-                setIsLoggedIn(true);
-                fetchUserData(decodedUser.email);
+                const decodedUser = jwtDecode(token);  // Decode the token
+                fetchUserData(decodedUser.email);  // Fetch user data based on email
             } catch (error) {
                 console.error('Error decoding token:', error);
                 setIsLoggedIn(false);
+                setLoading(false);  // Stop loading
             }
         } else {
             setIsLoggedIn(false);
+            setLoading(false);  // Stop loading
         }
-    }, []);
+    }, []);  // Run this effect only once on mount
 
     const logIn = async (email, password) => {
         try {
-            await loginUser(email, password);
-            const token = localStorage.getItem('token');
+            const response = await loginUser(email, password);
+            const token = response.token;
+
             if (token) {
                 const decodedUser = jwtDecode(token);
                 setIsLoggedIn(true);
@@ -76,6 +81,8 @@ export const ContextProvider = ({ children }) => {
         logOut,
         messageContact,
         setMessageContact,
+        loading,
+        setLoading
     };
 
     return (

@@ -41,7 +41,6 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot_password" element={<ForgotPass />} />
-            <Route path="/admin" element={<Diax_Home />} />
             <Route path="/communication" element={<Communication />} />
             <Route path="/community_policies" element={<CooPolicy />} />
             <Route path="/FAQ" element={<FAQ />} />
@@ -50,23 +49,27 @@ export default function App() {
             <Route path="/privacy_policy" element={<Pripolicy />} />
             <Route path="/terms_and_conditions" element={<Terms />} />
             <Route path="/about" element={<About />} />
-            <Route path="/admin_user" element={<Admin_user />} />
 
             {/* Protected Routes */}
-            <Route path="/epaggelmatias_homepage" element={<ProtectedRoute element={Epag_Home} />} />
-            <Route path="/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
-            <Route path="/epaggelmatias_article/:id" element={<ProtectedRoute element={Epag_article} />} />
-            <Route path="/epaggelmatias_aggelies" element={<ProtectedRoute element={Epag_job_ad} />} />
-            <Route path="/epaggelmatias_aggelies/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
-            <Route path="/epaggelmatias_messages" element={<ProtectedRoute element={Epag_messages} />} />
-            <Route path="/epaggelmatias_network" element={<ProtectedRoute element={Epag_network} />} />
-            <Route path="/epaggelmatias_network/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
-            <Route path="/epaggelmatias_notifications" element={<ProtectedRoute element={Epag_notifications} />} />
-            <Route path="/epaggelmatias_notifications/user_profile" element={<ProtectedRoute element={Epag_network_profile} />} />
-            <Route path="/epaggelmatias_notifications/epaggelmatias_article/:id" element={<ProtectedRoute element={Epag_article} />} />
-            <Route path="/epaggelmatias_personal_info" element={<ProtectedRoute element={Epag_pinformation} />} />
-            <Route path="/epaggelmatias_profile" element={<ProtectedRoute element={Epag_profile} />} />
-            <Route path="/epaggelmatias_settings" element={<ProtectedRoute element={Epag_settings} />} />
+            {/* Admin */}
+            <Route path="/admin" element={<ProtectedRoute element={Diax_Home} requiredRole="admin" />}/>
+            <Route path="/admin_user" element={<ProtectedRoute element={Admin_user} requiredRole="admin" />}/>
+
+            {/* User */}
+            <Route path="/epaggelmatias_homepage" element={<ProtectedRoute element={Epag_Home} requiredRole="user" />} />
+            <Route path="/user_profile" element={<ProtectedRoute element={Epag_network_profile} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_article/:id" element={<ProtectedRoute element={Epag_article} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_aggelies" element={<ProtectedRoute element={Epag_job_ad} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_aggelies/user_profile" element={<ProtectedRoute element={Epag_network_profile} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_messages" element={<ProtectedRoute element={Epag_messages} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_network" element={<ProtectedRoute element={Epag_network}requiredRole="user" />} />
+            <Route path="/epaggelmatias_network/user_profile" element={<ProtectedRoute element={Epag_network_profile} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_notifications" element={<ProtectedRoute element={Epag_notifications} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_notifications/user_profile" element={<ProtectedRoute element={Epag_network_profile} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_notifications/epaggelmatias_article/:id" element={<ProtectedRoute element={Epag_article} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_personal_info" element={<ProtectedRoute element={Epag_pinformation} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_profile" element={<ProtectedRoute element={Epag_profile} requiredRole="user"/>} />
+            <Route path="/epaggelmatias_settings" element={<ProtectedRoute element={Epag_settings} requiredRole="user"/>} />
           </Routes>
         </BrowserRouter>
       </div>

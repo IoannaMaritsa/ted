@@ -4,9 +4,11 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import '../css/Epag_settings.css';
+import { useAppContext } from '../context/appContext';
 
 const Epag_settings = () => {
 
+    const {user} = useAppContext();
     const [showPassword, setShowPassword] = useState(false);
 
     const [isModal1Open, setIsModal1Open] = useState(false);
@@ -104,46 +106,33 @@ const Epag_settings = () => {
             <Header variant="professional" />
             <Breadcrumbs />
             <div className="account-settings-page">
-                <h2>Γενικές Ρυθμίσεις</h2>
+                <div className="box-header">
+                    <h1 className="title2">Ρυθμίσεις</h1>
+                </div>
                 <div className="settings-main-section">
                     {/* First Half */}
                     <div className="settings-half-section">
 
-                        <span className="label">
-                            <img src='/email-yellow.png' alt='email' className="icon" /> Email:
-                        </span>
-                        <span className="email">{email}</span>
-                        <img src='/edit-yellow.png' alt='edit' className="big-icon" title="Edit Email" onClick={openModal1} />
+                        <div className="label12">
+                            <img src='/email-icon.png' alt='email' className="icon12" /><span className='text12'>Email</span>
+                            <span className="email15">{user?.email}</span>
+                            <img src='/edit-yellow.png' alt='edit' className="big-icon15" title="Edit Email" onClick={openModal1} />
+                        </div>
+
 
                     </div>
 
                     {/* Second Half */}
                     <div className="settings-half-section">
 
-                        <span className="label">
-                            <img src='/password-yellow.png' alt='password' className="icon" /> Password:
-                        </span>
-                        <span className="password">
-                            {showPassword ? password : '*'.repeat(password.length)}
-                        </span>
-                        <img src='/edit-yellow.png' alt='edit' className="big-icon" title="Edit Password" onClick={openModal2} />
-                        {showPassword ? (
-                            <img
-                                src='/eye-hide-yellow.png'
-                                alt='eyeslash'
-                                className="big-icon"
-                                onClick={toggleShowPassword}
-                                title="Hide Password"
-                            />
-                        ) : (
-                            <img
-                                src='/eye-yellow.png'
-                                alt='eye'
-                                className="big-icon"
-                                onClick={toggleShowPassword}
-                                title="Show Password"
-                            />
-                        )}
+                        <div className="label12">
+                            <img src='/password-icon.png' alt='password' className="icon12" /> <span className='text12'>Password</span>
+                            <span className="email15">
+                                *****************
+                            </span>
+                            <img src='/edit-yellow.png' alt='edit' className="big-icon15" title="Edit Password" onClick={openModal2} />
+                        </div>
+
 
                     </div>
                 </div>
@@ -164,7 +153,7 @@ const Epag_settings = () => {
                                 <input
                                     type="text"
                                     value={email}
-                                    placeholder={email}
+                                    placeholder={user?.email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>

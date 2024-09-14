@@ -313,6 +313,20 @@ const getUnconnectedUsers = async (userId) => {
     }
 };
 
+const isAdmin = async (email, password) => {
+    try {   
+        const {data, error} = await supabase
+        .from('admin')
+        .select('*')
+        .eq('email', email)
+        .single();
+        return data;
+    } catch (err){
+        console.error('Error getting admin:', err);
+        throw err;
+    }
+}
+
 module.exports = {
     getAllUsers,
     getUser,
@@ -321,5 +335,6 @@ module.exports = {
     updateEmail,
     updatePassword,
     deleteUser,
-    getUnconnectedUsers
+    getUnconnectedUsers,
+    isAdmin,
 };

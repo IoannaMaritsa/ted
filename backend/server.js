@@ -135,32 +135,54 @@ app.post('/login', async (req, res) => {
     console.log("Incoming user data:", {
         email, password
     });
+
+
     try {
-        const user = await usersModel.getUser(email);
-        console.log("User found:", user)
-        if (!user) {
-            return res.status(404).json({ error: 'Email not found' });
+        const response = await usersModel.isAdmin(email);
+        console.log("response1", response)
+        if (response != null) {
+            const admin = response;
+            const isPasswordValid = (admin.password === password);
+            if (!isPasswordValid) {
+                return res.status(401).json({ error: 'Invalid password' });
+            }
+            // Generate JWT token
+            const token = jwt.sign({
+                "userId": admin.id,
+                "email": email,
+                "role": "admin",
+            }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.json({ token });
         }
+        else {
+            const user = await usersModel.getUser(email);
+            console.log("User found:", user)
+            if (!user) {
+                return res.status(404).json({ error: 'Email not found' });
+            }
 
-        // Check if the password is correct
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid password' });
+            // Check if the password is correct
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                return res.status(401).json({ error: 'Invalid password' });
+            }
+
+            // Generate JWT token
+            const token = jwt.sign({
+                "userId": user.id,
+                "email": email,
+                "role": "user",
+            }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            res.json({ token });
         }
-
-        // Generate JWT token
-        const token = jwt.sign({
-            "userId": user.id,
-            "email": email,
-            "role": "user",
-        }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.json({ token });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Login failed' });
     }
 });
+
+
 // ---------- ARTICLE ROUTES -----------
 // Get a all the articles by user id
 app.get('/articles/:userEmail', async (req, res) => {

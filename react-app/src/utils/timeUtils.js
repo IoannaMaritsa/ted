@@ -74,4 +74,15 @@ const formatTime = (date) => {
     return `${displayHours}:${displayMinutes} ${period}`;
 };
 
-export {parseRelativeTime, formatRelativeTime, formatTime};
+function formatDateRange(startIso, endIso) {
+    const options = { year: 'numeric', month: 'short' }; // Formatting options
+    const startDate = new Date(startIso);
+    const endDate = new Date(endIso);
+  
+    const startFormatted = startDate.toLocaleDateString('en-US', options);
+    const endFormatted = endDate.toLocaleDateString('en-US', options);
+  
+    return `${startFormatted} - ${endFormatted}`;
+}
+  
+export {parseRelativeTime, formatRelativeTime, formatTime, formatDateRange};

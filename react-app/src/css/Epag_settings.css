@@ -1,15 +1,20 @@
 .account-settings-page {
-    padding: 20px 10%;
+    padding: 20px 17%;
     background-color: var(--background-color);
     text-align: left;
     align-items: center;
 }
 
 .settings-main-section {
-    border: 2px solid #ddd;
+    border: 1px solid var(--border-color);
     padding: 20px;
     border-radius: 4px;
     background-color: #fff;
+}
+.icon12 {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
 }
 
 .settings-half-section {
@@ -31,6 +36,34 @@
     font-weight: bold;
 }
 
+.label12 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-weight: bold;
+}
+
+.email15 {
+  font-family: var(--font-basic);
+  font-size: 15px;
+  font-weight: 400;
+  width: 600px;
+  text-align: center;
+}
+
+.text12 {
+  font-family: var(--font-basic);
+  font-size: 15px;
+  font-weight: 700;
+  width: 100px;
+  text-align: left;
+}
+.big-icon15 {
+  width: 30px;
+  height: 30px;
+  margin-left: 110px;
+  cursor: pointer;
+}
 .icon {
     margin-right: 8px;
 }

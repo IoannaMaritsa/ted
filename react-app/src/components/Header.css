@@ -44,7 +44,7 @@
     /* Optional: Background color if no image */
     margin: 0px;
     margin-top:5px;
-    margin-right: 5px;
+    margin-left: 10px;
   }
 
   table tbody tr {
@@ -118,6 +118,14 @@
     font-size: 14px;
     font-weight: 500;
     color:#777777;
+    text-align: center;
+    font-family: var(--font-basic);
+  }
+
+  .dropdown-admin {
+    font-size: 15px;
+    font-weight: 700;
+    color:var(--button-yellow);
     text-align: center;
     font-family: var(--font-basic);
   }

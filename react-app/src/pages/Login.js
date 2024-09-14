@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/appContext';
 import { useNavigate } from 'react-router-dom';
 import '../css/login.css';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -20,7 +21,15 @@ export default function Login() {
         e.preventDefault();
         try {
             await logIn(email, password);
-            navigate('/epaggelmatias_homepage'); // Use navigate for redirection
+            const token = localStorage.getItem("token");
+            const decoded = jwtDecode(token);
+            console.log("token", decoded)
+            if(decoded.role === "user") {
+            navigate('/epaggelmatias_homepage'); 
+            }// Use navigate for redirection
+            else if (decoded.role === "admin") {
+                navigate('/admin'); 
+            }
         } catch (error) {
             setError(error.message || 'Login failed. Please try again.');
         }
