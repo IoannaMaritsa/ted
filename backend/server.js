@@ -129,6 +129,52 @@ app.put('/users/:email', upload.single('profilepic'), async (req, res) => {
     }
 });
 
+app.get('/password', async (req, res) => {
+    const { email, password } = req.query;
+    console.log(email, password)
+    try {
+        const pass = await usersModel.getPassword(email);
+        console.log(pass.password, password)
+        const isPasswordValid = await bcrypt.compare(password, pass.password);
+        console.log(isPasswordValid)
+        if (isPasswordValid)
+            res.status(201).json(true);
+        else
+            res.status(201).json(false);
+    } catch (err) {
+        res.status(500).json({ error: 'Error checking password' });
+    }
+})
+
+app.put('/password', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const response = await usersModel.updatePassword(email, password)
+        res.status(201).json(response);
+    } catch (err) {
+        res.status(500).json({ error: 'Error updating password' });
+    }
+});
+
+app.put('/email', async (req, res) => {
+    const { email, newemail } = req.body;
+    try {
+
+        const response = await usersModel.updateEmail(email, newemail)
+        const user = await usersModel.getUser(newemail);
+        // Generate JWT token
+        const token = jwt.sign({
+            "userId": user.id,
+            "email": newemail,
+            "role": "user",
+        }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token });
+
+    } catch (err) {
+        res.status(500).json({ error: 'Error updating email' });
+    }
+});
+
 // Login route
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -183,6 +229,8 @@ app.post('/login', async (req, res) => {
 });
 
 
+
+
 // ---------- ARTICLE ROUTES -----------
 // Get a all the articles by user id
 app.get('/articles/:userEmail', async (req, res) => {
@@ -198,7 +246,9 @@ app.get('/articles/:userEmail', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch articles' });
     }
 });
-// Get a all the articles not made by user id
+
+
+// Get a all the articles not made by user 
 app.get('/notarticles/:userEmail', async (req, res) => {
     const { userEmail } = req.params;
     try {

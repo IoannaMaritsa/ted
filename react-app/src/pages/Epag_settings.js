@@ -5,10 +5,12 @@ import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
 import '../css/Epag_settings.css';
 import { useAppContext } from '../context/appContext';
+import '../css/popup.css';
+import { checkPassword, updatePassword, updateEmail, getUser } from '../api';
 
 const Epag_settings = () => {
 
-    const {user} = useAppContext();
+    const { user, setUser } = useAppContext();
     const [showPassword, setShowPassword] = useState(false);
 
     const [isModal1Open, setIsModal1Open] = useState(false);
@@ -18,18 +20,17 @@ const Epag_settings = () => {
     const [error1, setError1] = useState(false);
     const [error2, setError2] = useState(false);
     const [error3, setError3] = useState(false);
+    const [errorEmail, setErrorEmail] = useState('');
 
-    const [password, setPassword] = useState('mySecret123!');
+
+    const [password, setPassword] = useState('');
     const [oldpassword, setOldPassword] = useState('');
     const [newpassword, setNewPassword] = useState('');
     const [confirmpassword, setConfirmPassword] = useState('');
 
-    const [email, setEmail] = useState('user@example.com');
+    const [email, setEmail] = useState('');
     const [initialemail, setInitialEmail] = useState(email);
 
-    const toggleShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
 
     const openModal1 = () => {
         setIsModal1Open(true);
@@ -59,24 +60,71 @@ const Epag_settings = () => {
         e.stopPropagation();
     };
 
-    const handleSave1 = () => {
-        console.log('Input Value Saved:', email);
-        setInitialEmail(email);
-        console.log(initialemail);
-        closeModal1();
-    };
+    const handleSave1 = async () => {
+        setErrorEmail('');  // Reset the error state
+        try {
+            if (email === user?.email) {
+                setErrorEmail("Το email δεν έχει αλλάξει.");
+                return;
+            }
+            // Call the API to update email in the database
 
-    const handleSave2 = () => {
-        console.log('Input Value Saved:', password);
-        if (oldpassword === password && newpassword != '' && newpassword === confirmpassword) {
-            setPassword(newpassword);
-            closeModal2();
-        } else if (oldpassword != password) {
-            setError1('Πληκτρολογήστε σωστά τον παλιό κωδικό σας!')
+            const result = await updateEmail(user?.email, email);
+            console.log("result",result);
+            if (result) {
+                // Update the user in the app context
+                const updatedUser = { ...user, email };
+
+                console.log("updated user",updatedUser);
+                console.log("old user",user);
+                console.log("set user valid", setUser);
+                setUser(updatedUser);
+
+                console.log("user", user);
+                const newToken = result;
+                console.log("new token2", newToken);
+                localStorage.setItem('token', newToken);
+    
+                setInitialEmail(email);
+                closeModal1();
+            } else {
+                setErrorEmail(result.message || "Η ενημέρωση του email απέτυχε.");
+            }
+        } catch (error) {
+            console.error("Error saving email:", error);
+            setErrorEmail("Παρουσιάστηκε σφάλμα κατά την ενημέρωση του email.");
+        }
+    }
+
+    const handleSave2 = async () => {
+        setError1('');
+        setError2('');
+        setError3('');
+
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        const isPasswordValid = passwordRegex.test(newpassword);
+
+
+        // Check if the old password matches the one stored in the database
+        const passwordCheck = await checkPassword(user?.email, oldpassword);
+        console.log(passwordCheck)
+        if (!passwordCheck || passwordCheck.error) {
+            setError1('Πληκτρολογήστε σωστά τον παλιό κωδικό σας');
         } else if (newpassword === '') {
-            setError2('Πληκτρολογήστε έναν νέο κωδικό εισόδου!')
-        } else if (newpassword != confirmpassword) {
-            setError3('Ο κωδικός επιβεβαίωσης δεν ταιριάζει με τον νέο κωδικό!')
+            setError2('Πληκτρολογήστε έναν νέο κωδικό εισόδου');
+        } else if (!isPasswordValid) {
+            setError2('Πληκτρολογήστε έγκυρο κωδικό εισόδου');
+        } else if (newpassword === oldpassword) {
+            setError2('Ο νέος κωδικός σας πρέπει να είναι διαφορετικός απο τον παλιό');
+        } else if (confirmpassword === '') {
+            setError3('Επιβεβαιώστε τον κωδικό σας');
+        } else if (newpassword !== confirmpassword) {
+            setError3('Ο κωδικός επιβεβαίωσης δεν ταιριάζει με τον νέο κωδικό');
+        } else {
+            setPassword(newpassword);
+            const result = await updatePassword(user?.email, newpassword);
+            console.log('Password updated:', newpassword);
+            closeModal2();
         }
 
     };
@@ -85,10 +133,6 @@ const Epag_settings = () => {
         //implement save
     }
 
-    const HandleDiscard = () => {
-        setEmail('user@example.com');
-        setPassword('mySecret123!');
-    }
 
     useEffect(() => {
 
@@ -136,30 +180,42 @@ const Epag_settings = () => {
 
                     </div>
                 </div>
-                <div className='settings-button-area'>
-                    <button className='settings-button-secondary' onClick={HandleDiscard}>Ακύρωση</button>
-                    <button className='settings-button-primary' onClick={() => setIsModal3Open(true)}>Αποθήκευση</button>
-                </div>
 
 
                 {/* Modals */}
                 {isModal1Open && (
                     <div className="modal-overlay" onClick={closeModal1}>
-                        <div className="modal-content" onClick={handleModalClick}>
-                            <h2>Επεξεργασία Διεύθυνσης Ηλ. Αλληλογραφίας Επαγγελματία</h2>
-                            <br></br>
-                            <div className="job-input-group">
-                                <label htmlFor="title">Email</label>
-                                <input
-                                    type="text"
-                                    value={email}
-                                    placeholder={user?.email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                        <div className="add-work-experience-modal-content6" onClick={handleModalClick}>
+                            <div className="add-work-experience-modal-header">
+                                <div className="add-work-experience-modal-title">Επεξεργασία Προφίλ</div>
+                                <img
+                                    className="add-work-experience-modal-close-btn"
+                                    src="/close-icon.png"
+                                    onClick={closeModal1}
+                                    alt="Close"
                                 />
                             </div>
-                            <div className='settings-button-area'>
-                                <button onClick={closeModal1} className='modal-button-close'>Κλείσιμο</button>
-                                <button onClick={handleSave1} className="modal-button-confirm">Επιβεβαίωση</button>
+                            <div className="details-section2">
+
+                                <div className="form-group2">
+                                    <span className="span2" htmlFor="email">Email</span>
+                                    <input
+                                        id="email"
+                                        name ="email"
+                                        type="email"
+                                        value={email}
+                                        placeholder={user?.email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            {errorEmail && (
+                                        <div className='modal-error-message'>
+                                            {errorEmail}
+                                        </div>
+                                    )}
+                            <div className="add-work-experience-modal-footer">
+                                <button onClick={handleSave1} >Αποθήκευση</button>
                             </div>
                         </div>
                     </div>
@@ -167,79 +223,81 @@ const Epag_settings = () => {
 
                 {isModal2Open && (
                     <div className="modal-overlay" onClick={closeModal2}>
-                        <div className="modal-content" onClick={handleModalClick}>
-                            <h2>Επεξεργασία Κωδικού Εισόδου Επαγγελματία</h2>
-                            <br></br>
-                            <div className="job-input-group">
-                                <label htmlFor="password">Προηγούμενος Κωδικός</label>
-                                {error1 ? (
-                                    <input
-                                        type="text"
-                                        value={oldpassword}
-                                        onChange={(e) => setOldPassword(e.target.value)}
-                                        className='modal-input-error'
-                                    />
-                                ) : (
-                                    <input
-                                        type="text"
-                                        value={oldpassword}
-                                        onChange={(e) => setOldPassword(e.target.value)}
-                                    />
-                                )}
+                        <div className="add-work-experience-modal-content5" onClick={handleModalClick}>
+                            <div className="add-work-experience-modal-header">
+                                <div className="add-work-experience-modal-title">Επεξεργασία Κωδικού</div>
+                                <img
+                                    className="add-work-experience-modal-close-btn"
+                                    src="/close-icon.png"
+                                    onClick={closeModal2}
+                                    alt="Close"
+                                />
+                            </div>
+                            <div className="add-work-experience-modal-body">
+                                <div className="details-section2">
 
-                            </div>
-                            {error1 && (
-                                <div className='modal-error-message'>
-                                    {error1}
+                                    <div className="form-group2">
+                                        <span className="span2">Προηγούμενος Κωδικός</span>
+                                        <input
+                                            name ="oldpassword"
+                                            id="oldpassword"
+                                            type="password"
+                                            value={oldpassword}
+                                            onChange={(e) => setOldPassword(e.target.value)}
+                                            placeholder="Εισάγετε τον παλιό σας κωδικό"
+                                        />
+                                    </div>
+
+
+                                    {error1 && (
+                                        <div className='modal-error-message'>
+                                            {error1}
+                                        </div>
+                                    )}
+
+
+                                    <div className="form-group2">
+                                        <span className="span2" >Νέος Κωδικός</span>
+                                        <input
+                                            name="newpassword"
+                                            id="newpassword"
+                                            type="password"
+                                            value={newpassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            placeholder="Εισάγετε νέο κωδικό"
+                                        />
+                                    </div>
+
+
+                                    {error2 && (
+                                        <div className='modal-error-message'>
+                                            {error2}
+                                        </div>
+                                    )}
+
+
+                                    <div className="form-group2">
+                                        <span className="span2" htmlFor="confirmpassword"> Επιβεβαίωση Κωδικού</span>
+                                        <input
+                                            id ="confirmpassword"
+                                            name="confirmpassword"
+                                            type="password"
+                                            value={confirmpassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            placeholder="Εισάγετε τον νέο κωδικό ξανά"
+                                        />
+                                    </div>
+
+
+                                    {error3 && (
+                                        <div className='modal-error-message'>
+                                            {error3}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                            <div className="job-input-group">
-                                <label htmlFor="password">Νέος Κωδικός</label>
-                                {error2 ? (
-                                    <input
-                                        type="text"
-                                        value={newpassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        className='modal-input-error'
-                                    />
-                                ) : (
-                                    <input
-                                        type="text"
-                                        value={newpassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                    />
-                                )}
                             </div>
-                            {error2 && (
-                                <div className='modal-error-message'>
-                                    {error2}
-                                </div>
-                            )}
-                            <div className="job-input-group">
-                                <label htmlFor="password">Επιβεβαίωση κωδικού</label>
-                                {error3 ? (
-                                    <input
-                                        type="text"
-                                        value={confirmpassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className='modal-input-error'
-                                    />
-                                ) : (
-                                    <input
-                                        type="text"
-                                        value={confirmpassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    />
-                                )}
-                            </div>
-                            {error3 && (
-                                <div className='modal-error-message'>
-                                    {error3}
-                                </div>
-                            )}
-                            <div className='settings-button-area'>
-                                <button onClick={closeModal2} className='modal-button-close'>Κλείσιμο</button>
-                                <button onClick={handleSave2} className="modal-button-confirm">Επιβεβαίωση</button>
+                            <div className="add-work-experience-modal-footer">
+                                <button onClick={handleSave2} >Αποθήκευση</button>
                             </div>
                         </div>
                     </div>

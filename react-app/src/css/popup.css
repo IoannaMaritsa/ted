@@ -184,6 +184,28 @@
     overflow-x: hidden;
 }
 
+.add-work-experience-modal-content5 {
+    background: #fff; /* White background for the modal */
+    border-radius: 8px;
+    width: 80%;
+    height: 550px;
+    max-width: 800px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow-x: hidden;
+}
+
+.add-work-experience-modal-content6 {
+    background: #fff; /* White background for the modal */
+    border-radius: 8px;
+    width: 80%;
+    height: 380px;
+    max-width: 800px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow-x: hidden;
+}
+
 .add-work-experience-modal-header {
     padding: 15px;
     display: flex;
