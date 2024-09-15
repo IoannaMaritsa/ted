@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from "../context/appContext";
 import getImageUrl from "../hooks/getImageUrl";
 import { format } from 'date-fns';
+import { formatDateRange } from "../utils/timeUtils";
 import { addArticle, getArticle, getUser, deleteArticle, getOtherUsersArticles, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, addAttachment } from '../api';
 import '../css/epag-home.css';
 
@@ -230,7 +231,7 @@ export default function Epag_Home() {
                                         {experience.workplace}
                                     </p>
                                     <p className="home-user-info-h5">
-                                        <span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span>
+                                        <span>{formatDateRange(experience.start_date, experience.end_date)}</span>
                                     </p>
                                 </div>
                             ))}

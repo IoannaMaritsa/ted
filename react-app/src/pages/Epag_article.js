@@ -191,7 +191,7 @@ const Epag_article = () => {
                                 // Check the type and render accordingly
                                 if (type.startsWith('image/')) {
                                     return (
-                                        <div key={index}>
+                                        <div className="flex-article"key={index}>
                                             <img src={getImageUrl(url, 'attachments')} alt={`Attachment ${index + 1}`} className='attachment-image' />
                                         </div>
                                     );

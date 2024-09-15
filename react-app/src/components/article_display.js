@@ -53,7 +53,8 @@ const Article = ({ id, title, author_email, date, content, onDelete }) => {
         <img src="/user.png" alt="User Icon" className="iconp" />
         <span onClick={handleProfileClick}>{author}</span>
       </div>
-      <p className="article-content">{content.substring(0, 250)}...</p>
+      <p className="article-content">
+      {content.substring(0, 250)}... </p>
       {author_email === user_info.email && (
         <div className='send-right2'>
           <div className='icon-circle2'>
