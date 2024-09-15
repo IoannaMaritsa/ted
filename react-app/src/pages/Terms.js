@@ -11,9 +11,9 @@ export default function Terms() {
   return(
     <div>
       <Header variant="homepage" />
-      <div className="article-container">
+      <div className="help-main-section">
       
-      <div className="article-text">
+      <div className="help-main-container">
         <h1>Όροι χρήσης</h1>
         <h2>Περιορισμοί Αναρτήσεων Εργασίας</h2>
         <p>Δεν πρέπει να:</p>
@@ -34,10 +34,8 @@ export default function Terms() {
         </ol>
         <div className="split-page">
           <img src="/danger.png" alt="icon1" className="icon" />
-          <div className="text-section">
-            <p>Η μη συμμόρφωση με οποιονδήποτε από αυτούς τους περιορισμούς θα αποτελέσει αιτία για τον τερματισμό του λογαριασμού σας στο CareerHive.
+            <p style={{marginLeft:'20px', fontStyle:'italic'}}>Η μη συμμόρφωση με οποιονδήποτε από αυτούς τους περιορισμούς θα αποτελέσει αιτία για τον τερματισμό του λογαριασμού σας στο CareerHive.
           Διατηρούμε το απόλυτο δικαίωμα, χωρίς να αιτιολογήσουμε, να αφαιρέσουμε οποιαδήποτε δημοσιευμένη πληροφορία (όπως η ανακοίνωση εργασίας) από το CareerHive.com για οποιονδήποτε λόγο και ανά πάσα στιγμή χωρίς προηγούμενη ειδοποίηση.</p>
-          </div>
         </div>
       </div>
     </div>

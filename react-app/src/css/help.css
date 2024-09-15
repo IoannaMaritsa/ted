@@ -5,6 +5,7 @@
   }
   
   .toggle-button {
+    border-radius: 5px;
     width: 100%;
     padding: 10px 20px;
     font-size: 20px;
@@ -16,20 +17,21 @@
   }
   
   .toggle-button:hover {
-    background-color: #757575;
+    background-color: #f7ce6d;
     color: #ffffff;
   }
   
   .toggle-button.clicked {
-    background-color: #EBB430;
+    background-color: #f7ce6d;
   }
 
   .frame {
-    width: 95%;
+    width: 100%;
     padding: 20px 20px;
     background-color: #ffffff;
-    border: 2px solid #EBB430;
+    border: 2px solid #f7ce6d;
     text-align: left;
+    border-radius: 5px;
   }
 
   .help-split {
@@ -78,7 +80,7 @@
 }
 
 .community-box {
-    min-height: 240px;
+    min-height: 20vw;
     flex: 1;
     background-color: #EBB430;
     padding: 20px 10px;
@@ -95,4 +97,23 @@
 
 .community-box h6 {
   font-size: 15px;
+}
+
+.help-main-section {
+  min-height: 500px;
+  padding: 30px 20% ;
+  background-color: var(--background-color);
+}
+
+.help-main-container {
+  padding: 50px;
+  text-align: left;
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.help-secondary-section {
+  padding: 30px 50px ;
+  background-color: var(--background-color);
 }

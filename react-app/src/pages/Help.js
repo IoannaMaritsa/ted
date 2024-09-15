@@ -63,7 +63,7 @@ export default function Help() {
             </div>
 
         </div>
-        <div className="article-text">
+        <div className="help-main-container">
             <h1>Κέντρο Βοήθειας για τα άτομα που αναζητούν εργασία</h1>
             <div className="toggle-buttons">
                 <button className={`toggle-button ${isClicked1 ? 'clicked' : ''}`}

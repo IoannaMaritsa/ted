@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/admin.css';
 import {exportDataProfile} from '../utils/exportUtils';
 
-import { getUser, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser, getCommentsOfUser, getUserInterests, getArticleById} from "../api";
+import { getArticle, getUser, getAllContactsByUserEmail, getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, getJobsOfUser, getCommentsOfUser, getUserInterests, getArticleById} from "../api";
 import getImageUrl from "../hooks/getImageUrl";
 import { format} from 'date-fns';
 import { formatDateRange } from "../utils/timeUtils";
@@ -94,12 +94,12 @@ export default function Diax_Home() {
         }
     };
 
-    const getArticle = async (id) => {
+    const getSingleArticle = async (id) => {
         try {
             const article = await getArticleById(id);
             return(article.title);
         } catch (error) {
-            console.error('Error getting articles:', error);
+            console.error('Error getting article with id:', id);
         }
     };
 
@@ -109,7 +109,7 @@ export default function Diax_Home() {
             
             const comments2 = await Promise.all(
                 comments.map(async (comment) => {
-                    const article_name = await getArticle(comment.article_id); // Await here to get the resolved value
+                    const article_name = await getSingleArticle(comment.article_id); // Await here to get the resolved value
                     
                     return {
                         article_name,
@@ -132,15 +132,16 @@ export default function Diax_Home() {
             console.log('got interests', interests);
             const interests2 = await Promise.all(
                 interests.map(async (interest) => {
-                    const article_name = await getArticle(interest.article_id); // Await here to get the resolved value
+                    console.log('fetching article for interest:', interest);
+                    const article_name = await getSingleArticle(interest); // Await here to get the resolved value
                     
                     return {
-                        article_name,
-                        date: format(new Date(interest.date), 'yyyy-MM-dd hh:mm:ss')
+                        article: article_name,
+                        // date: format(new Date(interest.date), 'yyyy-MM-dd hh:mm:ss')
                     };
                 })
             );
-    
+            console.log('interests2', interests2);
             setInterests(interests2);
         } catch (error) {
             console.error('Error getting interests:', error);
@@ -343,10 +344,10 @@ export default function Diax_Home() {
                                     <img src="heart.png" alt="Heart Icon"></img>
                                 </div>
                                 {(interests && interests.length > 0 ) ? (
-                                    interests.map((like, index) => (
+                                    interests.map((interest, index) => (
                                         <div key={index} className="work-experience-row">
-                                            <div className="post-name">{like.article_name}</div>
-                                            <div className="work-duration">{like.date}</div>
+                                            <div className="post-name">{interest.article}</div>
+                                            {/* <div className="work-duration">{interest}</div> */}
                                         </div>
                                     ))
                                 ) : (
