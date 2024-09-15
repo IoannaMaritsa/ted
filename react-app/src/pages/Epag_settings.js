@@ -64,7 +64,14 @@ const Epag_settings = () => {
         setErrorEmail('');  // Reset the error state
         try {
             if (email === user?.email) {
-                setErrorEmail("Το email δεν έχει αλλάξει.");
+                setErrorEmail("Το email δεν έχει αλλάξει");
+                return;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isEmailValid = emailRegex.test(email);
+
+            if(!isEmailValid) {
+                setErrorEmail("Εισάγετε έγκυρο email");
                 return;
             }
             // Call the API to update email in the database
