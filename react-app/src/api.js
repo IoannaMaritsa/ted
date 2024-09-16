@@ -101,6 +101,18 @@ export const loginUser = async (email, password) => {
         }
     }
 };
+
+
+export const checkPassword = async (email, password) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/password`, { params: { email, password } });
+        return response.data;
+    } catch (err) {
+        console.error('Error checking password', err);
+        throw err;
+    }
+}
+
 // Get a article using userId
 export const getArticle = async (userEmail) => {
     try {
@@ -141,8 +153,8 @@ export const getAllArticles = async (userEmail) => {
             getArticle(userEmail),
             getOtherUsersArticles(userEmail)
         ]);
-        
-        return {myarticles, othersarticles};
+
+        return { myarticles, othersarticles };
     } catch (error) {
         console.error('Error fetching all the articles:', error);
         throw error;
@@ -563,9 +575,9 @@ export const getAttachments = async (articleId) => {
 };
 
 //Add a new job
-export const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details , creatorEmail) => {
+export const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/jobs`, {title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail});
+        const response = await axios.post(`${API_BASE_URL}/jobs`, { title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail });
         return response.data;
     } catch (error) {
         console.error('Error adding job:', error);
@@ -635,16 +647,16 @@ export const getSubmissionsForJob = async (jobId) => {
 // add a new message
 export const addMessage = async (senderEmail, receiverEmail, message, created_at) => {
     try {
-        console.log("hello3", senderEmail,receiverEmail,message, created_at)
+        console.log("hello3", senderEmail, receiverEmail, message, created_at)
         const response = await axios.post(`${API_BASE_URL}/messages`, {
-           senderEmail,
-           receiverEmail,
-           message,
-           created_at
+            senderEmail,
+            receiverEmail,
+            message,
+            created_at
         });
         console.log(response)
         return response.data;
-    } catch(err) {
+    } catch (err) {
         console.error('Error adding message:', err);
         throw err;
     }
@@ -657,7 +669,7 @@ export const getMessagesBetweenUsers = async (email1, email2) => {
             params: { email1, email2 } // Pass emails as query parameters
         });
         return response.data;
-    } catch(err){
+    } catch (err) {
         console.error('Error fetching messages:', err);
         throw err;
     }
@@ -696,5 +708,31 @@ export const updatePrivacy = async (email, privacyField, newValue) => {
     } catch (error) {
         console.error('Error updating privacy:', error);
         throw error;
+    }
+};
+
+export const updatePassword = async (email, password) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/password`, {
+            email,
+            password
+        });
+    } catch (err) {
+        console.error('Error updating password:', err);
+        throw err;
+    }
+};
+
+export const updateEmail = async (email, newemail) => {
+    try {
+        const token = await axios.put(`${API_BASE_URL}/email`, {
+            email,
+            newemail
+        });
+        console.log("new token", token.data.token);
+        return token.data.token;
+    } catch (err) {
+        console.error('Error updating email:', err);
+        throw err;
     }
 };

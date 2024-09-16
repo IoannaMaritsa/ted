@@ -76,6 +76,7 @@ export const ContextProvider = ({ children }) => {
         otherProfile,
         setOtherProfile,
         user,
+        setUser,
         isLoggedIn,
         logIn,
         logOut,

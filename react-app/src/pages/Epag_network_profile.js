@@ -10,6 +10,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
 import { format } from 'date-fns';
+import { formatDateRange, formatRelativeTime} from "../utils/timeUtils";
 
 export default function Epag_network_profile() {
     const location = useLocation();
@@ -421,7 +422,7 @@ export default function Epag_network_profile() {
                                         <div key={index} className="work-experience-row">
                                             <div className="work-role">{experience.profession}</div>
                                             <div className="work-company">{experience.workplace}</div>
-                                            <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
+                                            <div className="work-duration"><span>{formatDateRange(experience.start_date, experience.end_date)}</span></div>
                                         </div>
                                     ))
                                 ) : (

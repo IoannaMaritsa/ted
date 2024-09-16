@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const supabase = require('../supabaseClient');
 const path = require('path');
-const {addPrivacy} = require('./privacy');
+const { addPrivacy } = require('./privacy');
 
 // Get all users
 const getAllUsers = async () => {
@@ -238,17 +238,21 @@ const updateUser = async (email, name, profession, workplace, location, dob, pre
 
 
 // Update the email for a specific user
-const updateEmail = async (oldEmail, newEmail) => {
+const updateEmail = async (email, newEmail) => {
     try {
+
+
         const { data: updatedUser, error: updateError } = await supabase
             .from('users')
             .update({ email: newEmail })
             .eq('email', email)
             .single();
+
         if (updateError) {
             console.error('Error updating user email:', updateError);
             throw updateError;
         }
+
         console.log(`Email updated successfully for user  ${newEmail}.`);
     } catch (error) {
         console.error('Error updating email:', error);
@@ -260,18 +264,19 @@ const updateEmail = async (oldEmail, newEmail) => {
 const updatePassword = async (email, newPassword) => {
     try {
         // Hash the new password before storing
+        console.log(email, newPassword)
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         const { data: updatedUser, error: updateError } = await supabase
             .from('users')
-            .update({ password: newPassword })
+            .update({ password: hashedPassword })
             .eq('email', email)
             .single();
         if (updateError) {
             console.error('Error updating user password:', updateError);
             throw updateError;
         }
-        console.log(`Password updated successfully for user  ${newEmail}.`);
+        console.log(`Password updated successfully for user  ${email}.`);
     } catch (error) {
         console.error('Error updating password:', error);
         throw error;
@@ -302,7 +307,7 @@ const getUnconnectedUsers = async (userId) => {
         const contactIds = contacts.map(contact => contact.contact_id);
 
         // Filter out the user themselves and their contacts
-        const unconnectedUsers = allUsers.filter(user => 
+        const unconnectedUsers = allUsers.filter(user =>
             user.id !== userId && !contactIds.includes(user.id)
         );
 
@@ -314,18 +319,33 @@ const getUnconnectedUsers = async (userId) => {
 };
 
 const isAdmin = async (email, password) => {
-    try {   
-        const {data, error} = await supabase
-        .from('admin')
-        .select('*')
-        .eq('email', email)
-        .single();
+    try {
+        const { data, error } = await supabase
+            .from('admin')
+            .select('*')
+            .eq('email', email)
+            .single();
         return data;
-    } catch (err){
+    } catch (err) {
         console.error('Error getting admin:', err);
         throw err;
     }
 }
+
+const getPassword = async (email) => {
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('password')
+            .eq('email', email)
+            .single()
+        return data;
+    } catch (err) {
+        console.error('Error checking password:', err);
+        throw err;
+    }
+}
+
 
 module.exports = {
     getAllUsers,
@@ -337,4 +357,5 @@ module.exports = {
     deleteUser,
     getUnconnectedUsers,
     isAdmin,
+    getPassword,
 };

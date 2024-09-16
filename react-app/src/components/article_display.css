@@ -63,7 +63,12 @@
   color: black;
 
 }
-
+.flex-article {
+  width: 100%;
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 .iconp {
   width: 20px;
   height: 20px;
@@ -73,6 +78,11 @@
 
 .article-content {
   font-size: 14px;
+}
+
+.attachment-image {
+  max-width: 80%;
+  margin: auto;
 }
 
 .icon-circle2 {
@@ -102,6 +112,7 @@
   height: 25px;
   cursor: pointer;
 }
+
 
 
 .article-container2 {

@@ -13,6 +13,7 @@ import { useAppContext } from "../context/appContext";
 import { useEffect } from "react";
 import { getAllExperiencesForUser, getAllStudiesForUser, getAllSkillsForUser, updateUser, addExperience, deleteExperience, addStudy, deleteStudy, addSkillToUser, deleteSkillFromUser, getPrivacySettings, updatePrivacy } from "../api";
 import getImageUrl from "../hooks/getImageUrl";
+import { formatDateRange } from "../utils/timeUtils";
 
 export default function Epag_pinformation() {
     const { user } = useAppContext();
@@ -290,7 +291,7 @@ export default function Epag_pinformation() {
                                         <div className="work-experience-info">
                                             <div className="work-role">{experience.profession}</div>
                                             <div className="work-company">{experience.workplace}</div>
-                                            <div className="work-duration"><span>{experience.start_date}</span> - <span>{experience.end_date || 'Μέχρι Τώρα'}</span></div>
+                                            <div className="work-duration"><span>{formatDateRange(experience.start_date, experience.end_date)}</span></div>
                                         </div>
                                         <img
                                             className="delete-icon"
