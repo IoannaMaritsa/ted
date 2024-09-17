@@ -145,6 +145,7 @@ export default function Epag_pinformation() {
 
     const closeEditModal = () => {
         setEditModalOpen(false);
+        window.location.reload();
     };
 
     const openAddStudiesModal = () => {
@@ -192,8 +193,15 @@ export default function Epag_pinformation() {
 
 
     const handleAddSkills = async (newSkills) => {
+        console.log('chosen skills', newSkills);
         try {
-            await addSkillToUser(user.id, newSkills.name);
+            await Promise.all(
+                newSkills.map(async (newSkill) => {
+                    await addSkillToUser(user.id, newSkill);
+                })
+            );
+            console.log('All skills added successfully');
+            
         } catch (error) {
             console.error('Error adding skill:', error);
         }

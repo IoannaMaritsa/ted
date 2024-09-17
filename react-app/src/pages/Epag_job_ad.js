@@ -12,7 +12,7 @@ import { useAppContext } from "../context/appContext";
 import { default_locations } from "../context/locations";
 import { format } from 'date-fns';
 import { useState, useMemo, useEffect } from 'react';
-import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob } from '../api';
+import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob, getAllUsers } from '../api';
 
 export default function Epag_job_ad() {
 
@@ -24,24 +24,59 @@ export default function Epag_job_ad() {
   //jobs
   const [jobs, setJobs] = useState([]);
   const [myjobs, setMyjobs] = useState([]);
+  const [isMyLoading, setIsMyLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const getJobs = async (userEmail) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 4;
+  const [totalPages, setTotalPages] = useState('');
+  const [currentJobs, setCurrentJobs] = useState([]); // Jobs to display currently
+  const [selectedJob, setSelectedJob] = useState(null); // Job selected by user
+
+  const [mycurrentPage, setMyCurrentPage] = useState(1);
+  const myjobsPerPage = 4;
+  const [mytotalPages, setMytotalPages] = useState('');
+  const [mycurrentJobs, setMycurrentJobs] = useState([]); // Jobs to display currently
+  const [myselectedJob, setMyselectedJob] = useState(null); // Job selected by user
+
+
+  const [mysearchQuery, setMysearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const getJobs = async () => {
     try {
-      const contacts = await getAllContactsByUserEmail(userEmail);
-      for (const contact of contacts) {
+      const users = await getAllUsers();
+      const jobsSet = new Set(); // To store unique job IDs
+      let fetchedJobs = []; // Array to store all jobs
+
+      for (const user of users) {
+        if (user.email === user_info.email) {
+          continue;
+        }
         try {
-          const newjobs = await getJobsOfUser(contact.contact_email);
+          const newjobs = await getJobsOfUser(user.email);
           if (newjobs.success) {
-            setJobs(newjobs.data);
+            // Only add jobs that aren't already in the Set
+            const uniqueJobs = newjobs.data.filter(job => {
+              return job !== null && job.id && !jobsSet.has(job.id);
+            });
+
+            // Add job IDs to the Set after filtering nulls
+            uniqueJobs.forEach(job => jobsSet.add(job.id));
+            fetchedJobs = [...fetchedJobs, ...uniqueJobs];
           }
         } catch (error) {
-          console.error(`Error getting job for user with email ${contact.contact_email}:`, error);
+          console.error(`Error getting job for user with email ${user.email}:`, error);
         }
       }
+
+      // Update state with filtered jobs
+      setJobs(fetchedJobs);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error getting jobs:', error);
+      setIsLoading(false);
     }
-    console.log('jobs',jobs);
   };
 
   const getMyJobs = async (userEmail) => {
@@ -51,19 +86,42 @@ export default function Epag_job_ad() {
       console.log(`Got a job successfully.`);
       if (newjobs.success)
         setMyjobs(newjobs.data)
+      setIsMyLoading(false);
+
 
     } catch (error) {
       console.error('Error getting jobs:', error);
+      setIsMyLoading(false);
     }
   };
 
+  const isContact = async (userEmail) => {
+    try {
+      const contacts = await getAllContactsByUserEmail(user_info.email);
+      for (const contact in contacts) {
+        if (userEmail === contact.contact_email) {
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Error getting contacts:', error);
+      return false;
+    }
+  }
+
   //filters
   const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
+  const [selectedUserFilter, setSelectedUserFilter] = useState('Από Όλους τους Χρήστες');
   const [selectedDateFilter, setSelectedDateFilter] = useState('Δημοσίευση Όλες');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState('Απασχόληση Όλες');
   const [selectedExperienceFilter, setSelectedExperienceFilter] = useState('Εμπειρία Όλες');
   const [selectedSalaryFilter, setSelectedSalaryFilter] = useState('Μισθός Όλες');
   const [selectedLocation, setSelectedLocation] = useState('Περιοχές Όλες');
+
+  const handleUserFilterChange = (option) => {
+    setSelectedUserFilter(option);
+  };
 
   const handleDateFilterChange = (option) => {
     setSelectedDateFilter(option);
@@ -85,54 +143,66 @@ export default function Epag_job_ad() {
     setSelectedLocation(location);
   };
 
-  const filterJobs = (jobArray) => {
-    return jobArray.filter(job => {
-      let isMatch = true;
+  const filterJobs = async (jobArray) => {
+    const filteredJobs = await Promise.all(
+      jobArray.map(async (job) => {
+        let isMatch = true;
 
-      // Filter by Date
-      if (selectedDateFilter !== 'Δημοσίευση Όλες') {
-        const jobDate = new Date(job.date);
-        const now = new Date();
-        if (selectedDateFilter === 'Την τελευταία εβδομάδα') {
-          const lastWeek = new Date();
-          lastWeek.setDate(now.getDate() - 7);
-          if (jobDate < lastWeek) isMatch = false;
-        } else if (selectedDateFilter === 'Τον τελευταίο μήνα') {
-          const lastMonth = new Date();
-          lastMonth.setMonth(now.getMonth() - 1);
-          if (jobDate < lastMonth) isMatch = false;
+        // Filter by Date
+        if (selectedDateFilter !== 'Δημοσίευση Όλες') {
+          const jobDate = new Date(job.publish_date);
+          const now = new Date();
+          if (selectedDateFilter === 'Την τελευταία εβδομάδα') {
+            const lastWeek = new Date();
+            lastWeek.setDate(now.getDate() - 7);
+            if (jobDate < lastWeek) isMatch = false;
+          } else if (selectedDateFilter === 'Τον τελευταίο μήνα') {
+            const lastMonth = new Date();
+            lastMonth.setMonth(now.getMonth() - 1);
+            if (jobDate < lastMonth) isMatch = false;
+          }
         }
-      }
 
-      // Filter by Type
-      if (selectedTypeFilter !== 'Απασχόληση Όλες' && job.type !== selectedTypeFilter) {
-        isMatch = false;
-      }
+        // Filter by User
+        if (selectedUserFilter !== 'Από Όλους τους Χρήστες') {
+          const isUserContact = await isContact(job.creator_email); // Await the contact check
 
-      // Filter by Experience
-      if (selectedExperienceFilter !== 'Εμπειρία Όλες') {
-        if (selectedExperienceFilter === '0-2 Έτη' && job.experience > 2) isMatch = false;
-        else if (selectedExperienceFilter === '2+ Έτη' && job.experience < 2) isMatch = false;
-        else if (selectedExperienceFilter === '8+ Έτη' && job.experience < 8) isMatch = false;
-      }
+          if (selectedUserFilter === 'Συνδεδεμένους' && !isUserContact) {
+            isMatch = false;
+          } else if (selectedUserFilter === 'Μη Συνδεδεμένους' && isUserContact) {
+            isMatch = false;
+          }
+        }
 
-      // Filter by Salary
-      if (selectedSalaryFilter !== 'Μισθός Όλες') {
-        const salaryFilterValue = parseInt(selectedSalaryFilter.replace(/[^\d]/g, ''));
-        if (job.salary < salaryFilterValue) isMatch = false;
-      }
+        // Filter by Type
+        if (selectedTypeFilter !== 'Απασχόληση Όλες' && job.type !== selectedTypeFilter) {
+          isMatch = false;
+        }
 
-      if (selectedLocation !== 'Περιοχές Όλες') {
-        if (job.location !== selectedLocation) isMatch = false;
-      }
+        // Filter by Experience
+        if (selectedExperienceFilter !== 'Εμπειρία Όλες') {
+          if (selectedExperienceFilter === '0-2 Έτη' && job.experience > 2) isMatch = false;
+          else if (selectedExperienceFilter === '2+ Έτη' && job.experience < 2) isMatch = false;
+          else if (selectedExperienceFilter === '8+ Έτη' && job.experience < 8) isMatch = false;
+        }
 
-      return isMatch;
-    });
+        // Filter by Salary
+        if (selectedSalaryFilter !== 'Μισθός Όλες') {
+          const salaryFilterValue = parseInt(selectedSalaryFilter.replace(/[^\d]/g, ''));
+          if (job.salary < salaryFilterValue) isMatch = false;
+        }
+
+        if (selectedLocation !== 'Περιοχές Όλες') {
+          if (job.location !== selectedLocation) isMatch = false;
+        }
+
+        return isMatch ? job : null; // Return job if it matches, otherwise return null
+      })
+    );
+
+    return filteredJobs.filter((job) => job !== null); // Remove null values
   };
 
-  //search
-  const [mysearchQuery, setMysearchQuery] = useState();
-  const [searchQuery, setSearchQuery] = useState();
 
   const searchJobs = useMemo(() => {
     const query = (searchQuery || '').toLowerCase();
@@ -158,34 +228,12 @@ export default function Epag_job_ad() {
     });
   }, [mysearchQuery, myjobs]);
 
-  const filteredJobs = filterJobs(searchJobs);
-  const myfilteredJobs = filterJobs(searchMyjobs);
-
-
-  //pagination for my jobs
-  const [mycurrentPage, setMyCurrentPage] = useState(1);
-  const myjobsPerPage = 4;
-  const mytotalPages = Math.ceil(myfilteredJobs.length / myjobsPerPage);
-
-  const myindexOfLastJob = mycurrentPage * myjobsPerPage;
-  const myindexOfFirstJob = myindexOfLastJob - myjobsPerPage;
-  const mycurrentJobs = myfilteredJobs.slice(myindexOfFirstJob, myindexOfLastJob);
-  const [myselectedJob, setMyselectedJob] = useState(null);
 
   // Handle page change
   const myhandleClick = (pageNumber) => {
     setMyCurrentPage(pageNumber);
   };
 
-  //pagination for others' jobs
-  const [currentPage, setCurrentPage] = useState(1);
-  const jobsPerPage = 4;
-  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
-  const [selectedJob, setSelectedJob] = useState(currentJobs[0]);
 
   // Handle page change
   const handleClick = (pageNumber) => {
@@ -235,14 +283,8 @@ export default function Epag_job_ad() {
   useEffect(() => {
     setCurrentPage(1);
     setMyCurrentPage(1);
-  }, [searchQuery, mysearchQuery]);
+  }, [searchQuery, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedTypeFilter, selectedSalaryFilter]);
 
-  useEffect(() => {
-    setMyselectedJob(null);
-    if (currentJobs.length > 0) {
-      setSelectedJob(currentJobs[0]);
-    }
-  }, [selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedSalaryFilter, selectedTypeFilter, searchQuery, mysearchQuery, jobs]);
 
   const handleDeleteClick = async (jobid) => {
     try {
@@ -257,9 +299,66 @@ export default function Epag_job_ad() {
   };
 
   useEffect(() => {
-    getJobs(user_info.email);
+    getJobs();
     getMyJobs(user_info.email);
-  }, []);
+  }, [user_info, selectedOption]);
+
+  useEffect(() => {
+    // Ensure that jobs and filters are applied only after data is loaded
+    const fetchFilteredJobs = async () => {
+      if (!isLoading && jobs.length > 0) {
+        const updatedFilteredJobs = await filterJobs(searchJobs); // Filter based on the latest job data
+        setTotalPages(Math.ceil(updatedFilteredJobs.length / jobsPerPage)); // Update the total pages for pagination
+
+        const indexOfLastJob = currentPage * jobsPerPage;
+        const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+        const jobsToDisplay = updatedFilteredJobs.slice(indexOfFirstJob, indexOfLastJob); // Paginate jobs
+
+        setCurrentJobs(jobsToDisplay); // Set the jobs to be displayed for the current page
+        setSelectedJob(jobsToDisplay[0] || null); // Safely set selected job or null if no jobs available
+      }
+    };
+    fetchFilteredJobs();
+  }, [
+    isLoading, jobs, searchQuery, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter,
+    selectedLocation, selectedTypeFilter, selectedSalaryFilter, currentPage
+  ]);
+
+  useEffect(() => {
+    // Ensure that jobs and filters are applied only after data is loaded
+    const fetchFilteredJobs = async () => {
+      if (!isMyLoading && myjobs.length > 0) {
+        const updatedFilteredJobs = filterJobs(searchMyjobs); // Filter based on the latest job data
+        setMytotalPages(Math.ceil(updatedFilteredJobs.length / myjobsPerPage)); // Update the total pages for pagination
+
+        const indexOfLastJob = mycurrentPage * myjobsPerPage;
+        const indexOfFirstJob = indexOfLastJob - myjobsPerPage;
+        const jobsToDisplay = updatedFilteredJobs.slice(indexOfFirstJob, indexOfLastJob); // Paginate jobs
+
+        setMycurrentJobs(jobsToDisplay); // Set the jobs to be displayed for the current page
+        setMyselectedJob(null); // Safely set selected job or null if no jobs available
+      }
+    };
+    fetchFilteredJobs();
+  }, [
+    isMyLoading, myjobs, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter,
+    selectedLocation, selectedTypeFilter, selectedSalaryFilter, mycurrentPage
+  ]);
+
+  // Ensure selectedJob is updated properly when currentJobs changes
+  useEffect(() => {
+    if (currentJobs.length > 0) {
+      setSelectedJob(currentJobs[0] || null); // Guard against undefined job, select the first available job
+    }
+  }, [currentJobs]);
+
+  if (isLoading && (selectedOption === 'Αγγελίες άλλων')) {
+    return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
+  }
+
+  if (isMyLoading && (selectedOption === 'Οι αγγελίες μου')) {
+    return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
+  }
 
   return (
     <div>
@@ -281,7 +380,7 @@ export default function Epag_job_ad() {
         <div className="job-options">
           <Dropdown options={['Οι αγγελίες μου', 'Αγγελίες άλλων']} onOptionSelect={handleOptionSelect} />
           {(selectedOption === 'Αγγελίες άλλων') &&
-            <Dropdown options={['Από Όλους τους Χρήστες', 'Συνδεδεμένους', 'Μη Συνδεδεμένους']} />
+            <Dropdown options={['Από Όλους τους Χρήστες', 'Συνδεδεμένους', 'Μη Συνδεδεμένους']} onOptionSelect={handleUserFilterChange} />
           }
 
           <Dropdown options={locations} onOptionSelect={handleLocationSelect} />
@@ -457,19 +556,19 @@ export default function Epag_job_ad() {
                 )}
               </div>
               <div className="jobs-right-section">
-              {currentJobs.length > 0 && (
-                <Job
-                  id={selectedJob.id}
-                  title={selectedJob.title}
-                  company={selectedJob.company}
-                  location={selectedJob.location}
-                  publish_date={selectedJob.publish_date}
-                  type={selectedJob.type}
-                  profession={selectedJob.profession}
-                  experience={selectedJob.experience}
-                  salary={selectedJob.salary}
-                  detail={selectedJob.details}
-                />)}
+                {currentJobs.length > 0 && (
+                  <Job
+                    id={selectedJob.id}
+                    title={selectedJob.title}
+                    company={selectedJob.company}
+                    location={selectedJob.location}
+                    publish_date={format(selectedJob.publish_date, 'yyyy-MM-dd')}
+                    type={selectedJob.type}
+                    profession={selectedJob.profession}
+                    experience={selectedJob.experience}
+                    salary={selectedJob.salary}
+                    detail={selectedJob.details}
+                  />)}
               </div>
             </div>
           }

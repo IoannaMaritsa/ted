@@ -629,6 +629,17 @@ app.get('/skills/:userId', async (req, res) => {
     }
 });
 
+// Route to get all skills
+app.get('/api/skills', async (req, res) => {
+    try {
+        const skills = await skillsModel.getAllSkills(); // Call your skills function
+        res.status(200).json(skills); // Send the skills as JSON
+    } catch (error) {
+        console.error('Error fetching skills:', error);
+        res.status(500).json({ error: 'Failed to fetch skills' });
+    }
+});
+
 // ---------- Comment ROUTES -----------
 // Route to add a comment
 app.post('/comments', async (req, res) => {

@@ -494,6 +494,17 @@ export const getAllSkillsForUser = async (userId) => {
     }
 };
 
+//Function to get all the skills
+export const getAllSkills = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/api/skills`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching skills:', error);
+        throw error;
+    }
+};
+
 // Function to add a comment
 export const addComment = async (articleId, authorEmail, text) => {
     try {
