@@ -3,7 +3,10 @@ const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const https = require('https');
+const http = require('http');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
 
 const usersModel = require('./models/users'); // Adjust the path as necessary
 const articlesModel = require('./models/articles');
@@ -22,6 +25,12 @@ const privacyModel = require('./models/privacy');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+const options = {
+    key: fs.readFileSync('./certificates/localhost-key.pem'),
+    cert: fs.readFileSync('./certificates/localhost-cert.pem')
+  };
+
+
 // Middleware to parse JSON
 app.use(express.json());
 app.use(cors());
@@ -33,7 +42,7 @@ const upload = multer({ storage });
 
 // Enable CORS with specific configuration
 app.use(cors({
-    origin: ['http://localhost:5001', 'http://localhost:3000'], // Replace with your actual domains
+    origin: ['https://localhost', 'https://localhost:3000'], // Replace with your actual domains
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -896,7 +905,18 @@ app.put('/api/users/privacy', async (req, res) => {
 });
 
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+  });
+
+
+app.use(express.urlencoded({ extended: true }));
+
+//   http.createServer(app).listen(5001, () => {
+//     console.log(`HTTP server running on port ${5001}`);
+// });
+
+// Create HTTPS server
+https.createServer(options, app).listen(443, () => {
+    console.log('HTTPS server running on port 443');
 });
