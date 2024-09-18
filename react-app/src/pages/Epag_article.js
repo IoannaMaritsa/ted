@@ -197,8 +197,8 @@ const Epag_article = () => {
                                     );
                                 } else if (type.startsWith('video/')) {
                                     return (
-                                        <div key={index}>
-                                            <video width="500" controls>
+                                        <div className="flex-article"key={index}>
+                                            <video width="500" controls className='attachment-image'>
                                                 <source src={getImageUrl(url, 'attachments')} type={type} />
                                                 Your browser does not support the video tag.
                                             </video>
