@@ -21,6 +21,7 @@ const jobsModel = require('./models/jobs');
 const submissionsModel = require('./models/submissions');
 const messagesModel = require('./models/messages');
 const privacyModel = require('./models/privacy');
+const jobViewsModel = require('./models/job_views');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -904,6 +905,40 @@ app.put('/api/users/privacy', async (req, res) => {
     }
 });
 
+// ---------- JOB VIEWS ROUTES -----------
+//add a view for a job by a user
+app.post('/job-views', async (req, res) => {
+    const { userEmail, jobId } = req.body;
+
+    if (!userEmail || !jobId) {
+        return res.status(400).json({ error: 'User email and job ID are required' });
+    }
+
+    try {
+        await jobViewsModel.addViewtoJob(userEmail, jobId);
+        res.status(200).json({ message: 'View added successfully' });
+    } catch (error) {
+        console.error('Error adding view:', error);
+        res.status(500).json({ error: 'Error adding view' });
+    }
+});
+
+//get all the views for a specific user
+app.get('/job-views', async (req, res) => {
+    const { userEmail } = req.params;
+
+    if (!userEmail) {
+        return res.status(400).json({ error: 'User email is required' });
+    }
+
+    try {
+        const views = await jobViewsModel.getJobViewsByUser(userEmail);
+        res.status(200).json(views);
+    } catch (error) {
+        console.error('Error fetching job views:', error);
+        res.status(500).json({ error: 'Error fetching job views' });
+    }
+});
 
 app.get('/', (req, res) => {
     res.send('Hello, World!');

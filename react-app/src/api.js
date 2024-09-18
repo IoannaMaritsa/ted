@@ -747,3 +747,34 @@ export const updateEmail = async (email, newemail) => {
         throw err;
     }
 };
+
+// Function to add a view to a job
+export const addViewToJob = async (userEmail, jobId) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/job-views`, {
+            userEmail,
+            jobId,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Error adding view to job:', error);
+        throw error;
+    }
+};
+
+// Function to get job views for a specific user
+export const getJobViewsByUser = async (userEmail) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/job-views`, {
+            params: {
+                userEmail,
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching job views for user:', error);
+        throw error;
+    }
+};

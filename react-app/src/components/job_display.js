@@ -1,7 +1,7 @@
 import React from 'react';
 import './job_display.css';
 import { useState , useEffect } from 'react';
-import { addSubmission, getSubmissionsForJob } from '../api';
+import { addSubmission, getSubmissionsForJob , addViewToJob} from '../api';
 import { useAppContext } from "../context/appContext";
 
 const Job = ({ id, title, company, location, publish_date, type, profession, experience, salary, detail }) => {
@@ -10,9 +10,9 @@ const Job = ({ id, title, company, location, publish_date, type, profession, exp
     const [submissions, setSubmissions] = useState([]);
     const [submitted, setSubmitted] = useState(false);
 
-    const getSubmissions = async (articleId) => {
+    const getSubmissions = async (jobId) => {
         try {
-            const subs = await getSubmissionsForJob(articleId);
+            const subs = await getSubmissionsForJob(jobId);
             if (subs.success)
                 setSubmissions(subs.data)
 
@@ -41,8 +41,11 @@ const Job = ({ id, title, company, location, publish_date, type, profession, exp
     }
 
     useEffect(() => {
+        addViewToJob(myuser.email, id);
         getSubmissions(id);
     }, [id]);
+
+    
 
     return (
         <div className="black-frame">
