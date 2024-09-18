@@ -1,22 +1,25 @@
-
 /*Privacy popup*/
 .privacy-modal {
-    position: fixed; /* Fixed position to cover the entire viewport */
+    position: fixed;
+    /* Fixed position to cover the entire viewport */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    background: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Ensure it appears above other content */
+    z-index: 1000;
+    /* Ensure it appears above other content */
 }
 
 
 /* Styles for the modal content */
 .privacy-modal-content {
-    background: #fff; /* White background for the modal */
+    background: #fff;
+    /* White background for the modal */
     border-radius: 8px;
     width: 80%;
     height: 530px;
@@ -32,7 +35,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ddd; /* Optional border below header */
+    border-bottom: 1px solid #ddd;
+    /* Optional border below header */
     padding-bottom: 10px;
 }
 
@@ -57,34 +61,47 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 30px 0; /* Vertical padding for spacing between rows */
-    border-bottom: 1px solid var(--border-color); /* Light bottom border for each row */
+    padding: 30px 0;
+    /* Vertical padding for spacing between rows */
+    border-bottom: 1px solid var(--border-color);
+    /* Light bottom border for each row */
 }
 
 .privacy-row2 {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 30px 0; /* Vertical padding for spacing between rows */
-  
+    padding: 30px 0;
+    /* Vertical padding for spacing between rows */
+
 }
 
 .icon-circle {
-    width: 65px; /* Width and height should be equal for a perfect circle */
-    height: 65px; /* Same as width */
-    background-color: #f0f0f0; /* Grey background color */
-    border-radius: 50%; /* Makes the container a circle */
-    display: flex; /* Flexbox for centering */
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
-    margin-right: 20px; /* Space between icon and text */
+    width: 65px;
+    /* Width and height should be equal for a perfect circle */
+    height: 65px;
+    /* Same as width */
+    background-color: #f0f0f0;
+    /* Grey background color */
+    border-radius: 50%;
+    /* Makes the container a circle */
+    display: flex;
+    /* Flexbox for centering */
+    align-items: center;
+    /* Center vertically */
+    justify-content: center;
+    /* Center horizontally */
+    margin-right: 20px;
+    /* Space between icon and text */
     margin-left: 50px;
 }
 
 .privacy-row-icon {
-    width: 30px; /* Width for the icons */
-    height: 30px; /* Height for the icons */
- 
+    width: 30px;
+    /* Width for the icons */
+    height: 30px;
+    /* Height for the icons */
+
 }
 
 
@@ -99,16 +116,20 @@
 }
 
 .privacy-text-title {
-    font-weight: bold; /* Bolder text for title */
-    margin-bottom: 4px; /* Space between title and subtitle */
+    font-weight: bold;
+    /* Bolder text for title */
+    margin-bottom: 4px;
+    /* Space between title and subtitle */
 }
 
 .privacy-text-subtitle {
-    color: #666; /* Slightly lighter color for subtitle */
+    color: #666;
+    /* Slightly lighter color for subtitle */
 }
 
 .privacy-row-radio {
-    margin-left: 250px; /* Align radio button to the right */
+    margin-left: 250px;
+    /* Align radio button to the right */
     cursor: pointer;
     transform: scale(1.5);
     width: 50px;
@@ -140,7 +161,7 @@
     transition: 0.3s ease;
 }
 
-.privacy-modal-button:hover{
+.privacy-modal-button:hover {
     background-color: white;
     color: var(--button-yellow);
     cursor: pointer;
@@ -162,7 +183,8 @@
 }
 
 .add-work-experience-modal-content {
-    background: #fff; /* White background for the modal */
+    background: #fff;
+    /* White background for the modal */
     border-radius: 8px;
     width: 80%;
     height: 500px;
@@ -173,7 +195,8 @@
 }
 
 .add-work-experience-modal-content4 {
-    background: #fff; /* White background for the modal */
+    background: #fff;
+    /* White background for the modal */
     border-radius: 8px;
     width: 80%;
     height: 700px;
@@ -185,7 +208,8 @@
 }
 
 .add-work-experience-modal-content5 {
-    background: #fff; /* White background for the modal */
+    background: #fff;
+    /* White background for the modal */
     border-radius: 8px;
     width: 80%;
     height: 550px;
@@ -196,7 +220,8 @@
 }
 
 .add-work-experience-modal-content6 {
-    background: #fff; /* White background for the modal */
+    background: #fff;
+    /* White background for the modal */
     border-radius: 8px;
     width: 80%;
     height: 380px;
@@ -211,7 +236,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ddd; /* Optional border below header */
+    border-bottom: 1px solid #ddd;
+    /* Optional border below header */
     padding-bottom: 10px;
 }
 
@@ -235,7 +261,7 @@
     padding: 20px;
     justify-content: center;
     align-items: center;
-    
+
 }
 
 .form-group2 {
@@ -257,7 +283,7 @@
 
 
 
-.form-group2 input{
+.form-group2 input {
     flex-grow: 1;
     width: 430px;
     padding: 7px;
@@ -272,10 +298,14 @@
 }
 
 .form-group2 input::placeholder {
-    color: #6E6E6E; /* Placeholder color */
-    font-size: 14px; /* Font size of placeholder text */
-    opacity: 1; /* Make sure the placeholder is fully visible */
+    color: #6E6E6E;
+    /* Placeholder color */
+    font-size: 14px;
+    /* Font size of placeholder text */
+    opacity: 1;
+    /* Make sure the placeholder is fully visible */
 }
+
 .form-group2 input:focus {
     background-color: white;
     border-color: #333;
@@ -307,7 +337,7 @@
 .form-group-label span {
     font-weight: bold;
     width: 80%;
-    color:#6E6E6E;
+    color: #6E6E6E;
     font-size: 14px;
     text-align: left;
 }
@@ -342,7 +372,7 @@
     transition: 0.3s ease;
 }
 
-.add-work-experience-modal-footer button:hover{
+.add-work-experience-modal-footer button:hover {
     background-color: white;
     color: var(--button-yellow);
     cursor: pointer;
@@ -350,7 +380,8 @@
 
 
 .add-work-experience-modal-content2 {
-    background: #fff; /* White background for the modal */
+    background: #fff;
+    /* White background for the modal */
     border-radius: 8px;
     width: 80%;
     height: 570px;
@@ -360,7 +391,8 @@
 }
 
 .add-work-experience-modal-content3 {
-    background: #fff; /* White background for the modal */
+    background: #fff;
+    /* White background for the modal */
     border-radius: 8px;
     width: 80%;
     height: 300px;
@@ -376,7 +408,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 80%;;
+    width: 80%;
+    ;
     gap: 150px;
     margin-top: 10px;
     border: 1px solid var(--border-color);
@@ -444,4 +477,71 @@
     align-items: center;
     padding: 30px;
     border: none;
+}
+
+.add-skill-modal-content3 {
+    background: #fff;
+    /* White background for the modal */
+    border-radius: 8px;
+    width: 80%;
+    height: 80vh;
+    max-width: 800px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow-x: hidden;
+}
+
+.skills-container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Skill grid styling */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.skill-box {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.skill-box:hover {
+    background-color: var(--button-yellow);
+    color: white;
+}
+
+/* Chosen skills container styling */
+.chosen-skills-container {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.chosen-skills-head {
+    display: flex;
+    align-items: center;
+    height: fit-content;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.chosen-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.chosen-skill-box {
+    background-color: #e0e0e0;
+    border: 1px solid #bbb;
+    padding: 8px;
+    text-align: center;
+    border-radius: 5px;
 }

@@ -10,22 +10,8 @@ async function addSkillToUser(userId, skillName) {
             .eq('skill_name', skillName)
             .single();
 
-        let skillId;
-        if (skillData) {
-            // Skill exists, get its ID
-            skillId = skillData.id;
-        } else {
-            // Skill does not exist, insert it
-            const { data: insertSkillData, error: insertSkillError } = await supabase
-                .from('skills')
-                .insert({ skill_name: skillName })
-                .select('id')
-                .single();
-
-            if (insertSkillError) throw insertSkillError;
-            skillId = insertSkillData.id;
-        }
-
+        const skillId = skillData.id;
+        
         // Add the skill to the user using upsert to handle conflicts
         const { error: userSkillError } = await supabase
             .from('user_skills')
@@ -99,8 +85,28 @@ const getAllSkillsForUser = async (userId) => {
         throw error;
     }
 }
+
+// Function to get all the skills
+const getAllSkills = async () => {
+    try {
+        const { data: skills, error: skillError } = await supabase
+            .from('skills')
+            .select('skill_name')
+
+        if (skillError) throw skillError;
+
+        console.log(`Got all the skills`);
+
+        return skills;
+    } catch (error) {
+        console.error('Error getting skills', error);
+        throw error; // Optional: re-throw error for further handling
+    }
+}
+
 module.exports = {
     addSkillToUser,
     deleteSkillFromUser,
-    getAllSkillsForUser
+    getAllSkillsForUser,
+    getAllSkills
 };

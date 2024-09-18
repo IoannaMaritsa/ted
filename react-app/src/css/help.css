@@ -23,6 +23,7 @@
   
   .toggle-button.clicked {
     background-color: #f7ce6d;
+    color: #ffffff;
   }
 
   .frame {
@@ -100,6 +101,9 @@
 }
 
 .help-main-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
   min-height: 500px;
   padding: 30px 20% ;
   background-color: var(--background-color);
@@ -111,9 +115,40 @@
   border: 1px solid var(--border-color);
   background-color: #fff;
   border-radius: 5px;
+  min-width: 50vw;
+  max-width: 80vw;
 }
 
 .help-secondary-section {
+  display: flex;
   padding: 30px 50px ;
   background-color: var(--background-color);
+}
+
+.about-text-section {
+  flex: 1;
+  padding: 20px;
+  color: var(--text-dark-grey);
+}
+
+.about-text-section h1 {
+  font-size: 34px;
+  font-weight: 400;
+}
+
+.about-text-section p {
+  font-size: 17px;
+  font-weight: 300;
+}
+
+.about-image-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-back-icon-container {
+  flex:1;
+  margin-right: 20px;
 }
