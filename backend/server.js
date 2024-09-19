@@ -1,3 +1,6 @@
+if (typeof globalThis === 'undefined') {
+    global.globalThis = global;
+  }
 require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
@@ -24,7 +27,6 @@ const privacyModel = require('./models/privacy');
 const jobViewsModel = require('./models/job_views');
 
 const app = express();
-const PORT = process.env.PORT || 5001;
 
 const options = {
     key: fs.readFileSync('./certificates/localhost-key.pem'),
