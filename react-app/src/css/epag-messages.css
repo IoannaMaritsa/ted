@@ -3,12 +3,17 @@
     display: flex;
     background-color: var(--background-color);
     flex-direction: column;
-    align-items: center; /* Center horizontally */   
-    height: 100vh; /* Full viewport height */
-    width: 100%; /* Full viewport width */
-    padding: 20px; /* Padding around the container */
+    align-items: center;
+    /* Center horizontally */
+    height: 100vh;
+    /* Full viewport height */
+    width: 100%;
+    /* Full viewport width */
+    padding: 20px;
+    /* Padding around the container */
     padding-top: 20px;
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    box-sizing: border-box;
+    /* Include padding and border in element's total width and height */
 }
 
 .mess-header {
@@ -16,8 +21,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-   
-    padding: 0 20px; /* Padding for the header */
+
+    padding: 0 20px;
+    /* Padding for the header */
     box-sizing: border-box;
 }
 
@@ -38,33 +44,44 @@
     /* Adjust color as needed */
     margin-right: 500px;
 }
+
 .main-content-mess {
     margin-top: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 950px; /* Fixed width for the main content */
-    height: 500px; /* Fixed height for the main content */
-    background-color: #f9f9f9; /* Background color for the main content */
-    border: 1px solid var(--border-color); /* Light border for the container */
-    border-radius: 8px; /* Rounded corners */
+    width: 950px;
+    /* Fixed width for the main content */
+    height: 500px;
+    /* Fixed height for the main content */
+    background-color: #f9f9f9;
+    /* Background color for the main content */
+    border: 1px solid var(--border-color);
+    /* Light border for the container */
+    border-radius: 8px;
+    /* Rounded corners */
 }
 
 .message-container {
-    width: 100%; /* Full width of the main content */
-    height: 100%; /* Full height of the main content */
+    width: 100%;
+    /* Full width of the main content */
+    height: 100%;
+    /* Full height of the main content */
     flex: 1;
     background-color: #fff;
     border-left: 1px solid var(--border-color);
     border-top-right-radius: 8px;
-    position: relative; /* For absolute positioning of the footer */
+    position: relative;
+    /* For absolute positioning of the footer */
     border-bottom-right-radius: 8px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Scroll only this area */
-    flex-grow: 1; /* Allow this area to grow and shrink as needed */
-    box-sizing: border-box; /* Include padding in width calculations */
-   
+    overflow-y: auto;
+    /* Scroll only this area */
+    flex-grow: 1;
+    /* Allow this area to grow and shrink as needed */
+    box-sizing: border-box;
+    /* Include padding in width calculations */
 }
 
 .sidebar {
@@ -73,7 +90,8 @@
     background-color: #f8f8f8;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
-    overflow-y: auto; /* Allow scrolling if content overflows */
+    overflow-y: auto;
+    /* Allow scrolling if content overflows */
 }
 
 .contact {
@@ -83,11 +101,10 @@
     align-items: center;
     padding: 20px;
     padding-left: 15px;
-    position: relative; /* For absolute positioning of name */
+    position: relative;
+    /* For absolute positioning of name */
     cursor: pointer;
-   
 }
-
 
 .contact2 {
     display: flex;
@@ -96,14 +113,14 @@
     align-items: center;
     padding: 0px;
     padding-left: 15px;
-    position: relative; /* For absolute positioning of name */
-   
+    position: relative;
+    /* For absolute positioning of name */
 }
 
 .contact:last-child {
-    border-bottom: none; /* Remove border from the last contact */
+    border-bottom: none;
+    /* Remove border from the last contact */
 }
-
 
 .contact-pic {
     width: 70px;
@@ -119,16 +136,21 @@
     font-family: var(--font-basic);
     font-weight: 700;
     text-align: left;
-    margin: 0; /* Remove margin to align text close to image */
-    position: absolute; /* Position the text absolutely */
-    left: 110px; /* Adjust to align text starting point */
-    top: 35%; /* Center text vertically in the contact container */
-    transform: translateY(-50%); /* Center text vertically in the container */
-  
+    margin: 0;
+    /* Remove margin to align text close to image */
+    position: absolute;
+    /* Position the text absolutely */
+    left: 110px;
+    /* Adjust to align text starting point */
+    top: 35%;
+    /* Center text vertically in the contact container */
+    transform: translateY(-50%);
+    /* Center text vertically in the container */
 }
 
 .contact.selected {
-    background-color: #fff4dc; /* Light yellow background for selected contact */
+    background-color: #fff4dc;
+    /* Light yellow background for selected contact */
 }
 
 .last-message {
@@ -139,29 +161,33 @@
     overflow: hidden;
     text-overflow: ellipsis;
     margin-top: 20px;
-    text-align: left; /* Align text to the left */
-    margin-left: 15px; /* Adjust margin to position relative to other elements */
-    flex-grow: 1; /* Allow last-message to grow and take available space */
+    text-align: left;
+    /* Align text to the left */
+    margin-left: 15px;
+    /* Adjust margin to position relative to other elements */
+    flex-grow: 1;
+    /* Allow last-message to grow and take available space */
 }
-
 
 .contact-time {
     font-size: 12px;
     color: #999;
-    position: absolute; /* Position relative to the contact */
-    right: 10px; /* Align to the right of the contact */
+    position: absolute;
+    /* Position relative to the contact */
+    right: 10px;
+    /* Align to the right of the contact */
     top: 23px;
 }
 
 .contact-read {
-    border-left: 4px solid transparent; /* No border for read messages */
+    border-left: 4px solid transparent;
+    /* No border for read messages */
 }
 
 .contact-unread {
-    border-left: 4px solid #d3d3d3; /* Thin grey border for unread messages */
+    border-left: 4px solid #d3d3d3;
+    /* Thin grey border for unread messages */
 }
-
-
 
 .message-header {
     display: flex;
@@ -187,17 +213,21 @@
 }
 
 .messages {
-    flex: 1; /* Takes up available space */
+    flex: 1;
+    /* Takes up available space */
     padding: 10px;
-    overflow-y: auto; /* Scroll if content overflows */
+    overflow-y: auto;
+    /* Scroll if content overflows */
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box; /* Include padding in height calculation */
+    box-sizing: border-box;
+    /* Include padding in height calculation */
 }
 
 .message-footer {
-    width: 100%; /* Full width of the container */
+    width: 100%;
+    /* Full width of the container */
     padding: 10px;
     background-color: #fafafa;
     display: flex;
@@ -205,9 +235,9 @@
     justify-content: center;
     border-bottom-right-radius: 8px;
     align-items: center;
-    box-sizing: border-box; /* Ensure padding is included in width */
+    box-sizing: border-box;
+    /* Ensure padding is included in width */
 }
-
 
 .message-input {
     flex-grow: 1;
@@ -248,7 +278,8 @@
 
 .message.user {
     justify-content: flex-end;
-    align-self: flex-end; /* Align user's messages to the right */
+    align-self: flex-end;
+    /* Align user's messages to the right */
     text-align: right;
 }
 
@@ -265,9 +296,8 @@
     font-family: var(--font-basic);
     border-radius: 15px;
     background-color: #ffffff;
-    text-align: left; 
+    text-align: left;
 }
-
 
 .message.user .message-content {
     background-color: #646464;
@@ -278,7 +308,6 @@
 
 .message.contact2 .message-content {
     background-color: #f3f3f3;
-
 }
 
 .timestamp {
@@ -287,19 +316,20 @@
     color: #999;
     margin-bottom: 2px;
 }
+
 .message.user .timestamp {
     color: rgb(235, 235, 235);
 }
 
-
-
-
 .message {
-    max-width: 80%; /* Set a maximum width for the message bubble */
+    max-width: 80%;
+    /* Set a maximum width for the message bubble */
     margin: 5px 0;
     border-radius: 15px;
-    word-wrap: break-word; /* Ensure words break and wrap */
-    white-space: normal; /* Allow normal text wrapping */
+    word-wrap: break-word;
+    /* Ensure words break and wrap */
+    white-space: normal;
+    /* Allow normal text wrapping */
 }
 
 .no-contacts-message {
@@ -309,5 +339,4 @@
     margin: auto;
     font-size: 18px;
     margin-top: 40px;
-
 }
