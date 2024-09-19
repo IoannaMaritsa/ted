@@ -1,9 +1,10 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from "../context/appContext";
 import { default_locations } from "../context/locations";
 import { getSubmissionsForJob } from '../api';
+import { getAllSkills, getAllSkillsForJob } from '../api';
 import { format } from 'date-fns';
 import './job_display.css';
 
@@ -15,6 +16,7 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
     const [profession, setProfession] = useState(init_profession);
     const [experience, setExperience] = useState(init_experience);
     const [salary, setSalary] = useState(init_salary);
+    const [chosen, setChosen] = useState([]);
     const [detail, setDetail] = useState(init_detail);
 
     const [submissions, setSubmissions] = useState([]);
@@ -53,17 +55,14 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
     const handleSave = (e) => {
         e.preventDefault();
 
-        const today = new Date();
-        const day = today.getDate();
-        const month = today.getMonth() + 1;
-        const year = today.getFullYear();
-        const formattedDate = `${year}-${month}-${day}`;
+        const now = new Date();
+        const timestamp = now.toISOString();
 
         const newjob = {
             title: title,
             company: company,
             location: location,
-            publish_date: formattedDate,
+            publish_date: timestamp,
             type: type,
             profession: profession,
             experience: experience,
@@ -71,9 +70,81 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
             details: detail,
         }
 
-        onSave(id, newjob);
+        onSave(id, newjob, chosen);
 
     };
+
+    //skills
+
+    const [skills, setSkills] = useState([]);
+
+    const skillsPerPage = 12; // 3 rows * 4 columns
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const searchSkills = useMemo(() => {
+        const query = (searchQuery || '').toLowerCase();
+        return skills.filter(skill => {
+            const name = (skill.skill_name || '').toLowerCase();
+            return name.includes(query);
+        });
+    }, [searchQuery, skills]);
+
+    const indexOfLastSkill = currentPage * skillsPerPage;
+    const indexOfFirstSkill = indexOfLastSkill - skillsPerPage;
+    const currentSkills = searchSkills.slice(indexOfFirstSkill, indexOfLastSkill);
+
+    const totalPages = Math.ceil(searchSkills.length / skillsPerPage);
+
+
+    // Handle page change
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const handleRemove = () => {
+        setChosen([]);
+    };
+
+    // Add selected skill to chosen list
+    const AddSkill = (skill) => {
+        // Check if skill is already chosen
+        if (!chosen.includes(skill)) {
+            setChosen((prevChosen) => [...prevChosen, skill]);
+        }
+    };
+
+    const getSkills = async () => {
+        try {
+            const response = await getAllSkills();
+
+            setSkills(response);
+        } catch (error) {
+            console.error('Error getting skills:', error);
+        }
+    };
+
+    const getSkillsforjob = async () => {
+        try {
+            const response = await getAllSkillsForJob(id);
+
+            const currentSkills = new Set(chosen);
+
+            for (const skill of response) {
+                currentSkills.add(skill.skill_name);
+            }
+
+            setChosen(Array.from(currentSkills));
+        } catch (error) {
+            console.error('Error getting skills:', error);
+        }
+    };
+
+    useEffect(() => {
+        getSkills();
+        getSkillsforjob();
+    }, []);
 
     useEffect(() => {
         if (type === 'Εθελοντική') {
@@ -101,6 +172,8 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
     useEffect(() => {
 
     }, [otherProfile]);
+
+    console.log("chosen", chosen);
 
     return (
         <div className="black-frame">
@@ -181,6 +254,63 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
                         required
                     />
                 </div>
+                <div className="add-work-experience-modal-body">
+                    <div className='job-input-group-header'>
+                        <h3>Προαπαιτούμενες δεξιότητες</h3>
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                placeholder="Αναζήτηση Δεξιότητας"
+                                className="search-input"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <img src="/search.png" alt="Search Icon" className="search-icon"></img>
+                        </div>
+                    </div>
+                    <div className="skills-container">
+                        <div className="skills-grid">
+                            {currentSkills.map((skill, index) => (
+                                <div key={index} className="skill-box" style={{ color: 'black' }} onClick={() => AddSkill(skill.skill_name)}>
+                                    {skill.skill_name}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="pagination" style={{ color: 'black' }}>
+                            <button type="button" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                                Προηγούμενο
+                            </button>
+                            <span>Σελίδα {currentPage} από {totalPages}</span>
+                            <button type="button" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                                Επόμενο
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Display chosen skills */}
+                    <div className="chosen-skills-container">
+
+                        <div className='chosen-skills-head'>
+                            <h3>Επιλεγμένες Δεξιότητες</h3>
+                            <img src='/reset.png' className='icon' onClick={handleRemove} style={{ cursor: 'pointer' }} />
+                        </div>
+                        {chosen.length > 0 ? (
+                            <div className="chosen-skills-grid">
+                                {chosen.map((skill, index) => (
+                                    <div key={index} className="chosen-skill-box" style={{ color: 'black' }}>
+                                        {skill}
+                                    </div>
+                                ))}
+                            </div>
+
+                        ) : (
+                            <p>
+                                Δεν έχουν επιλεγεί ακόμα δεξιότητες
+                            </p>
+                        )}
+                    </div>
+                </div>
+                <br></br>
                 <div className="job-input-group">
                     <label htmlFor="detail">Επιπλέον Σχόλια</label>
                     <textarea

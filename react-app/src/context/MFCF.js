@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { getAllContactsByUserEmail, getJobViewsByUser } from "../api";
 
-const FindJobRecommendations = ({ user, jobs, onGetRecommendations }) => {
+const MatrixFactorization = ({ user, jobs }) => {
     const [UJMatrix, setUJMatrix] = useState([]);
     const [userMatrix, setUserMatrix] = useState([]);
     const [jobMatrix, setJobMatrix] = useState([]);
+    const [recommendations, setRecommendations] = useState([]);
 
     const createMatrix = async () => {
         try {
@@ -81,18 +82,18 @@ const FindJobRecommendations = ({ user, jobs, onGetRecommendations }) => {
                 const unseenJobs = jobs.filter(job => !userSeenJobs.includes(job.id));
 
                 // Υπολογισμός προβλέψεων με βάση το δίκτυο του χρήστη
-                const recommendations = unseenJobs.map(job => {
+                const recommend = unseenJobs.map(job => {
                     const userNetworkVector = getUserNetworkVector();
                     const jobVector = jobMatrix[job.id];
                     const predictedScore = dotProduct(userNetworkVector, jobVector);
                     return { job, predictedScore };
                 });
 
-                recommendations.sort((a, b) => b.predictedScore - a.predictedScore);
-                onGetRecommendations(recommendations);
+                recommend.sort((a, b) => b.predictedScore - a.predictedScore);
+                setRecommendations(recommend);
             });
         }
-    }, [UJMatrix, userMatrix, jobMatrix, jobs, onGetRecommendations]);
+    }, [UJMatrix, userMatrix, jobMatrix, jobs]);
 
     function dotProduct(vec1, vec2) {
         return vec1.reduce((sum, value, index) => sum + value * vec2[index], 0);
@@ -112,7 +113,7 @@ const FindJobRecommendations = ({ user, jobs, onGetRecommendations }) => {
         }
     }
 
-    return null; // This component doesn't render anything directly
+    return recommendations;
 };
 
-export default FindJobRecommendations;
+export default MatrixFactorization;

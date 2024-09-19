@@ -53,3 +53,12 @@
     background-color: var(--button-hover-yellow);
     border: 2px solid var(--button-hover-yellow);
   }
+
+  .job-input-group-header {
+    color: #fff;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 10px;
+  }

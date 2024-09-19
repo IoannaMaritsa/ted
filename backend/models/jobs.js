@@ -1,25 +1,53 @@
 const supabase = require('../supabaseClient');
 
-const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail) => {
+const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills) => {
     try {
         const { data, error } = await supabase
             .from('jobs')
-            .insert([{ 
-                title,  
-                company, 
-                location,  
+            .insert([{
+                title,
+                company,
+                location,
                 publish_date: publishDate,
-                type, 
-                profession, 
-                experience, 
-                salary, 
-                details ,
+                type,
+                profession,
+                experience,
+                salary,
+                details,
                 creator_email: creatorEmail
-            }]);
+            }])
+            .select();
 
         if (error) {
             throw error;
         }
+
+        const jobId = data[0].id;
+
+        for (const skill of skills) {
+
+            const { data: skillwithid } = await supabase
+                .from('skills')
+                .select('id')
+                .eq('skill_name', skill)
+                .single();
+
+            const skillId = skillwithid.id;
+
+            const { data: skilldata, error: skillerror } = await supabase
+                .from('job_skills')
+                .insert([{
+                    job_id: jobId,
+                    skill_id: skillId
+                }]);
+
+            if (skillerror) {
+                console.error(`Error adding skill ${skillId} to job ${jobId}:`, skillerror);
+                continue; // Skip this skill and continue with the rest
+            }
+            console.log(`Skill ${skilldata} added successfully to job with id`, jobId);
+        }
+
 
         console.log('Job added successfully:', data);
         return { success: true, job: data };

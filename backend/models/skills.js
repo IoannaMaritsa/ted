@@ -86,6 +86,119 @@ const getAllSkillsForUser = async (userId) => {
     }
 }
 
+// Function to get all skills for a job
+const getAllSkillsForJob = async (jobId) => {
+    try {
+        // Fetch skill IDs associated with the job
+        const { data: job_skills, error: jobSkillsError } = await supabase
+            .from('job_skills')
+            .select('skill_id')
+            .eq('job_id', jobId);
+
+        if (jobSkillsError) {
+            throw jobSkillsError;
+        }
+
+        // Extract skill IDs
+        const skillIds = job_skills.map(skill => skill.skill_id);
+
+        // Fetch skill names based on the skill IDs
+        const { data: skills, error: skillsError } = await supabase
+            .from('skills')
+            .select('*')
+            .in('id', skillIds); // Use .in to match multiple IDs
+
+        if (skillsError) {
+            throw skillsError;
+        }
+
+        return skills;
+
+    } catch (error) {
+        console.error('Error fetching skills for job', error);
+        throw error;
+    }
+}
+
+// Function to update the skills of a job
+const UpdateSkillsForJob = async (jobId, newskills) => {
+    try {
+        // Fetch current skill IDs associated with the job
+        const { data: job_skills, error: jobSkillsError } = await supabase
+            .from('job_skills')
+            .select('skill_id')
+            .eq('job_id', jobId);
+
+        if (jobSkillsError) {
+            throw jobSkillsError;
+        }
+
+        // Get current skill IDs in the job
+        const currentSkillIds = job_skills.map(skill => skill.skill_id);
+
+        // Store new skill IDs in a Set
+        const updatedSkillIds = new Set();
+
+        // Get the skill IDs for the new skill names
+        for (const skill of newskills) {
+            const { data: skillWithId, error: skillError } = await supabase
+                .from('skills')
+                .select('id')
+                .eq('skill_name', skill)
+                .single();
+
+            if (skillError) {
+                throw skillError;
+            }
+
+            updatedSkillIds.add(skillWithId.id);
+        }
+
+        // Determine which skills to remove (skills present in currentSkillIds but not in updatedSkillIds)
+        const skillsToRemove = currentSkillIds.filter(id => !updatedSkillIds.has(id));
+
+        // Determine which skills to add (skills present in updatedSkillIds but not in currentSkillIds)
+        const skillsToAdd = [...updatedSkillIds].filter(id => !currentSkillIds.includes(id));
+
+        // Remove the old skills
+        if (skillsToRemove.length > 0) {
+            const { error: removeError } = await supabase
+                .from('job_skills')
+                .delete()
+                .in('skill_id', skillsToRemove)
+                .eq('job_id', jobId);
+
+            if (removeError) {
+                throw removeError;
+            }
+            console.log(`Removed skills: ${skillsToRemove}`);
+        }
+
+        // Add the new skills
+        if (skillsToAdd.length > 0) {
+            const skillEntries = skillsToAdd.map(skillId => ({
+                job_id: jobId,
+                skill_id: skillId,
+            }));
+
+            const { error: addError } = await supabase
+                .from('job_skills')
+                .insert(skillEntries);
+
+            if (addError) {
+                throw addError;
+            }
+            console.log(`Added skills: ${skillsToAdd}`);
+        }
+
+        console.log('Skills updated successfully.');
+        return { success: true };
+    } catch (error) {
+        console.error('Error updating skills for job:', error);
+        return { success: false, message: 'Error updating skills' };
+    }
+};
+
 // Function to get all the skills
 const getAllSkills = async () => {
     try {
@@ -108,5 +221,7 @@ module.exports = {
     addSkillToUser,
     deleteSkillFromUser,
     getAllSkillsForUser,
+    getAllSkillsForJob,
+    UpdateSkillsForJob,
     getAllSkills
 };

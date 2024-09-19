@@ -494,6 +494,39 @@ export const getAllSkillsForUser = async (userId) => {
     }
 };
 
+// Function to get all skills for a specific job
+export const getAllSkillsForJob = async (jobId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/job_skills/${jobId}`);
+        console.log('Skills fetched successfully:', response.data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Server responded with an error:', error.response.data);
+        } else if (error.request) {
+            // No response received
+            console.error('No response received from server:', error.request);
+        } else {
+            // Error setting up request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error; // Rethrow to handle higher up if necessary
+    }
+};
+
+// Function to update the skills of a job
+export const updateJobSkills = async (jobId, skills) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/job/${jobId}/skills`, { skills } );
+
+        return response.data; // Return response data, success message, etc.
+    } catch (error) {
+        console.error('Error updating job skills:', error);
+        throw error; // Rethrow error for further handling if needed
+    }
+};
+
 //Function to get all the skills
 export const getAllSkills = async () => {
     try {
@@ -586,9 +619,9 @@ export const getAttachments = async (articleId) => {
 };
 
 //Add a new job
-export const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail) => {
+export const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/jobs`, { title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail });
+        const response = await axios.post(`${API_BASE_URL}/jobs`, { title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills });
         return response.data;
     } catch (error) {
         console.error('Error adding job:', error);

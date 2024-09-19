@@ -640,6 +640,45 @@ app.get('/skills/:userId', async (req, res) => {
     }
 });
 
+// Route to get all skills for a specific job
+app.get('/job_skills/:jobId', async (req, res) => {
+    const { jobId } = req.params;
+    console.log(`Fetching skills for id: ${jobId}`);
+    try {
+        const skills = await skillsModel.getAllSkillsForJob(jobId);
+        if (!skills || skills.length === 0) {
+            return res.status(404).json({ message: 'No skills found for job' }); // Ensure to return here
+        }
+        res.status(200).json(skills);
+    } catch (error) {
+        console.error('Error fetching skills:', error);
+        res.status(500).json({ message: 'Error fetching skills', error: error.message });
+    }
+});
+
+// Route to update job skills
+app.put('/job/:jobId/skills', async (req, res) => {
+    const { jobId } = req.params;
+    const { skills } = req.body;
+
+    if (!jobId || !skills || !Array.isArray(skills)) {
+        return res.status(400).json({ message: 'Invalid input. Ensure jobId and skills array are provided.' });
+    }
+
+    try {
+        const result = await skillsModel.UpdateSkillsForJob(jobId, skills);
+
+        if (result.success) {
+            res.status(200).json({ message: 'Skills updated successfully.' });
+        } else {
+            res.status(500).json({ message: result.message });
+        }
+    } catch (error) {
+        console.error('Error updating job skills:', error);
+        res.status(500).json({ message: 'Server error while updating job skills.' });
+    }
+});
+
 // Route to get all skills
 app.get('/api/skills', async (req, res) => {
     try {
@@ -749,10 +788,10 @@ app.get('/attachments/:articleId', async (req, res) => {
 // ---------- Job ROUTES -----------
 //Adding a job
 app.post('/jobs', async (req, res) => {
-    const { title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail } = req.body;
+    const { title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills } = req.body;
 
     try {
-        const job = await jobsModel.addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail);
+        const job = await jobsModel.addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills);
         if (!job.success) {
             return res.status(404).json({ message: 'failed adding job' });
         }
