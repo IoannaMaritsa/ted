@@ -22,6 +22,7 @@ const submissionsModel = require('./models/submissions');
 const messagesModel = require('./models/messages');
 const privacyModel = require('./models/privacy');
 const jobViewsModel = require('./models/job_views');
+const articlesViewsModel = require('./models/article_views');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -940,6 +941,42 @@ app.get('/job-views', async (req, res) => {
     }
 });
 
+// ---------- ARTICLE VIEWS ROUTES -----------
+//add a view for an article by a user
+app.post('/article-views', async (req, res) => {
+    const { userEmail, articleId } = req.body;
+
+    if (!userEmail || !articleId) {
+        return res.status(400).json({ error: 'User email and article ID are required' });
+    }
+
+    try {
+        await articlesViewsModel.addViewtoArticle(userEmail, articleId);
+        res.status(200).json({ message: 'View added successfully' });
+    } catch (error) {
+        console.error('Error adding view:', error);
+        res.status(500).json({ error: 'Error adding view' });
+    }
+});
+
+//get all the views for a specific user
+app.get('/article-views', async (req, res) => {
+    const { userEmail } = req.params;
+
+    if (!userEmail) {
+        return res.status(400).json({ error: 'User email is required' });
+    }
+
+    try {
+        const views = await jobViewsModel.getArticlesViewsByUser(userEmail);
+        res.status(200).json(views);
+    } catch (error) {
+        console.error('Error fetching article views:', error);
+        res.status(500).json({ error: 'Error fetching article views' });
+    }
+
+});
+
 app.get('/', (req, res) => {
     res.send('Hello, World!');
   });
@@ -947,9 +984,6 @@ app.get('/', (req, res) => {
 
 app.use(express.urlencoded({ extended: true }));
 
-//   http.createServer(app).listen(5001, () => {
-//     console.log(`HTTP server running on port ${5001}`);
-// });
 
 // Create HTTPS server
 https.createServer(options, app).listen(443, () => {

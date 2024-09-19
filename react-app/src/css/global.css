@@ -61,6 +61,7 @@
 .link:hover {
   text-decoration: underline;
   font-weight: 500;
+  cursor: pointer;
 }
 
 

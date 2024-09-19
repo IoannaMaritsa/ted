@@ -1,22 +1,28 @@
-import React from "react"
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import MainBottom from '../components/MainBottom';
+import React from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import MainBottom from "../components/MainBottom";
 import Breadcrumbs from "../components/Breadcrumbs";
-import Dropdown from '../components/dropdown';
-import Job_create from '../components/job_create';
-import Job from '../components/job_display';
-import MyJob from '../components/my_job_display';
-import '../css/Epag_job_ad.css';
+import Dropdown from "../components/dropdown";
+import Job_create from "../components/job_create";
+import Job from "../components/job_display";
+import MyJob from "../components/my_job_display";
+import "../css/Epag_job_ad.css";
 import { useAppContext } from "../context/appContext";
 import { default_locations } from "../context/locations";
-import { format } from 'date-fns';
-import { useState, useMemo, useEffect } from 'react';
-import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob, getAllUsers } from '../api';
+import { format } from "date-fns";
+import { useState, useMemo, useEffect } from "react";
+import {
+  getJobsOfUser,
+  getAllContactsByUserEmail,
+  updateJob,
+  addJob,
+  deleteJob,
+  getAllUsers,
+} from "../api";
 
 export default function Epag_job_ad() {
-
-  const locations = ['Περιοχές Όλες', ...default_locations];
+  const locations = ["Περιοχές Όλες", ...default_locations];
 
   //user
   const user_info = useAppContext().user;
@@ -29,16 +35,15 @@ export default function Epag_job_ad() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 4;
-  const [totalPages, setTotalPages] = useState('');
+  const [totalPages, setTotalPages] = useState("");
   const [currentJobs, setCurrentJobs] = useState([]); // Jobs to display currently
   const [selectedJob, setSelectedJob] = useState(null); // Job selected by user
 
   const [mycurrentPage, setMyCurrentPage] = useState(1);
   const myjobsPerPage = 4;
-  const [mytotalPages, setMytotalPages] = useState('');
+  const [mytotalPages, setMytotalPages] = useState("");
   const [mycurrentJobs, setMycurrentJobs] = useState([]); // Jobs to display currently
   const [myselectedJob, setMyselectedJob] = useState(null); // Job selected by user
-
 
   const [mysearchQuery, setMysearchQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -57,16 +62,19 @@ export default function Epag_job_ad() {
           const newjobs = await getJobsOfUser(user.email);
           if (newjobs.success) {
             // Only add jobs that aren't already in the Set
-            const uniqueJobs = newjobs.data.filter(job => {
+            const uniqueJobs = newjobs.data.filter((job) => {
               return job !== null && job.id && !jobsSet.has(job.id);
             });
 
             // Add job IDs to the Set after filtering nulls
-            uniqueJobs.forEach(job => jobsSet.add(job.id));
+            uniqueJobs.forEach((job) => jobsSet.add(job.id));
             fetchedJobs = [...fetchedJobs, ...uniqueJobs];
           }
         } catch (error) {
-          console.error(`Error getting job for user with email ${user.email}:`, error);
+          console.error(
+            `Error getting job for user with email ${user.email}:`,
+            error
+          );
         }
       }
 
@@ -74,23 +82,19 @@ export default function Epag_job_ad() {
       setJobs(fetchedJobs);
       setIsLoading(false);
     } catch (error) {
-      console.error('Error getting jobs:', error);
+      console.error("Error getting jobs:", error);
       setIsLoading(false);
     }
   };
 
   const getMyJobs = async (userEmail) => {
     try {
-
       const newjobs = await getJobsOfUser(userEmail);
       console.log(`Got a job successfully.`);
-      if (newjobs.success)
-        setMyjobs(newjobs.data)
+      if (newjobs.success) setMyjobs(newjobs.data);
       setIsMyLoading(false);
-
-
     } catch (error) {
-      console.error('Error getting jobs:', error);
+      console.error("Error getting jobs:", error);
       setIsMyLoading(false);
     }
   };
@@ -105,19 +109,25 @@ export default function Epag_job_ad() {
       }
       return false;
     } catch (error) {
-      console.error('Error getting contacts:', error);
+      console.error("Error getting contacts:", error);
       return false;
     }
-  }
+  };
 
   //filters
-  const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
-  const [selectedUserFilter, setSelectedUserFilter] = useState('Από Όλους τους Χρήστες');
-  const [selectedDateFilter, setSelectedDateFilter] = useState('Δημοσίευση Όλες');
-  const [selectedTypeFilter, setSelectedTypeFilter] = useState('Απασχόληση Όλες');
-  const [selectedExperienceFilter, setSelectedExperienceFilter] = useState('Εμπειρία Όλες');
-  const [selectedSalaryFilter, setSelectedSalaryFilter] = useState('Μισθός Όλες');
-  const [selectedLocation, setSelectedLocation] = useState('Περιοχές Όλες');
+  const [selectedOption, setSelectedOption] = useState("Οι αγγελίες μου");
+  const [selectedUserFilter, setSelectedUserFilter] = useState(
+    "Από Όλους τους Χρήστες"
+  );
+  const [selectedDateFilter, setSelectedDateFilter] =
+    useState("Δημοσίευση Όλες");
+  const [selectedTypeFilter, setSelectedTypeFilter] =
+    useState("Απασχόληση Όλες");
+  const [selectedExperienceFilter, setSelectedExperienceFilter] =
+    useState("Εμπειρία Όλες");
+  const [selectedSalaryFilter, setSelectedSalaryFilter] =
+    useState("Μισθός Όλες");
+  const [selectedLocation, setSelectedLocation] = useState("Περιοχές Όλες");
 
   const handleUserFilterChange = (option) => {
     setSelectedUserFilter(option);
@@ -149,14 +159,14 @@ export default function Epag_job_ad() {
         let isMatch = true;
 
         // Filter by Date
-        if (selectedDateFilter !== 'Δημοσίευση Όλες') {
+        if (selectedDateFilter !== "Δημοσίευση Όλες") {
           const jobDate = new Date(job.publish_date);
           const now = new Date();
-          if (selectedDateFilter === 'Την τελευταία εβδομάδα') {
+          if (selectedDateFilter === "Την τελευταία εβδομάδα") {
             const lastWeek = new Date();
             lastWeek.setDate(now.getDate() - 7);
             if (jobDate < lastWeek) isMatch = false;
-          } else if (selectedDateFilter === 'Τον τελευταίο μήνα') {
+          } else if (selectedDateFilter === "Τον τελευταίο μήνα") {
             const lastMonth = new Date();
             lastMonth.setMonth(now.getMonth() - 1);
             if (jobDate < lastMonth) isMatch = false;
@@ -164,35 +174,46 @@ export default function Epag_job_ad() {
         }
 
         // Filter by User
-        if (selectedUserFilter !== 'Από Όλους τους Χρήστες') {
+        if (selectedUserFilter !== "Από Όλους τους Χρήστες") {
           const isUserContact = await isContact(job.creator_email); // Await the contact check
 
-          if (selectedUserFilter === 'Συνδεδεμένους' && !isUserContact) {
+          if (selectedUserFilter === "Συνδεδεμένους" && !isUserContact) {
             isMatch = false;
-          } else if (selectedUserFilter === 'Μη Συνδεδεμένους' && isUserContact) {
+          } else if (
+            selectedUserFilter === "Μη Συνδεδεμένους" &&
+            isUserContact
+          ) {
             isMatch = false;
           }
         }
 
         // Filter by Type
-        if (selectedTypeFilter !== 'Απασχόληση Όλες' && job.type !== selectedTypeFilter) {
+        if (
+          selectedTypeFilter !== "Απασχόληση Όλες" &&
+          job.type !== selectedTypeFilter
+        ) {
           isMatch = false;
         }
 
         // Filter by Experience
-        if (selectedExperienceFilter !== 'Εμπειρία Όλες') {
-          if (selectedExperienceFilter === '0-2 Έτη' && job.experience > 2) isMatch = false;
-          else if (selectedExperienceFilter === '2+ Έτη' && job.experience < 2) isMatch = false;
-          else if (selectedExperienceFilter === '8+ Έτη' && job.experience < 8) isMatch = false;
+        if (selectedExperienceFilter !== "Εμπειρία Όλες") {
+          if (selectedExperienceFilter === "0-2 Έτη" && job.experience > 2)
+            isMatch = false;
+          else if (selectedExperienceFilter === "2+ Έτη" && job.experience < 2)
+            isMatch = false;
+          else if (selectedExperienceFilter === "8+ Έτη" && job.experience < 8)
+            isMatch = false;
         }
 
         // Filter by Salary
-        if (selectedSalaryFilter !== 'Μισθός Όλες') {
-          const salaryFilterValue = parseInt(selectedSalaryFilter.replace(/[^\d]/g, ''));
+        if (selectedSalaryFilter !== "Μισθός Όλες") {
+          const salaryFilterValue = parseInt(
+            selectedSalaryFilter.replace(/[^\d]/g, "")
+          );
           if (job.salary < salaryFilterValue) isMatch = false;
         }
 
-        if (selectedLocation !== 'Περιοχές Όλες') {
+        if (selectedLocation !== "Περιοχές Όλες") {
           if (job.location !== selectedLocation) isMatch = false;
         }
 
@@ -203,43 +224,43 @@ export default function Epag_job_ad() {
     return filteredJobs.filter((job) => job !== null); // Remove null values
   };
 
-
   const searchJobs = useMemo(() => {
-    const query = (searchQuery || '').toLowerCase();
-    return jobs.filter(job => {
-      const title = (job.title || '').toLowerCase();
-      const company = (job.company || '').toLowerCase();
-      const profession = (job.profession || '').toLowerCase();
-      return title.includes(query) ||
+    const query = (searchQuery || "").toLowerCase();
+    return jobs.filter((job) => {
+      const title = (job.title || "").toLowerCase();
+      const company = (job.company || "").toLowerCase();
+      const profession = (job.profession || "").toLowerCase();
+      return (
+        title.includes(query) ||
         company.includes(query) ||
-        profession.includes(query);
+        profession.includes(query)
+      );
     });
   }, [searchQuery, jobs]);
 
   const searchMyjobs = useMemo(() => {
-    const query = (mysearchQuery || '').toLowerCase();
-    return myjobs.filter(job => {
-      const title = (job.title || '').toLowerCase();
-      const company = (job.company || '').toLowerCase();
-      const profession = (job.profession || '').toLowerCase();
-      return title.includes(query) ||
+    const query = (mysearchQuery || "").toLowerCase();
+    return myjobs.filter((job) => {
+      const title = (job.title || "").toLowerCase();
+      const company = (job.company || "").toLowerCase();
+      const profession = (job.profession || "").toLowerCase();
+      return (
+        title.includes(query) ||
         company.includes(query) ||
-        profession.includes(query);
+        profession.includes(query)
+      );
     });
   }, [mysearchQuery, myjobs]);
-
 
   // Handle page change
   const myhandleClick = (pageNumber) => {
     setMyCurrentPage(pageNumber);
   };
 
-
   // Handle page change
   const handleClick = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
 
   //update job
   const handleSave = async (jobId, updatedJob) => {
@@ -247,7 +268,6 @@ export default function Epag_job_ad() {
       await updateJob(jobId, updatedJob);
 
       await getMyJobs(user_info.email);
-
     } catch (error) {
       console.error(`Error updating job with id ${jobId}:`, error);
     }
@@ -269,9 +289,31 @@ export default function Epag_job_ad() {
   };
 
   //add job
-  const HandleAddJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail) => {
+  const HandleAddJob = async (
+    title,
+    company,
+    location,
+    publishDate,
+    type,
+    profession,
+    experience,
+    salary,
+    details,
+    creatorEmail
+  ) => {
     try {
-      await addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail);
+      await addJob(
+        title,
+        company,
+        location,
+        publishDate,
+        type,
+        profession,
+        experience,
+        salary,
+        details,
+        creatorEmail
+      );
       console.log(`Added a job successfully.`);
 
       await getMyJobs(user_info.email);
@@ -283,13 +325,21 @@ export default function Epag_job_ad() {
   useEffect(() => {
     setCurrentPage(1);
     setMyCurrentPage(1);
-  }, [searchQuery, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedTypeFilter, selectedSalaryFilter]);
-
+  }, [
+    searchQuery,
+    mysearchQuery,
+    selectedUserFilter,
+    selectedDateFilter,
+    selectedExperienceFilter,
+    selectedLocation,
+    selectedTypeFilter,
+    selectedSalaryFilter,
+  ]);
 
   const handleDeleteClick = async (jobid) => {
     try {
       await deleteJob(jobid);
-      console.log('job deleted sucessfully');
+      console.log("job deleted sucessfully");
 
       await getMyJobs(user_info.email);
     } catch (error) {
@@ -312,7 +362,10 @@ export default function Epag_job_ad() {
 
         const indexOfLastJob = currentPage * jobsPerPage;
         const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-        const jobsToDisplay = updatedFilteredJobs.slice(indexOfFirstJob, indexOfLastJob); // Paginate jobs
+        const jobsToDisplay = updatedFilteredJobs.slice(
+          indexOfFirstJob,
+          indexOfLastJob
+        ); // Paginate jobs
 
         setCurrentJobs(jobsToDisplay); // Set the jobs to be displayed for the current page
         setSelectedJob(jobsToDisplay[0] || null); // Safely set selected job or null if no jobs available
@@ -320,8 +373,17 @@ export default function Epag_job_ad() {
     };
     fetchFilteredJobs();
   }, [
-    isLoading, jobs, searchQuery, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter,
-    selectedLocation, selectedTypeFilter, selectedSalaryFilter, currentPage
+    isLoading,
+    jobs,
+    searchQuery,
+    mysearchQuery,
+    selectedUserFilter,
+    selectedDateFilter,
+    selectedExperienceFilter,
+    selectedLocation,
+    selectedTypeFilter,
+    selectedSalaryFilter,
+    currentPage,
   ]);
 
   useEffect(() => {
@@ -333,7 +395,10 @@ export default function Epag_job_ad() {
 
         const indexOfLastJob = mycurrentPage * myjobsPerPage;
         const indexOfFirstJob = indexOfLastJob - myjobsPerPage;
-        const jobsToDisplay = updatedFilteredJobs.slice(indexOfFirstJob, indexOfLastJob); // Paginate jobs
+        const jobsToDisplay = updatedFilteredJobs.slice(
+          indexOfFirstJob,
+          indexOfLastJob
+        ); // Paginate jobs
 
         setMycurrentJobs(jobsToDisplay); // Set the jobs to be displayed for the current page
         setMyselectedJob(null); // Safely set selected job or null if no jobs available
@@ -341,8 +406,16 @@ export default function Epag_job_ad() {
     };
     fetchFilteredJobs();
   }, [
-    isMyLoading, myjobs, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter,
-    selectedLocation, selectedTypeFilter, selectedSalaryFilter, mycurrentPage
+    isMyLoading,
+    myjobs,
+    mysearchQuery,
+    selectedUserFilter,
+    selectedDateFilter,
+    selectedExperienceFilter,
+    selectedLocation,
+    selectedTypeFilter,
+    selectedSalaryFilter,
+    mycurrentPage,
   ]);
 
   // Ensure selectedJob is updated properly when currentJobs changes
@@ -352,11 +425,11 @@ export default function Epag_job_ad() {
     }
   }, [currentJobs]);
 
-  if (isLoading && (selectedOption === 'Αγγελίες άλλων')) {
+  if (isLoading && selectedOption === "Αγγελίες άλλων") {
     return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
   }
 
-  if (isMyLoading && (selectedOption === 'Οι αγγελίες μου')) {
+  if (isMyLoading && selectedOption === "Οι αγγελίες μου") {
     return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
   }
 
@@ -371,44 +444,92 @@ export default function Epag_job_ad() {
               type="text"
               placeholder="Αναζήτηση Αγγελίας"
               className="search-input"
-              value={selectedOption === 'Οι αγγελίες μου' ? mysearchQuery : searchQuery}
-              onChange={(e) => { selectedOption === 'Οι αγγελίες μου' ? setMysearchQuery(e.target.value) : setSearchQuery(e.target.value) }}
+              value={
+                selectedOption === "Οι αγγελίες μου"
+                  ? mysearchQuery
+                  : searchQuery
+              }
+              onChange={(e) => {
+                selectedOption === "Οι αγγελίες μου"
+                  ? setMysearchQuery(e.target.value)
+                  : setSearchQuery(e.target.value);
+              }}
             />
-            <img src="/search.png" alt="Search Icon" className="search-icon"></img>
+            <img
+              src="/search.png"
+              alt="Search Icon"
+              className="search-icon"
+            ></img>
           </div>
         </div>
         <div className="job-options">
-          <Dropdown options={['Οι αγγελίες μου', 'Αγγελίες άλλων']} onOptionSelect={handleOptionSelect} />
-          {(selectedOption === 'Αγγελίες άλλων') &&
-            <Dropdown options={['Από Όλους τους Χρήστες', 'Συνδεδεμένους', 'Μη Συνδεδεμένους']} onOptionSelect={handleUserFilterChange} />
-          }
+          <Dropdown
+            options={["Οι αγγελίες μου", "Αγγελίες άλλων"]}
+            onOptionSelect={handleOptionSelect}
+          />
+          {selectedOption === "Αγγελίες άλλων" && (
+            <Dropdown
+              options={[
+                "Από Όλους τους Χρήστες",
+                "Συνδεδεμένους",
+                "Μη Συνδεδεμένους",
+              ]}
+              onOptionSelect={handleUserFilterChange}
+            />
+          )}
 
           <Dropdown options={locations} onOptionSelect={handleLocationSelect} />
 
-          <Dropdown options={['Δημοσίευση Όλες', 'Την τελευταία εβδομάδα', 'Τον τελευταίο μήνα']} onOptionSelect={handleDateFilterChange} />
-          <Dropdown options={['Απασχόληση Όλες', 'Πλήρης', 'Μερική', 'Εθελοντική']} onOptionSelect={handleTypeFilterChange} />
-          <Dropdown options={['Εμπειρία Όλες', '0-2 Έτη', '2+ Έτη', '8+ Έτη']} onOptionSelect={handleExperienceFilterChange} />
-          <Dropdown options={['Μισθός Όλες', '40.000+', '80.000+', '120.000+']} onOptionSelect={handleSalaryFilterChange} />
+          <Dropdown
+            options={[
+              "Δημοσίευση Όλες",
+              "Την τελευταία εβδομάδα",
+              "Τον τελευταίο μήνα",
+            ]}
+            onOptionSelect={handleDateFilterChange}
+          />
+          <Dropdown
+            options={["Απασχόληση Όλες", "Πλήρης", "Μερική", "Εθελοντική"]}
+            onOptionSelect={handleTypeFilterChange}
+          />
+          <Dropdown
+            options={["Εμπειρία Όλες", "0-2 Έτη", "2+ Έτη", "8+ Έτη"]}
+            onOptionSelect={handleExperienceFilterChange}
+          />
+          <Dropdown
+            options={["Μισθός Όλες", "40.000+", "80.000+", "120.000+"]}
+            onOptionSelect={handleSalaryFilterChange}
+          />
         </div>
         <div>
-          {(selectedOption === 'Οι αγγελίες μου' && myselectedJob === null) &&
+          {selectedOption === "Οι αγγελίες μου" && myselectedJob === null && (
             <div className="job-split">
               <div className="jobs-left-section">
-
                 <div className="job-display-selected">
-                  <div className="job-display-title">
-                    + Νέα Αγγελία
-                  </div>
+                  <div className="job-display-title">+ Νέα Αγγελία</div>
                 </div>
 
                 {mycurrentJobs.map((job, index) => (
-                  <div className="job-display" onClick={() => HandleMyJobSelect(job)}>
-                    <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={() => handleDeleteClick(job.id)} />
-                    <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
+                  <div
+                    className="job-display"
+                    onClick={() => HandleMyJobSelect(job)}
+                  >
+                    <img
+                      src="/remove.png"
+                      alt="Image Icon"
+                      className="job-delete-icon"
+                      onClick={() => handleDeleteClick(job.id)}
+                    />
+                    <div className="job-display-date">
+                      {" "}
+                      {format(job.publish_date, "yyyy-MM-dd")}{" "}
+                    </div>
                     <div className="job-display-title">{job.title}</div>
                     <div className="job-display-company">{job.company}</div>
                     <div className="job-display-company">{job.profession}</div>
-                    <div className="job-display-company">{job.type} Απασχόληση</div>
+                    <div className="job-display-company">
+                      {job.type} Απασχόληση
+                    </div>
                     <div className="job-display-salary">{job.salary} €</div>
                   </div>
                 ))}
@@ -420,7 +541,9 @@ export default function Epag_job_ad() {
                     >
                       Προηγούμενο
                     </button>
-                    <span>Σελίδα {mycurrentPage} από {mytotalPages}</span>
+                    <span>
+                      Σελίδα {mycurrentPage} από {mytotalPages}
+                    </span>
                     <button
                       onClick={() => myhandleClick(mycurrentPage + 1)}
                       disabled={mycurrentPage === mytotalPages}
@@ -436,40 +559,70 @@ export default function Epag_job_ad() {
                 <Job_create c_email={user_info.email} onSave={HandleAddJob} />
               </div>
             </div>
-          }
-          {(selectedOption === 'Οι αγγελίες μου' && myselectedJob != null) &&
+          )}
+          {selectedOption === "Οι αγγελίες μου" && myselectedJob != null && (
             <div className="job-split">
               <div className="jobs-left-section">
-                <div className="job-display" onClick={() => HandleMyJobSelect(null)}>
-                  <div className="job-display-title">
-                    + Νέα Αγγελία
-                  </div>
+                <div
+                  className="job-display"
+                  onClick={() => HandleMyJobSelect(null)}
+                >
+                  <div className="job-display-title">+ Νέα Αγγελία</div>
                 </div>
 
                 {mycurrentJobs.map((job, index) => (
                   <div>
                     {job.id === myselectedJob.id ? (
-                      <div className="job-display-selected" onClick={() => HandleMyJobSelect(job)}>
-                        <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={() => handleDeleteClick(job.id)} />
-                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
+                      <div
+                        className="job-display-selected"
+                        onClick={() => HandleMyJobSelect(job)}
+                      >
+                        <img
+                          src="/remove.png"
+                          alt="Image Icon"
+                          className="job-delete-icon"
+                          onClick={() => handleDeleteClick(job.id)}
+                        />
+                        <div className="job-display-date">
+                          {" "}
+                          {format(job.publish_date, "yyyy-MM-dd")}{" "}
+                        </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.profession}</div>
-                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-company">
+                          {job.profession}
+                        </div>
+                        <div className="job-display-company">
+                          {job.type} Απασχόληση
+                        </div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
                     ) : (
-                      <div className="job-display" onClick={() => HandleMyJobSelect(job)}>
-                        <img src="/remove.png" alt="Image Icon" className='job-delete-icon' onClick={() => handleDeleteClick(job.id)} />
-                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
+                      <div
+                        className="job-display"
+                        onClick={() => HandleMyJobSelect(job)}
+                      >
+                        <img
+                          src="/remove.png"
+                          alt="Image Icon"
+                          className="job-delete-icon"
+                          onClick={() => handleDeleteClick(job.id)}
+                        />
+                        <div className="job-display-date">
+                          {" "}
+                          {format(job.publish_date, "yyyy-MM-dd")}{" "}
+                        </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.profession}</div>
-                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-company">
+                          {job.profession}
+                        </div>
+                        <div className="job-display-company">
+                          {job.type} Απασχόληση
+                        </div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
                     )}
-
                   </div>
                 ))}
                 {mycurrentJobs.length > 0 ? (
@@ -480,7 +633,9 @@ export default function Epag_job_ad() {
                     >
                       Προηγούμενο
                     </button>
-                    <span>Σελίδα {mycurrentPage} από {mytotalPages}</span>
+                    <span>
+                      Σελίδα {mycurrentPage} από {mytotalPages}
+                    </span>
                     <button
                       onClick={() => myhandleClick(mycurrentPage + 1)}
                       disabled={mycurrentPage === mytotalPages}
@@ -507,32 +662,51 @@ export default function Epag_job_ad() {
                 />
               </div>
             </div>
-          }
-          {selectedOption === 'Αγγελίες άλλων' &&
+          )}
+          {selectedOption === "Αγγελίες άλλων" && (
             <div className="job-split">
               <div className="jobs-left-section">
                 {currentJobs.map((job, index) => (
                   <div>
                     {job.id === selectedJob.id ? (
-                      <div className="job-display-selected" onClick={() => HandleJobSelect(job)}>
-                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
+                      <div
+                        className="job-display-selected"
+                        onClick={() => HandleJobSelect(job)}
+                      >
+                        <div className="job-display-date">
+                          {" "}
+                          {format(job.publish_date, "yyyy-MM-dd")}{" "}
+                        </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.profession}</div>
-                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-company">
+                          {job.profession}
+                        </div>
+                        <div className="job-display-company">
+                          {job.type} Απασχόληση
+                        </div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
                     ) : (
-                      <div className="job-display" onClick={() => HandleJobSelect(job)}>
-                        <div className="job-display-date"> {format(job.publish_date, 'yyyy-MM-dd')} </div>
+                      <div
+                        className="job-display"
+                        onClick={() => HandleJobSelect(job)}
+                      >
+                        <div className="job-display-date">
+                          {" "}
+                          {format(job.publish_date, "yyyy-MM-dd")}{" "}
+                        </div>
                         <div className="job-display-title">{job.title}</div>
                         <div className="job-display-company">{job.company}</div>
-                        <div className="job-display-company">{job.profession}</div>
-                        <div className="job-display-company">{job.type} Απασχόληση</div>
+                        <div className="job-display-company">
+                          {job.profession}
+                        </div>
+                        <div className="job-display-company">
+                          {job.type} Απασχόληση
+                        </div>
                         <div className="job-display-salary">{job.salary} €</div>
                       </div>
                     )}
-
                   </div>
                 ))}
                 {currentJobs.length > 0 ? (
@@ -543,7 +717,9 @@ export default function Epag_job_ad() {
                     >
                       Προηγούμενο
                     </button>
-                    <span>Σελίδα {currentPage} από {totalPages}</span>
+                    <span>
+                      Σελίδα {currentPage} από {totalPages}
+                    </span>
                     <button
                       onClick={() => handleClick(currentPage + 1)}
                       disabled={currentPage === totalPages}
@@ -562,21 +738,24 @@ export default function Epag_job_ad() {
                     title={selectedJob.title}
                     company={selectedJob.company}
                     location={selectedJob.location}
-                    publish_date={format(selectedJob.publish_date, 'yyyy-MM-dd')}
+                    publish_date={format(
+                      selectedJob.publish_date,
+                      "yyyy-MM-dd"
+                    )}
                     type={selectedJob.type}
                     profession={selectedJob.profession}
                     experience={selectedJob.experience}
                     salary={selectedJob.salary}
                     detail={selectedJob.details}
-                  />)}
+                  />
+                )}
               </div>
             </div>
-          }
-
+          )}
         </div>
       </div>
       <MainBottom />
       <Footer />
     </div>
-  )
+  );
 }
