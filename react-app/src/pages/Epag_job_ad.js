@@ -12,7 +12,8 @@ import { useAppContext } from "../context/appContext";
 import { default_locations } from "../context/locations";
 import { format } from 'date-fns';
 import { useState, useMemo, useEffect } from 'react';
-import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob, getAllUsers } from '../api';
+import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob, getAllUsers, getAllSkills , updateJobSkills} from '../api';
+import FindJobRecommendations from '../context/job_recommendations';
 
 export default function Epag_job_ad() {
 
@@ -70,6 +71,7 @@ export default function Epag_job_ad() {
         }
       }
 
+      //const recommendedjobs = FindJobRecommendations(user_info, fetchedJobs);
       // Update state with filtered jobs
       setJobs(fetchedJobs);
       setIsLoading(false);
@@ -112,16 +114,11 @@ export default function Epag_job_ad() {
 
   //filters
   const [selectedOption, setSelectedOption] = useState('Οι αγγελίες μου');
-  const [selectedUserFilter, setSelectedUserFilter] = useState('Από Όλους τους Χρήστες');
   const [selectedDateFilter, setSelectedDateFilter] = useState('Δημοσίευση Όλες');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState('Απασχόληση Όλες');
   const [selectedExperienceFilter, setSelectedExperienceFilter] = useState('Εμπειρία Όλες');
   const [selectedSalaryFilter, setSelectedSalaryFilter] = useState('Μισθός Όλες');
   const [selectedLocation, setSelectedLocation] = useState('Περιοχές Όλες');
-
-  const handleUserFilterChange = (option) => {
-    setSelectedUserFilter(option);
-  };
 
   const handleDateFilterChange = (option) => {
     setSelectedDateFilter(option);
@@ -160,17 +157,6 @@ export default function Epag_job_ad() {
             const lastMonth = new Date();
             lastMonth.setMonth(now.getMonth() - 1);
             if (jobDate < lastMonth) isMatch = false;
-          }
-        }
-
-        // Filter by User
-        if (selectedUserFilter !== 'Από Όλους τους Χρήστες') {
-          const isUserContact = await isContact(job.creator_email); // Await the contact check
-
-          if (selectedUserFilter === 'Συνδεδεμένους' && !isUserContact) {
-            isMatch = false;
-          } else if (selectedUserFilter === 'Μη Συνδεδεμένους' && isUserContact) {
-            isMatch = false;
           }
         }
 
@@ -242,9 +228,11 @@ export default function Epag_job_ad() {
 
 
   //update job
-  const handleSave = async (jobId, updatedJob) => {
+  const handleSave = async (jobId, updatedJob, skills) => {
     try {
       await updateJob(jobId, updatedJob);
+
+      await updateJobSkills(jobId, skills);
 
       await getMyJobs(user_info.email);
 
@@ -269,9 +257,9 @@ export default function Epag_job_ad() {
   };
 
   //add job
-  const HandleAddJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail) => {
+  const HandleAddJob = async (title, company, location, publishDate, type, profession, experience, salary, skills, details, creatorEmail) => {
     try {
-      await addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail);
+      await addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills);
       console.log(`Added a job successfully.`);
 
       await getMyJobs(user_info.email);
@@ -283,7 +271,7 @@ export default function Epag_job_ad() {
   useEffect(() => {
     setCurrentPage(1);
     setMyCurrentPage(1);
-  }, [searchQuery, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedTypeFilter, selectedSalaryFilter]);
+  }, [searchQuery, mysearchQuery, selectedDateFilter, selectedExperienceFilter, selectedLocation, selectedTypeFilter, selectedSalaryFilter]);
 
 
   const handleDeleteClick = async (jobid) => {
@@ -320,7 +308,7 @@ export default function Epag_job_ad() {
     };
     fetchFilteredJobs();
   }, [
-    isLoading, jobs, searchQuery, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter,
+    isLoading, jobs, searchQuery, selectedDateFilter, selectedExperienceFilter,
     selectedLocation, selectedTypeFilter, selectedSalaryFilter, currentPage
   ]);
 
@@ -328,9 +316,10 @@ export default function Epag_job_ad() {
     // Ensure that jobs and filters are applied only after data is loaded
     const fetchFilteredJobs = async () => {
       if (!isMyLoading && myjobs.length > 0) {
-        const updatedFilteredJobs = filterJobs(searchMyjobs); // Filter based on the latest job data
+        const updatedFilteredJobs = await filterJobs(searchMyjobs); // Filter based on the latest job data
         setMytotalPages(Math.ceil(updatedFilteredJobs.length / myjobsPerPage)); // Update the total pages for pagination
 
+        console.log('myjobs', updatedFilteredJobs);
         const indexOfLastJob = mycurrentPage * myjobsPerPage;
         const indexOfFirstJob = indexOfLastJob - myjobsPerPage;
         const jobsToDisplay = updatedFilteredJobs.slice(indexOfFirstJob, indexOfLastJob); // Paginate jobs
@@ -341,7 +330,7 @@ export default function Epag_job_ad() {
     };
     fetchFilteredJobs();
   }, [
-    isMyLoading, myjobs, mysearchQuery, selectedUserFilter, selectedDateFilter, selectedExperienceFilter,
+    isMyLoading, myjobs, mysearchQuery, selectedDateFilter, selectedExperienceFilter,
     selectedLocation, selectedTypeFilter, selectedSalaryFilter, mycurrentPage
   ]);
 
@@ -379,10 +368,6 @@ export default function Epag_job_ad() {
         </div>
         <div className="job-options">
           <Dropdown options={['Οι αγγελίες μου', 'Αγγελίες άλλων']} onOptionSelect={handleOptionSelect} />
-          {(selectedOption === 'Αγγελίες άλλων') &&
-            <Dropdown options={['Από Όλους τους Χρήστες', 'Συνδεδεμένους', 'Μη Συνδεδεμένους']} onOptionSelect={handleUserFilterChange} />
-          }
-
           <Dropdown options={locations} onOptionSelect={handleLocationSelect} />
 
           <Dropdown options={['Δημοσίευση Όλες', 'Την τελευταία εβδομάδα', 'Τον τελευταίο μήνα']} onOptionSelect={handleDateFilterChange} />
