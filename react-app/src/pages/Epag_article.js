@@ -19,6 +19,7 @@ import {
   getUserInterests,
   addComment,
 } from "../api";
+import MatrixFactorizationArticles from "../context/MFarticles";
 import getImageUrl from "../hooks/getImageUrl";
 import { formatRelativeTime } from "../utils/timeUtils";
 
@@ -28,6 +29,7 @@ const getCurrentTimestamp = () => {
 };
 
 const Epag_article = () => {
+
   const myuser = useAppContext().user;
   const { id } = useParams();
   const navigate = useNavigate();
@@ -51,14 +53,12 @@ const Epag_article = () => {
     try {
       const response = await getArticleById(id);
       setArticle(response);
-      console.log("response", article);
     } catch (error) {
       console.error("Error getting articles:", error);
     }
   };
 
   const getAuthor = async (email) => {
-    console.log("the author is this:", email);
     try {
       const response = await getUser(email);
       setAuthor(response);
@@ -105,9 +105,7 @@ const Epag_article = () => {
   const getInterest = async (userEmail, articleId) => {
     try {
       const interests = await getUserInterests(userEmail);
-      console.log("trying to get the interests", interests, articleId);
       if (interests.includes(articleId)) {
-        console.log(`Article ID ${articleId} is in the interests list.`);
         setInterested(true);
       }
     } catch (error) {
@@ -119,14 +117,12 @@ const Epag_article = () => {
     if (!interested) {
       try {
         const response = await addInterest(myuser.email, parseInt(id));
-        console.log("added interest for user ", myuser.email);
       } catch (error) {
         console.error("Error adding interest:", error);
       }
     } else if (interested) {
       try {
         const response = await removeInterest(myuser.email, parseInt(id));
-        console.log("Removed interest for user ", myuser.email);
       } catch (error) {
         console.error("Error removing interest:", error);
       }
@@ -142,7 +138,6 @@ const Epag_article = () => {
     getAuthor(article.author_email);
     getArticleAttachments(parseInt(id));
     getInterest(myuser.email, parseInt(id));
-    console.log(article);
   }, [article.author_email]);
 
   const handleBodyChange = (e) => {
@@ -161,10 +156,10 @@ const Epag_article = () => {
       console.error("Error adding comment:", error);
     }
   };
-
   useEffect(() => {
-    console.log(interested);
-  }, [interested]);
+    MatrixFactorizationArticles();
+  }, [])
+
 
   return (
     <div>

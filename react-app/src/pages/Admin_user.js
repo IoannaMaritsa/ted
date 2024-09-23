@@ -85,7 +85,6 @@ export default function Diax_Home() {
         try {
 
             const newjobs = await getJobsOfUser(otherProfile.email);
-            console.log(`Got a job successfully.`);
             if (newjobs.success)
                 setJobAds(newjobs.data)
 
@@ -129,10 +128,8 @@ export default function Diax_Home() {
     const getInterest = async () => {
         try {
             const interests = await getUserInterests(otherProfile.email);
-            console.log('got interests', interests);
             const interests2 = await Promise.all(
                 interests.map(async (interest) => {
-                    console.log('fetching article for interest:', interest);
                     const article_name = await getSingleArticle(interest); // Await here to get the resolved value
                     
                     return {
@@ -141,7 +138,6 @@ export default function Diax_Home() {
                     };
                 })
             );
-            console.log('interests2', interests2);
             setInterests(interests2);
         } catch (error) {
             console.error('Error getting interests:', error);
