@@ -120,7 +120,8 @@ export default function Epag_Home() {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [attachedFiles, setAttachedFiles] = useState([]);
-
+    const maxArticles = 6;
+    let currentArticles = 0;
 
     useEffect(() => {
         console.log(attachedFiles)
