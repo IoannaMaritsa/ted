@@ -118,7 +118,6 @@ useEffect(() => {
   const navigate = useNavigate();
 
   const handleProfileClick = (user) => {
-    console.log('click', user.email);
     navigate('/admin_user', { state: { userEmail: user.email } });
     window.scrollTo(0, 0);
   }

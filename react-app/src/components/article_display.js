@@ -1,26 +1,27 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
-import { useState, useEffect } from "react";
-import { getAllUsers, addViewtoArticle } from "../api";
+import { useState, useEffect, useLayoutEffect } from "react";
+import { getAllUsers, addViewtoArticle , getUser} from "../api";
 import "./article_display.css";
 
 const Article = ({ id, title, author_email, date, content, onDelete }) => {
   const navigate = useNavigate();
   const user_info = useAppContext().user;
-  const [users, setUsers] = useState([]);
+  const [author, setAuthor] = useState("");
 
   const getUsers = async () => {
     try {
-      const response = await getAllUsers();
-      setUsers(response);
+      let author1 = await getUser(author_email);
+      setAuthor(author1.name)
+
     } catch (error) {
       console.error("Error getting articles:", error);
     }
   };
 
-  const author =
-    users.find((user) => user.email === author_email)?.name || "Unknown Author";
+  
+
 
   const handleDeleteClick = () => {
     onDelete(id); // Call the delete function passed as a prop

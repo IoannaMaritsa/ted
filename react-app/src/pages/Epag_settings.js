@@ -35,7 +35,6 @@ const Epag_settings = () => {
     const openModal1 = () => {
         setIsModal1Open(true);
         setInitialEmail(email);
-        console.log(initialemail);
     };
 
     const openModal2 = () => {
@@ -43,7 +42,6 @@ const Epag_settings = () => {
     };
 
     const closeModal1 = () => {
-        console.log(initialemail);
         setEmail(initialemail);
         setIsModal1Open(false);
     };
@@ -77,19 +75,12 @@ const Epag_settings = () => {
             // Call the API to update email in the database
 
             const result = await updateEmail(user?.email, email);
-            console.log("result",result);
             if (result) {
                 // Update the user in the app context
                 const updatedUser = { ...user, email };
-
-                console.log("updated user",updatedUser);
-                console.log("old user",user);
-                console.log("set user valid", setUser);
                 setUser(updatedUser);
 
-                console.log("user", user);
                 const newToken = result;
-                console.log("new token2", newToken);
                 localStorage.setItem('token', newToken);
     
                 setInitialEmail(email);
@@ -114,7 +105,6 @@ const Epag_settings = () => {
 
         // Check if the old password matches the one stored in the database
         const passwordCheck = await checkPassword(user?.email, oldpassword);
-        console.log(passwordCheck)
         if (!passwordCheck || passwordCheck.error) {
             setError1('Πληκτρολογήστε σωστά τον παλιό κωδικό σας');
         } else if (newpassword === '') {
@@ -130,7 +120,6 @@ const Epag_settings = () => {
         } else {
             setPassword(newpassword);
             const result = await updatePassword(user?.email, newpassword);
-            console.log('Password updated:', newpassword);
             closeModal2();
         }
 

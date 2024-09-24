@@ -61,11 +61,13 @@ const getArticleViewsByUser = async (userEmail) => {
             .select('*')
             .eq('user_email', userEmail);
 
+            console.log(userEmail, userViews)
         if (userViewsError) {
             throw userViewsError;
         }
 
         if (!userViews || userViews.length === 0) {
+    
             return []; // No views found for the user
         }
 

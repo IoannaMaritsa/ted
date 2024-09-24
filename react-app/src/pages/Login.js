@@ -23,7 +23,6 @@ export default function Login() {
             await logIn(email, password);
             const token = localStorage.getItem("token");
             const decoded = jwtDecode(token);
-            console.log("token", decoded)
             if(decoded.role === "user") {
             navigate('/epaggelmatias_homepage'); 
             }// Use navigate for redirection
