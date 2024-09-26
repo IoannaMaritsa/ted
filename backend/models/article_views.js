@@ -66,6 +66,7 @@ const getArticleViewsByUser = async (userEmail) => {
             throw userViewsError;
         }
 
+        console.log(userViews)
         if (!userViews || userViews.length === 0) {
     
             return []; // No views found for the user
