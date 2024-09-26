@@ -5,7 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
+const jose = require('node-jose');
 const https = require('https');
 const http = require('http');
 const bcrypt = require('bcrypt');
@@ -39,6 +39,16 @@ const options = {
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+
+const keyData = fs.readFileSync('jwtKey.json', 'utf8');
+let key;
+
+// Load the key into a keystore
+(async function loadKey() {
+    const keystore = jose.JWK.createKeyStore();
+    key = await keystore.add(JSON.parse(keyData), 'json');
+})();
+
 
 // Initialize Multer for handling file uploads
 const storage = multer.memoryStorage(); // Use memoryStorage if you are directly uploading to Supabase
@@ -175,12 +185,21 @@ app.put('/email', async (req, res) => {
 
         const response = await usersModel.updateEmail(email, newemail)
         const user = await usersModel.getUser(newemail);
+
+        const payload = {
+            userId: user.id,
+            email: newemail,
+            role: 'user',
+        };
         // Generate JWT token
-        const token = jwt.sign({
-            "userId": user.id,
-            "email": newemail,
-            "role": "user",
-        }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        if (!key) {
+            return res.status(500).json({ error: 'Key not loaded' });
+        }
+
+        // Sign the JWT
+        const token = await jose.JWS.createSign({ format: 'compact' }, key)
+            .update(JSON.stringify(payload))
+            .final();
         res.json({ token });
 
     } catch (err) {
@@ -205,12 +224,22 @@ app.post('/login', async (req, res) => {
             if (!isPasswordValid) {
                 return res.status(401).json({ error: 'Invalid password' });
             }
+
+            const payload = {
+                userId: admin.id,
+                email: email,
+                role: 'admin',
+            };
             // Generate JWT token
-            const token = jwt.sign({
-                "userId": admin.id,
-                "email": email,
-                "role": "admin",
-            }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            if (!key) {
+                return res.status(500).json({ error: 'Key not loaded' });
+            }
+    
+            // Sign the JWT
+            const token = await jose.JWS.createSign({ format: 'compact' }, key)
+                .update(JSON.stringify(payload))
+                .final();
+
             res.json({ token });
         }
         else {
@@ -226,12 +255,20 @@ app.post('/login', async (req, res) => {
                 return res.status(401).json({ error: 'Invalid password' });
             }
 
+            const payload = {
+                userId: user.id,
+                email: email,
+                role: 'user',
+            };
             // Generate JWT token
-            const token = jwt.sign({
-                "userId": user.id,
-                "email": email,
-                "role": "user",
-            }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            if (!key) {
+                return res.status(500).json({ error: 'Key not loaded' });
+            }
+    
+            // Sign the JWT
+            const token = await jose.JWS.createSign({ format: 'compact' }, key)
+                .update(JSON.stringify(payload))
+                .final();
 
             res.json({ token });
         }
