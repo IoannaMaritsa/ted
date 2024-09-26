@@ -799,16 +799,21 @@ export const addViewToJob = async (userEmail, jobId) => {
 // Function to get job views for a specific user
 export const getJobViewsByUser = async (userEmail) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/job-views`, {
-            params: {
-                userEmail,
-            },
-        });
+        const response = await axios.get(`${API_BASE_URL}/job-views-user/${userEmail}`);
 
         return response.data;
     } catch (error) {
-        console.error('Error fetching job views for user:', error);
-        throw error;
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Server responded with an error:', error.response.data);
+        } else if (error.request) {
+            // No response received
+            console.error('No response received from server:', error.request);
+        } else {
+            // Error setting up request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error; // Rethrow to handle higher up if necessary
     }
 };
 

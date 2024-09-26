@@ -1003,7 +1003,7 @@ app.post('/job-views', async (req, res) => {
 });
 
 //get all the views for a specific user
-app.get('/job-views', async (req, res) => {
+app.get('/job-views-user/:userEmail', async (req, res) => {
     const { userEmail } = req.params;
 
     if (!userEmail) {
@@ -1046,7 +1046,7 @@ app.get('/article-views', async (req, res) => {
     }
 
     try {
-        const views = await jobViewsModel.getArticlesViewsByUser(userEmail);
+        const views = await articlesViewsModel.getArticlesViewsByUser(userEmail);
         res.status(200).json(views);
     } catch (error) {
         console.error('Error fetching article views:', error);

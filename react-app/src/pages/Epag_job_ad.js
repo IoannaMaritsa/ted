@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import { useState, useMemo, useEffect } from 'react';
 import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob, getAllUsers, getAllSkills , updateJobSkills} from '../api';
 import FindJobRecommendations from '../context/job_recommendations';
+import MatrixFactorization from "../context/MFCF";
 
 export default function Epag_job_ad() {
   const locations = ["Περιοχές Όλες", ...default_locations];
@@ -41,6 +42,7 @@ export default function Epag_job_ad() {
 
   const [mysearchQuery, setMysearchQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [recommendations, setRecommendations] = useState([]);
 
   const getJobs = async () => {
     try {
@@ -71,7 +73,8 @@ export default function Epag_job_ad() {
           );
         }
       }
-
+      
+      
       //const recommendedjobs = FindJobRecommendations(user_info, fetchedJobs);
       // Update state with filtered jobs
       setJobs(fetchedJobs);
@@ -350,6 +353,21 @@ export default function Epag_job_ad() {
       setSelectedJob(currentJobs[0] || null); // Guard against undefined job, select the first available job
     }
   }, [currentJobs]);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      if (jobs.length > 0) {
+        try {
+          const recommendedJobs = await MatrixFactorization(user_info, jobs);
+          setRecommendations(recommendedJobs);
+        } catch (error) {
+          console.error("Error in MatrixFactorization:", error);
+        }
+      }
+    };
+
+    fetchRecommendations();
+  }, [jobs, user_info]);
 
   if (isLoading && selectedOption === "Αγγελίες άλλων") {
     return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
