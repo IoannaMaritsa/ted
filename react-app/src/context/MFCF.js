@@ -46,7 +46,7 @@ const MatrixFactorization = async (user, jobs) => {
         console.table(UJMatrix);
 
         // Step 4: Initialize user and job matrices with random factors
-        const numFactors = 20;
+        const numFactors = 50;
         for (let i = 0; i < contacts.length; i++) {
             userMatrix.push(Array.from({ length: numFactors }, () => Math.random()));
         }
@@ -115,7 +115,7 @@ function calculateError(realRating, predictedRating) {
 }
 
 function sgdUpdate(userIndex, jobIndex, error, userMatrix, jobMatrix, learningRate) {
-    for (let k = 0; k < 20; k++) {
+    for (let k = 0; k < 50; k++) {
         const userFactor = userMatrix[userIndex][k];
         const jobFactor = jobMatrix[jobIndex][k];
 

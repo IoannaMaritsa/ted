@@ -1,15 +1,21 @@
-if (typeof globalThis === 'undefined') {
-    global.globalThis = global;
-  }
+// if (typeof globalThis === 'undefined') {
+//     global.globalThis = global;
+//   }
+// require('dotenv').config();
+// const express = require('express');
+// const multer = require('multer');
+// const cors = require('cors');
+// const jose = require('node-jose');
+// const https = require('https');
+// const http = require('http');
+// const bcrypt = require('bcrypt');
+// const fs = require('fs');
 require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const jose = require('node-jose');
-const https = require('https');
-const http = require('http');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const fs = require('fs');
 
 const usersModel = require('./models/users'); // Adjust the path as necessary
 const articlesModel = require('./models/articles');
@@ -29,25 +35,25 @@ const articlesViewsModel = require('./models/article_views');
 
 const app = express();
 
-const options = {
-    key: fs.readFileSync('./certificates/localhost-key.pem'),
-    cert: fs.readFileSync('./certificates/localhost-cert.pem')
-  };
-
+// const options = {
+//     key: fs.readFileSync('./certificates/localhost-key.pem'),
+//     cert: fs.readFileSync('./certificates/localhost-cert.pem')
+//   };
+const PORT = process.env.PORT || 5001;
 
 // Middleware to parse JSON
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-const keyData = fs.readFileSync('jwtKey.json', 'utf8');
-let key;
+// const keyData = fs.readFileSync('jwtKey.json', 'utf8');
+// let key;
 
-// Load the key into a keystore
-(async function loadKey() {
-    const keystore = jose.JWK.createKeyStore();
-    key = await keystore.add(JSON.parse(keyData), 'json');
-})();
+// // Load the key into a keystore
+// (async function loadKey() {
+//     const keystore = jose.JWK.createKeyStore();
+//     key = await keystore.add(JSON.parse(keyData), 'json');
+// })();
 
 
 // Initialize Multer for handling file uploads
@@ -55,8 +61,14 @@ const storage = multer.memoryStorage(); // Use memoryStorage if you are directly
 const upload = multer({ storage });
 
 // Enable CORS with specific configuration
+// app.use(cors({
+//     origin: ['https://localhost', 'https://localhost:3000'], // Replace with your actual domains
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
 app.use(cors({
-    origin: ['https://localhost', 'https://localhost:3000'], // Replace with your actual domains
+    origin: ['http://localhost:5001', 'http://localhost:3000'], // Replace with your actual domains
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -185,21 +197,12 @@ app.put('/email', async (req, res) => {
 
         const response = await usersModel.updateEmail(email, newemail)
         const user = await usersModel.getUser(newemail);
-
-        const payload = {
-            userId: user.id,
-            email: newemail,
-            role: 'user',
-        };
         // Generate JWT token
-        if (!key) {
-            return res.status(500).json({ error: 'Key not loaded' });
-        }
-
-        // Sign the JWT
-        const token = await jose.JWS.createSign({ format: 'compact' }, key)
-            .update(JSON.stringify(payload))
-            .final();
+        const token = jwt.sign({
+            "userId": user.id,
+            "email": newemail,
+            "role": "user",
+        }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
 
     } catch (err) {
@@ -224,22 +227,12 @@ app.post('/login', async (req, res) => {
             if (!isPasswordValid) {
                 return res.status(401).json({ error: 'Invalid password' });
             }
-
-            const payload = {
-                userId: admin.id,
-                email: email,
-                role: 'admin',
-            };
             // Generate JWT token
-            if (!key) {
-                return res.status(500).json({ error: 'Key not loaded' });
-            }
-    
-            // Sign the JWT
-            const token = await jose.JWS.createSign({ format: 'compact' }, key)
-                .update(JSON.stringify(payload))
-                .final();
-
+            const token = jwt.sign({
+                "userId": admin.id,
+                "email": email,
+                "role": "admin",
+            }, process.env.JWT_SECRET, { expiresIn: '1h' });
             res.json({ token });
         }
         else {
@@ -255,20 +248,12 @@ app.post('/login', async (req, res) => {
                 return res.status(401).json({ error: 'Invalid password' });
             }
 
-            const payload = {
-                userId: user.id,
-                email: email,
-                role: 'user',
-            };
             // Generate JWT token
-            if (!key) {
-                return res.status(500).json({ error: 'Key not loaded' });
-            }
-    
-            // Sign the JWT
-            const token = await jose.JWS.createSign({ format: 'compact' }, key)
-                .update(JSON.stringify(payload))
-                .final();
+            const token = jwt.sign({
+                "userId": user.id,
+                "email": email,
+                "role": "user",
+            }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
             res.json({ token });
         }
@@ -1055,15 +1040,20 @@ app.get('/article-views', async (req, res) => {
 
 });
 
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-  });
+// app.get('/', (req, res) => {
+//     res.send('Hello, World!');
+//   });
 
 
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 
 
-// Create HTTPS server
-https.createServer(options, app).listen(443, () => {
-    console.log('HTTPS server running on port 443');
+// // Create HTTPS server
+// https.createServer(options, app).listen(443, () => {
+//     console.log('HTTPS server running on port 443');
+// });
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
