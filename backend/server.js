@@ -733,9 +733,7 @@ app.get('/comments/:articleId', async (req, res) => {
     const { articleId } = req.params;
     try {
         const comments = await commentsModel.getComments(articleId);
-        if (!comments || comments.length === 0) {
-            return res.status(404).json({ message: 'No comments found for this article' });
-        }
+
         res.status(200).json(comments);
     } catch (error) {
         console.error('Error fetching comments:', error);
@@ -748,9 +746,7 @@ app.get('/comments/user/:authorEmail', async (req, res) => {
     const { authorEmail } = req.params;
     try {
         const comments = await commentsModel.getCommentsOfUser(authorEmail);
-        if (comments.length === 0) {
-            return res.status(404).json({ message: 'No comments found for this user' });
-        }
+
         res.status(200).json(comments);
     } catch (error) {
         console.error('Error fetching comments by user:', error);
@@ -1031,7 +1027,26 @@ app.get('/article-views', async (req, res) => {
     }
 
     try {
-        const views = await articlesViewsModel.getArticlesViewsByUser(userEmail);
+        const views = await articlesViewsModel.getArticleViewsByUser(userEmail);
+        res.status(200).json(views);
+    } catch (error) {
+        console.error('Error fetching article views:', error);
+        res.status(500).json({ error: 'Error fetching article views' });
+    }
+
+});
+
+
+//get all the views for a specific user
+app.get('/article-views/article', async (req, res) => {
+    const { articleId } = req.params;
+
+    if (!articleId) {
+        return res.status(400).json({ error: 'Article Id is required' });
+    }
+
+    try {
+        const views = await articlesViewsModel.getArticleViewsByUser(articleId);
         res.status(200).json(views);
     } catch (error) {
         console.error('Error fetching article views:', error);

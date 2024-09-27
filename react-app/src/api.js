@@ -849,3 +849,19 @@ export const getArticleViewsByUser = async (userEmail) => {
         throw error;
     }
 };
+
+// Function to get article views for a specific user
+export const getArticleViewsByArticle = async (articleId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/article-views/article`, {
+            params: {
+                articleId,
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching article views for user:', error);
+        throw error;
+    }
+};
