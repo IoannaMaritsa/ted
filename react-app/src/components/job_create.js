@@ -252,7 +252,7 @@ const Job_create = ({ c_email, onSave }) => {
 
                             <div className='chosen-skills-head'>
                                 <h3>Επιλεγμένες Δεξιότητες</h3>
-                                <img src='/again.png' className='icon' onClick={handleRemove} style={{cursor:'pointer'}}/>
+                                <img src='/reset.png' className='icon' onClick={handleRemove} style={{cursor:'pointer'}}/>
                             </div>
                             {chosen.length > 0 ? (
                                 <div className="chosen-skills-grid">

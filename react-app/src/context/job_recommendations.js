@@ -1,70 +1,84 @@
-import { useState, useEffect } from "react";
-import  MatrixFactorization  from "./MFCF"
+import MatrixFactorization from "./MFCF";
 import { getAllContactsByUserEmail, getAllSkillsForUser, getAllSkillsForJob, getJobsOfUser } from "../api";
 
-const FindJobRecommendations = ({ user, jobs }) => {
-    const [contacts, setContacts] = useState([]);
-    const [userskills, setUserskills] = useState([]);
-    const [jobRecommendations, setJobRecommendations] = useState([]);
+const FindJobRecommendations = async (user, jobs) => {
+    let contacts = [];
+    let userskills = [];
+    let jobRecommendations = [];
 
-    useEffect(() => {
-        const fetchContactsAndSkills = async () => {
-            const network = await getAllContactsByUserEmail(user.email);
-            setContacts(network);
+    // Fetch contacts and user skills
+    const fetchContactsAndSkills = async () => {
+        try {
+            contacts = await getAllContactsByUserEmail(user.email);
+            userskills = await getAllSkillsForUser(user.id);
+        } catch (error) {
+            console.error("Error fetching contacts and skills:", error);
+        }
+    };
 
-            const skills = await getAllSkillsForUser(user.id);
-            setUserskills(skills);
-        };
+    await fetchContactsAndSkills();
 
-        fetchContactsAndSkills();
-    }, [user]);
+    // Calculate recommendations
+    const calculateRecommendations = async () => {
+        const jobsSet = new Set();
 
-    useEffect(() => {
-        const calculateRecommendations = async () => {
-            const jobsSet = new Set();
-            let contactJobs = await Promise.all(contacts.map(async contact => {
-                try {
-                    const newjobs = await getJobsOfUser(contact.email);
-                    if (newjobs.success) {
-                        const uniqueJobs = newjobs.data.filter(job => job && job.id && !jobsSet.has(job.id));
-                        uniqueJobs.forEach(job => jobsSet.add(job.id));
-                        return uniqueJobs;
-                    }
-                } catch (error) {
-                    console.error(`Error getting job for user with email ${contact.email}:`, error);
-                    return [];
+        let contactJobs = await Promise.all(contacts.map(async (contact) => {
+            try {
+                const newjobs = await getJobsOfUser(contact.contact_email);
+                if (newjobs.success) {
+                    const uniqueJobs = newjobs.data.filter(job => job && job.id && !jobsSet.has(job.id));
+                    uniqueJobs.forEach(job => jobsSet.add(job.id));
+                    return uniqueJobs;
                 }
-            }));
-            contactJobs = contactJobs.flat();
+            } catch (error) {
+                console.error(`Error getting job for user with email ${contact.contact_email}:`, error);
+                return [];
+            }
+        }));
 
-            const networkJobRecommendations = jobs
-                .filter(job => contactJobs.some(contactJob => contactJob.id === job.id))
-                .map(job => ({ job, priority: 1 }));
+        contactJobs = contactJobs.flat();
 
-            const skillBasedRecommendations = await Promise.all(jobs.map(async (job) => {
-                const jobSkills = await getAllSkillsForJob(job.id);
-                const matchingSkills = jobSkills.filter(skill => userskills.includes(skill)).length;
-                const skillMatchScore = matchingSkills / jobSkills.length;
-                return { job, skillMatchScore };
-            }));
+        // Network-based recommendations
+        const networkJobRecommendations = jobs
+            .filter(job => contactJobs.some(contactJob => contactJob.id === job.id))
+            .map(job => ({ job, priority: 1 }));
 
-            const mfRecommendations = await MatrixFactorization(user, jobs);
+        // Skill-based recommendations
+        const skillBasedRecommendations = await Promise.all(jobs.map(async (job) => {
+            const jobSkills = await getAllSkillsForJob(job.id);
+            const matchingSkills = jobSkills.filter(skill => userskills.includes(skill));
+            let skillMatchScore;
+            if (jobSkills.length > 0) {
+                skillMatchScore = matchingSkills.length / jobSkills.length;
+            }
+            else {
+                skillMatchScore = 1;
+            }
+            return { job, skillMatchScore };
+        }));
 
-            const combinedRecommendations = [
-                ...networkJobRecommendations,
-                ...skillBasedRecommendations,
-                ...mfRecommendations
-            ];
+        // Matrix Factorization Recommendations
+        const mfRecommendations = await MatrixFactorization(user, jobs);
 
-            combinedRecommendations.sort((a, b) => (b.priority || 0) - (a.priority || 0) || b.skillMatchScore - a.skillMatchScore);
+        // Combine and sort recommendations
+        const combinedRecommendations = [
+            ...networkJobRecommendations,
+            ...skillBasedRecommendations,
+            ...mfRecommendations
+        ];
 
-            setJobRecommendations(combinedRecommendations.map(rec => rec.job));
-        };
+        combinedRecommendations.sort((a, b) => 
+            (b.priority || 0) - (a.priority || 0) || 
+            b.predictedScore - a.predictedScore || 
+            b.skillMatchScore - a.skillMatchScore
+        );
 
-        calculateRecommendations();
-    }, [contacts, jobs, userskills]);
+        jobRecommendations = combinedRecommendations.map(rec => rec.job);
+    };
 
-    return (jobRecommendations);
+    await calculateRecommendations();
+
+    return jobRecommendations;
 };
 
 export default FindJobRecommendations;
