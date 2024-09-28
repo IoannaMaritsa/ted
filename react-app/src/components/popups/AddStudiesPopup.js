@@ -51,13 +51,13 @@ const AddStudiesPopup = ({ isOpen, onClose, onAddStudies }) => {
                 </div>
                 <div className="add-work-experience-modal-body">
                 <div className="form-group2">
-                        <label htmlFor="school">Πανεπιστήμιο</label>
+                        <label htmlFor="school">Πανεπιστήμιο και Τμήμα</label>
                         <input
                             id="school"
                             type="text"
                             value={school}
                             onChange={(e) => setSchool(e.target.value)}
-                            placeholder='π.χ. Harvard'
+                            placeholder='π.χ. Πανεπιστήμιο Αθηνών - Τμήμα Φιλοσοφίας'
                         />
                     </div>
                     <div className="form-group2">

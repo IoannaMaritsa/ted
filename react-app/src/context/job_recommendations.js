@@ -36,19 +36,29 @@ const FindJobRecommendations = async (user, jobs) => {
             }
         }));
 
-        contactJobs = contactJobs.flat();
+        contactJobs = contactJobs.flat().filter(job => job !== undefined);
 
         // Network-based recommendations
-        const networkJobRecommendations = jobs
-            .filter(job => contactJobs.some(contactJob => contactJob.id === job.id))
-            .map(job => ({ job, priority: 1 }));
+        let networkJobRecommendations = [];
+        if (contactJobs.length > 0) {
+            // If contactJobs is not empty, proceed with filtering and assigning priority based on contacts' jobs
+            networkJobRecommendations = jobs
+                .filter(job => contactJobs.some(contactJob => contactJob.id === job.id))
+                .map(job => ({ job, priority: 1 }));
+        } else {
+            // If no contact jobs, assign the same default priority to all jobs
+            networkJobRecommendations = jobs.map(job => ({ job, priority: 1 })); // Default priority for all jobs
+        }
 
         // Skill-based recommendations
         const skillBasedRecommendations = await Promise.all(jobs.map(async (job) => {
             const jobSkills = await getAllSkillsForJob(job.id);
-            const matchingSkills = jobSkills.filter(skill => userskills.includes(skill));
+
             let skillMatchScore;
             if (jobSkills.length > 0) {
+                const matchingSkills = jobSkills.filter(jobSkill => 
+                    userskills.some(userSkill => userSkill.skill_name === jobSkill.skill_name)
+                );
                 skillMatchScore = matchingSkills.length / jobSkills.length;
             }
             else {
@@ -56,6 +66,8 @@ const FindJobRecommendations = async (user, jobs) => {
             }
             return { job, skillMatchScore };
         }));
+        
+        console.log('skillscore',skillBasedRecommendations);
 
         // Matrix Factorization Recommendations
         const mfRecommendations = await MatrixFactorization(user, jobs);
@@ -67,13 +79,26 @@ const FindJobRecommendations = async (user, jobs) => {
             ...mfRecommendations
         ];
 
-        combinedRecommendations.sort((a, b) => 
-            (b.priority || 0) - (a.priority || 0) || 
-            b.predictedScore - a.predictedScore || 
-            b.skillMatchScore - a.skillMatchScore
-        );
+        const jobScores = [];
 
-        jobRecommendations = combinedRecommendations.map(rec => rec.job);
+        jobs.forEach(job => {
+            const j = combinedRecommendations.filter(rec => rec.job.id === job.id);
+
+            let priority = 0, predictedScore = 0, skillMatchScore = 0;
+            j.forEach(i => {
+                priority += i.priority || 0;
+                skillMatchScore += i.skillMatchScore || 0;
+                predictedScore += i.predictedScore || 0;
+            })
+
+            const score = priority + skillMatchScore + predictedScore / 100;
+            const recommend = { job, score };
+            jobScores.push(recommend);
+        })
+
+        jobScores.sort((a, b) => b.score - a.score);
+
+        jobRecommendations = jobScores.map(rec => rec.job);
     };
 
     await calculateRecommendations();

@@ -12,9 +12,8 @@ import { useAppContext } from "../context/appContext";
 import { default_locations } from "../context/locations";
 import { format } from 'date-fns';
 import { useState, useMemo, useEffect } from 'react';
-import { getJobsOfUser, getAllContactsByUserEmail, updateJob, addJob, deleteJob, getAllUsers, getAllSkills , updateJobSkills} from '../api';
+import { getJobsOfUser, updateJob, addJob, deleteJob, getAllUsers, updateJobSkills } from '../api';
 import FindJobRecommendations from '../context/job_recommendations';
-import MatrixFactorization from "../context/MFCF";
 
 export default function Epag_job_ad() {
   const locations = ["Περιοχές Όλες", ...default_locations];
@@ -42,42 +41,39 @@ export default function Epag_job_ad() {
 
   const [mysearchQuery, setMysearchQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [recommendations, setRecommendations] = useState([]);
 
   const getJobs = async () => {
     try {
       const users = await getAllUsers();
       const jobsSet = new Set(); // To store unique job IDs
-      let fetchedJobs = []; // Array to store all jobs
 
-      for (const user of users) {
-        if (user.email === user_info.email) {
-          continue;
-        }
-        try {
-          const newjobs = await getJobsOfUser(user.email);
-          if (newjobs.success) {
-            // Only add jobs that aren't already in the Set
-            const uniqueJobs = newjobs.data.filter((job) => {
-              return job !== null && job.id && !jobsSet.has(job.id);
-            });
+      let fetchedJobs = await Promise.all(users
+        .filter(user => user.email !== user_info.email) // Filter out the current user's email
+        .map(async (user) => {
+          try {
+            const newjobs = await getJobsOfUser(user.email);
+            if (newjobs.success) {
+              // Only add jobs that aren't already in the Set
+              const uniqueJobs = newjobs.data.filter(job =>
+                job !== null && job.id && !jobsSet.has(job.id)
+              );
 
-            // Add job IDs to the Set after filtering nulls
-            uniqueJobs.forEach((job) => jobsSet.add(job.id));
-            fetchedJobs = [...fetchedJobs, ...uniqueJobs];
+              // Add job IDs to the Set after filtering nulls
+              uniqueJobs.forEach(job => jobsSet.add(job.id));
+              return uniqueJobs; // Return the unique jobs for this user
+            }
+            return []; // Return an empty array if newjobs is not successful
+          } catch (error) {
+            console.error(`Error getting job for user with email ${user.email}:`, error);
+            return []; // Return an empty array on error
           }
-        } catch (error) {
-          console.error(
-            `Error getting job for user with email ${user.email}:`,
-            error
-          );
-        }
-      }
-      
-      
-      //const recommendedjobs = FindJobRecommendations(user_info, fetchedJobs);
+        }));
+
+      fetchedJobs = fetchedJobs.flat().filter(job => job !== undefined && Object.keys(job).length > 0);
+
+      const recommendedjobs = await FindJobRecommendations(user_info, fetchedJobs);
       // Update state with filtered jobs
-      setJobs(fetchedJobs);
+      setJobs(recommendedjobs);
       setIsLoading(false);
     } catch (error) {
       console.error("Error getting jobs:", error);
@@ -94,21 +90,6 @@ export default function Epag_job_ad() {
     } catch (error) {
       console.error("Error getting jobs:", error);
       setIsMyLoading(false);
-    }
-  };
-
-  const isContact = async (userEmail) => {
-    try {
-      const contacts = await getAllContactsByUserEmail(user_info.email);
-      for (const contact in contacts) {
-        if (userEmail === contact.contact_email) {
-          return true;
-        }
-      }
-      return false;
-    } catch (error) {
-      console.error("Error getting contacts:", error);
-      return false;
     }
   };
 
@@ -149,10 +130,10 @@ export default function Epag_job_ad() {
         if (selectedDateFilter !== "Δημοσίευση Όλες") {
           const jobDate = new Date(job.publish_date);
           const now = new Date();
-          if (selectedDateFilter === "Την τελευταία εβδομάδα") {
-            const lastWeek = new Date();
-            lastWeek.setDate(now.getDate() - 7);
-            if (jobDate < lastWeek) isMatch = false;
+          if (selectedDateFilter === "Τον τελευταίο χρόνο") {
+            const lastYear = new Date();
+            lastYear.setFullYear(lastYear.getFullYear() - 1);
+            if (jobDate < lastYear) isMatch = false;
           } else if (selectedDateFilter === "Τον τελευταίο μήνα") {
             const lastMonth = new Date();
             lastMonth.setMonth(now.getMonth() - 1);
@@ -252,7 +233,7 @@ export default function Epag_job_ad() {
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
     setMyselectedJob(null); // Clear myselectedJob when switching options
-    setSelectedJob(currentJobs[0]); // Clear selectedJob when switching options
+    setSelectedJob(null); // Clear selectedJob when switching options
   };
 
   const HandleJobSelect = (job) => {
@@ -313,7 +294,7 @@ export default function Epag_job_ad() {
         ); // Paginate jobs
 
         setCurrentJobs(jobsToDisplay); // Set the jobs to be displayed for the current page
-        setSelectedJob(jobsToDisplay[0] || null); // Safely set selected job or null if no jobs available
+        setSelectedJob(null); // Safely set selected job or null if no jobs available
       }
     };
     fetchFilteredJobs();
@@ -350,24 +331,9 @@ export default function Epag_job_ad() {
   // Ensure selectedJob is updated properly when currentJobs changes
   useEffect(() => {
     if (currentJobs.length > 0) {
-      setSelectedJob(currentJobs[0] || null); // Guard against undefined job, select the first available job
+      setSelectedJob(null); // Guard against undefined job, select the first available job
     }
   }, [currentJobs]);
-
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      if (jobs.length > 0) {
-        try {
-          const recommendedJobs = await MatrixFactorization(user_info, jobs);
-          setRecommendations(recommendedJobs);
-        } catch (error) {
-          console.error("Error in MatrixFactorization:", error);
-        }
-      }
-    };
-
-    fetchRecommendations();
-  }, [jobs, user_info]);
 
   if (isLoading && selectedOption === "Αγγελίες άλλων") {
     return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
@@ -413,8 +379,8 @@ export default function Epag_job_ad() {
           <Dropdown
             options={[
               "Δημοσίευση Όλες",
-              "Την τελευταία εβδομάδα",
               "Τον τελευταίο μήνα",
+              "Τον τελευταίο χρόνο",
             ]}
             onOptionSelect={handleDateFilterChange}
           />
@@ -598,7 +564,7 @@ export default function Epag_job_ad() {
               <div className="jobs-left-section">
                 {currentJobs.map((job, index) => (
                   <div>
-                    {job.id === selectedJob.id ? (
+                    {(selectedJob != null && job.id === selectedJob.id) ? (
                       <div
                         className="job-display-selected"
                         onClick={() => HandleJobSelect(job)}
@@ -662,23 +628,34 @@ export default function Epag_job_ad() {
                 )}
               </div>
               <div className="jobs-right-section">
-                {currentJobs.length > 0 && (
-                  <Job
-                    id={selectedJob.id}
-                    title={selectedJob.title}
-                    company={selectedJob.company}
-                    location={selectedJob.location}
-                    publish_date={format(
-                      selectedJob.publish_date,
-                      "yyyy-MM-dd"
+                {selectedJob != null ? (
+                  <>
+                    {currentJobs.length > 0 && (
+                      <Job
+                        id={selectedJob.id}
+                        title={selectedJob.title}
+                        company={selectedJob.company}
+                        location={selectedJob.location}
+                        publish_date={format(
+                          selectedJob.publish_date,
+                          "yyyy-MM-dd"
+                        )}
+                        type={selectedJob.type}
+                        profession={selectedJob.profession}
+                        experience={selectedJob.experience}
+                        salary={selectedJob.salary}
+                        detail={selectedJob.details}
+                      />
                     )}
-                    type={selectedJob.type}
-                    profession={selectedJob.profession}
-                    experience={selectedJob.experience}
-                    salary={selectedJob.salary}
-                    detail={selectedJob.details}
-                  />
+                  </>
+                ) : (
+                  <div className="black-frame">
+                    <div className='job-display-box'>
+                      Επιλέξτε μία Αγγελία για να δείτε περισσότερες πληροφορίες για αυτή!
+                    </div>
+                  </div>
                 )}
+
               </div>
             </div>
           )}

@@ -484,12 +484,15 @@ export const getAllSkillsForUser = async (userId) => {
         if (error.response) {
             // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
+            return [];
         } else if (error.request) {
             // No response received
             console.error('No response received from server:', error.request);
+            return [];
         } else {
             // Error setting up request
             console.error('Error setting up request:', error.message);
+            return [];
         }
         throw error; // Rethrow to handle higher up if necessary
     }

@@ -1,19 +1,18 @@
-import { getAllContactsByUserEmail, getJobViewsByUser } from "../api";
+import { getAllUsers, getJobViewsByUser } from "../api";
 
 // Refactor MatrixFactorization to not use React hooks
 const MatrixFactorization = async (user, jobs) => {
     const UJMatrix = [];
     const userMatrix = [];
     const jobMatrix = [];
-    const recommendations = [];
 
     try {
-        // Step 1: Fetch user's contacts
-        const contacts = await getAllContactsByUserEmail(user.email);
+        // Step 1: Fetch all users
+        const users = await getAllUsers();
 
-        if (!contacts || contacts.length === 0) {
-            console.error("No contacts found for the user.");
-            return; // Early exit if no contacts are found
+        if (!users || users.length === 0) {
+            console.error("No users found.");
+            return; // Early exit if no users are found
         }
 
         if (!jobs || jobs.length === 0) {
@@ -25,12 +24,12 @@ const MatrixFactorization = async (user, jobs) => {
         const numofJobs = jobs.length;
 
         // Step 3: Fill job views for each user
-        await Promise.all(contacts.map(async (contact) => {
-            const userViews = await getJobViewsByUser(contact.contact_email); // Fetch views for each user
+        await Promise.all(users.map(async (user) => {
+            const userViews = await getJobViewsByUser(user.email); // Fetch views for each user
 
             if (!userViews) {
-                console.error(`No views found for contact: ${contact}`);
-                return; // Skip this contact if no views found
+                console.error(`No views found for user: ${user.email}`);
+                return; // Skip this user if no views found
             }
             const row = [];
 
@@ -43,11 +42,9 @@ const MatrixFactorization = async (user, jobs) => {
             UJMatrix.push(row);
         }));
 
-        console.table(UJMatrix);
-
         // Step 4: Initialize user and job matrices with random factors
         const numFactors = 50;
-        for (let i = 0; i < contacts.length; i++) {
+        for (let i = 0; i < users.length; i++) {
             userMatrix.push(Array.from({ length: numFactors }, () => Math.random()));
         }
         for (let j = 0; j < numofJobs; j++) {
@@ -71,10 +68,13 @@ const MatrixFactorization = async (user, jobs) => {
             }
         }
 
-        // Step 6: Calculate user vector (average vector for user's contacts)
-        const getUserNetworkVector = () => {
-            return userMatrix[0].map((_, i) => userMatrix.reduce((sum, vec) => sum + vec[i], 0) / userMatrix.length);
-        };
+        // Step 6: Calculate user vector
+        const userIndexMap = {};
+        users.forEach((user, index) => {
+            userIndexMap[user.id] = index; // Map user.id to its index in userMatrix
+        });
+        const userIndex = userIndexMap[user.id];
+        const userVector = userMatrix[userIndex];
 
         // Step 7: Get jobs unseen by the user and recommend based on the network
         const userSeenJobs = (await getJobViewsByUser(user.email)).map(view => view.job_id);
@@ -86,11 +86,10 @@ const MatrixFactorization = async (user, jobs) => {
         }, {});
 
         const recommend = unseenJobs.map(job => {
-            const userNetworkVector = getUserNetworkVector();
             const jobIndex = jobIndexMap[job.id];
 
             const jobVector = jobMatrix[jobIndex];
-            const predictedScore = dotProduct(userNetworkVector, jobVector);
+            const predictedScore = dotProduct(userVector, jobVector);
             return { job, predictedScore };
         });
 

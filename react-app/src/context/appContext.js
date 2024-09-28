@@ -14,6 +14,7 @@ export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [messageContact, setMessageContact] = useState(null)
     const [loading, setLoading] = useState(true);
+    const [logoutTimer, setLogoutTimer] = useState(null);
 
     const fetchUserData = async (email) => {
         try {
@@ -28,12 +29,32 @@ export const ContextProvider = ({ children }) => {
         }
     };
 
+    const startLogoutTimer = (expirationTime) => {
+        const currentTime = Date.now();
+        const timeLeft = expirationTime - currentTime;
+
+        if (logoutTimer) clearTimeout(logoutTimer);  // Clear any previous timers
+
+        const timer = setTimeout(() => {
+            logOut();
+        }, timeLeft);
+
+        setLogoutTimer(timer);  // Save the timer reference
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');  // Check if token exists in localStorage
         if (token) {
             try {
-                const decodedUser = jwtDecode(token);  // Decode the token
-                fetchUserData(decodedUser.email);  // Fetch user data based on email
+                const decodedToken = jwtDecode(token);  // Decode the token
+                 // Check if the token has expired
+                 const expirationTime = decodedToken.exp * 1000;
+                 if (Date.now() >= expirationTime) {
+                     logOut();  // If token is expired, log out immediately
+                 } else {
+                     fetchUserData(decodedToken.email);  // Fetch user data
+                     startLogoutTimer(expirationTime);  // Set a timer to log out when the token expires
+                 }
             } catch (error) {
                 console.error('Error decoding token:', error);
                 setIsLoggedIn(false);
@@ -51,9 +72,13 @@ export const ContextProvider = ({ children }) => {
             const token = response.token;
 
             if (token) {
+                localStorage.setItem('token', token);
                 const decodedUser = jwtDecode(token);
                 setIsLoggedIn(true);
                 await fetchUserData(decodedUser.email);
+
+                const expirationTime = decodedUser.exp * 1000;
+                startLogoutTimer(expirationTime);
             } else {
                 throw new Error('Token not found in localStorage.');
             }
@@ -66,6 +91,7 @@ export const ContextProvider = ({ children }) => {
         localStorage.removeItem('token');
         setUser(null);
         setIsLoggedIn(false);
+        if (logoutTimer) clearTimeout(logoutTimer);  // Clear the timer on logout
     };
 
     const value = {

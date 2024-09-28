@@ -118,9 +118,9 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
             console.error('Error adding user:', error);
             throw error;
         }
-        await addPrivacy(user.email);
+        await addPrivacy(email);
 
-        console.log(`Privacy record created for user with email ${user.email}`);
+        console.log(`Privacy record created for user with email ${email}`);
 
         console.log('User added');
         return true;
@@ -214,7 +214,7 @@ const updateUser = async (email, name, profession, workplace, location, dob, pre
         const filePath = new URL(previousPic).pathname.replace('/storage/v1/object/profilepics/', '');
 
         // Handle profile picture deletion if it's not the default
-        if (fileName !== 'default-avatar.jpeg') {
+        if (profilepic && fileName !== 'default-avatar.jpeg') {
             // Delete the old profile picture from Supabase Storage
             const { error: deleteFileError } = await supabase
                 .storage

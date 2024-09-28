@@ -6,7 +6,8 @@ import "../../css/popup.css";
 const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
     const { user } = useAppContext();
     const [skills, setSkills] = useState([]);
-    const [chosen, setChosen] = useState([]); // Correctly use state for chosen skills
+    const [chosen, setChosen] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const skillsPerPage = 12; // 3 rows * 4 columns
     const [currentPage, setCurrentPage] = useState(1);
@@ -56,18 +57,27 @@ const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
 
     const getSkills = async () => {
         try {
+            // Filter out skills that the user already has
             const response = await getAllSkills();
+            console.log('allskills', response);
 
             const userskills = await getAllSkillsForUser(user.id);
+            console.log('userskills', userskills);
 
-            // Filter out skills that the user already has
-            const filteredSkills = response.filter(skill => {
-                return !userskills.some(userSkill => userSkill.skill_name === skill.skill_name);
-            });
+            if (userskills && userskills.length > 0) {
+                const filteredSkills = response.filter(skill => {
+                    return !userskills.some(userSkill => userSkill.skill_name === skill.skill_name);
+                });
 
-            setSkills(filteredSkills);
+                setSkills(filteredSkills);
+            }
+            else setSkills(response);
+
+
+            setIsLoading(false);
         } catch (error) {
             console.error('Error getting skills:', error);
+            setIsLoading(false);
         }
     };
 
@@ -103,22 +113,29 @@ const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
                         </div>
                     </div>
                     <div className="skills-container">
-                        <div className="skills-grid">
-                            {currentSkills.map((skill, index) => (
-                                <div key={index} className="skill-box" onClick={() => AddSkill(skill.skill_name)}>
-                                    {skill.skill_name}
+                        {isLoading ? (
+                            <div>Loading...</div>
+                        ) : (
+                            <>
+                                <div className="skills-grid">
+                                    {currentSkills.map((skill, index) => (
+                                        <div key={index} className="skill-box" onClick={() => AddSkill(skill.skill_name)}>
+                                            {skill.skill_name}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                        <div className="pagination">
-                            <button onClick={() => handleClick(currentPage - 1)} disabled={currentPage === 1}>
-                                Προηγούμενο
-                            </button>
-                            <span>Σελίδα {currentPage} από {totalPages}</span>
-                            <button onClick={() => handleClick(currentPage + 1)} disabled={currentPage === totalPages}>
-                                Επόμενο
-                            </button>
-                        </div>
+                                <div className="pagination">
+                                    <button onClick={() => handleClick(currentPage - 1)} disabled={currentPage === 1}>
+                                        Προηγούμενο
+                                    </button>
+                                    <span>Σελίδα {currentPage} από {totalPages}</span>
+                                    <button onClick={() => handleClick(currentPage + 1)} disabled={currentPage === totalPages}>
+                                        Επόμενο
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
                     </div>
 
                     {/* Display chosen skills */}
