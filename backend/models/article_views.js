@@ -80,7 +80,50 @@ const getArticleViewsByUser = async (userEmail) => {
     }
 }
 
+// Function to get article views of a user
+const getArticleViewsByArticle = async (articleId) => {
+    try {
+        // Fetch views associated with the user
+        const { data: userViews, error: userViewsError } = await supabase
+            .from('article_views')
+            .select('*')
+            .eq('article_id', articleId);
+
+            console.log(userEmail, userViews)
+        if (userViewsError) {
+            throw userViewsError;
+        }
+
+        return userViews;
+
+    } catch (error) {
+        console.error('Error fetching views for user:', error);
+        throw error;
+    }
+}
+
+// Function to get article views of a user
+const getArticleViews = async () => {
+    try {
+        // Fetch views associated with the user
+        const { data: userViews, error: userViewsError } = await supabase
+            .from('article_views')
+            .select('*')
+        if (userViewsError) {
+            throw userViewsError;
+        }
+
+        return userViews;
+
+    } catch (error) {
+        console.error('Error fetching views for user:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     addViewtoArticle,
-    getArticleViewsByUser
+    getArticleViewsByUser,
+    getArticleViewsByArticle,
+    getArticleViews
 };

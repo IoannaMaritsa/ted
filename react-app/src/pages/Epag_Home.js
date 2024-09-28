@@ -9,9 +9,11 @@ import { useAppContext } from "../context/appContext";
 import getImageUrl from "../hooks/getImageUrl";
 import { format } from "date-fns";
 import { formatDateRange } from "../utils/timeUtils";
+import MatrixFactorizationArticles from "../context/MFarticles";
 import {
   addArticle,
   getArticle,
+  getAllArticles,
   getUser,
   deleteArticle,
   getOtherUsersArticles,
@@ -31,10 +33,54 @@ export default function Epag_Home() {
   const [studies, setStudies] = useState([]);
   const [skills, setSkills] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [recommendedArticles, setRecommendedArticles] = useState([]);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      const predictions = await MatrixFactorizationArticles();
+      const articles = (await getAllArticles()).othersarticles;
+
+      // Find the recommended articles for the user
+      const userRecommendations = predictions.find(
+        (user) => user[0].user === user_info.email // Assuming the user object is at index 0
+      );
+
+      // Extract recommended article IDs based on predicted ratings
+      const recommendedArticlesData = userRecommendations
+        .filter(({ predictedRating }) => predictedRating > 0) // Filter out non-recommended articles
+        .sort((a, b) => b.predictedRating - a.predictedRating) // Sort by predicted rating
+        .map(({ articleId }) => {
+          // Find the full article data by ID and maintain order
+          return articles.find((article) => article.id === articleId);
+        })
+        .filter((article) => article !== undefined); // Filter out any undefined values
+      // Filter full articles based on recommended IDs
+
+      // Get contact emails
+      const cont = await getAllContactsByUserEmail(user_info.email);
+      const contactEmails = cont.map((contact) => contact.contact_email);
+      console.log("contacts",cont)
+      console.log("emails",contactEmails)
+
+      // Sort recommended articles by whether the author is in the user's network
+      const sortedRecommendedArticles = recommendedArticlesData.sort((a, b) => {
+        const isAInNetwork = contactEmails.includes(a.author_email);
+        const isBInNetwork = contactEmails.includes(b.author_email);
+        if(isAInNetwork === true || isBInNetwork === true)
+        {console.log(a.title, b.title, isAInNetwork, isBInNetwork)}
+        return isAInNetwork === isBInNetwork ? 0 : isAInNetwork ? -1 : 1;
+      });
+
+      setRecommendedArticles(sortedRecommendedArticles);
+    };
+
+    fetchRecommendations();
+  }, [user_info.email]);
 
   const getArticles = async (userEmail) => {
     try {
       const response = await getOtherUsersArticles(userEmail);
+      console.log("articles", response);
       setArticles(response);
     } catch (error) {
       console.error("Error getting articles:", error);
@@ -128,7 +174,6 @@ export default function Epag_Home() {
   const [attachedFiles, setAttachedFiles] = useState([]);
   const maxArticles = 6;
   let currentArticles = 0;
-
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -428,7 +473,7 @@ export default function Epag_Home() {
             <div>
               <h2>Άρθρα άλλων επαγγελματιών</h2>
               <div className="articles-page">
-                {articles.map((article, index) => (
+                {recommendedArticles.map((article, index) => (
                   <Article
                     key={index}
                     id={article.id}
