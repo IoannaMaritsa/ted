@@ -230,6 +230,26 @@ const getArticleInterests = async (articleId) => {
     }
 };
 
+//Get all interersts
+const getAllInterests = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('user_interests')
+            .select('*')
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error('Error retrieving user interests:', error);
+        throw error;
+    }
+};
+
+
 module.exports = {
     addArticle,
     getArticlesByUserEmail,
@@ -239,5 +259,6 @@ module.exports = {
     getUserInterests,
     getArticleInterests,
     getArticlesNotByUserEmail,
-    getArticlesById
+    getArticlesById,
+    getAllInterests
 };

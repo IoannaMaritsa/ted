@@ -102,8 +102,28 @@ const getArticleViewsByArticle = async (articleId) => {
     }
 }
 
+// Function to get article views of a user
+const getArticleViews = async () => {
+    try {
+        // Fetch views associated with the user
+        const { data: userViews, error: userViewsError } = await supabase
+            .from('article_views')
+            .select('*')
+        if (userViewsError) {
+            throw userViewsError;
+        }
+
+        return userViews;
+
+    } catch (error) {
+        console.error('Error fetching views for user:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     addViewtoArticle,
     getArticleViewsByUser,
-    getArticleViewsByArticle
+    getArticleViewsByArticle,
+    getArticleViews
 };

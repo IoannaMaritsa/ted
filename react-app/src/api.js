@@ -227,6 +227,17 @@ export const getArticleInterests = async (articleId) => {
     }
 };
 
+// Get all users interested in a specific article
+export const getAllInterests = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/interests`);
+        return response.data;
+    } catch (error) {
+        console.error('Error retrieving user interests:', error);
+        throw error;
+    }
+};
+
 // Get all contacts for a specific user by email
 export const getAllContactsByUserEmail = async (userEmail) => {
     try {
@@ -565,6 +576,18 @@ export const getComments = async (articleId) => {
     }
 };
 
+// Function to get all comments 
+export const getAllComments = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/comments`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        throw error; // Rethrow the error to handle it further up if necessary
+    }
+};
+
+
 // Function to get all comments by a specific user
 export const getCommentsOfUser = async (authorEmail) => {
     try {
@@ -850,18 +873,28 @@ export const getArticleViewsByUser = async (userEmail) => {
     }
 };
 
-// Function to get article views for a specific user
 export const getArticleViewsByArticle = async (articleId) => {
     try {
+        console.log(`Fetching views for article ID: ${articleId}`);
         const response = await axios.get(`${API_BASE_URL}/article-views/article`, {
-            params: {
-                articleId,
-            },
+            params: { articleId },
         });
-
+        console.log(`Response for article ${articleId}:`, response.data);
         return response.data;
     } catch (error) {
-        console.error('Error fetching article views for user:', error);
+        console.error(`Error fetching article views for article ${articleId}:`, error);
         throw error;
     }
 };
+
+
+export const getArticleViews= async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/article-views/all`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching article views`, error);
+        throw error;
+    }
+};
+

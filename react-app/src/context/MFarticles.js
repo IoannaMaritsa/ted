@@ -2,106 +2,157 @@ import React from "react";
 import {
   getAllUsers,
   getAllArticles,
-  getArticleInterests,
-  getComments,
-  getArticleViewsByArticle,
+  getAllInterests,
+  getAllComments,
+  getArticleViews,
 } from "../api";
 
 const MatrixFactorizationArticles = async () => {
-   // Function to get the total number of views for a specific user and article
-   const getUserViewCountForArticle = (userEmail, articleId) => {
-    const userViews = viewsMap[articleId].filter(view => view.user_email === userEmail);
-    return userViews.reduce((total, view) => total + view.view_count, 0); // Sum the counts
-  };
-
-
+ 
   try {
     const users = await getAllUsers();
-    const articles = await getAllArticles();
-    const otherArticles = articles.othersarticles;
+    const articles = (await getAllArticles()).othersarticles;
+    const views = await getArticleViews();
+    const comments = await getAllComments();
+    const interests = await getAllInterests();
 
-    // Check if articles exist
-    if (!otherArticles || otherArticles.length === 0) {
-      console.error("No articles found");
-      return;
-    }
+    const createUserArticleMatrix = (
+      users,
+      articles,
+      views,
+      comments,
+      interests
+    ) => {
+      const interestsMap = {};
+      const commentsMap = {};
+      const viewsMap = {};
 
-    // Fetch all article interests concurrently
-    const articleInterestsPromises = otherArticles.map((article) =>
-      getArticleInterests(article.id)
-    );
+      // Step 1: Prepare maps for fast lookup
+      articles.forEach((article) => {
+        interestsMap[article.id] = interests
+          .filter((interest) => interest.article_id === article.id)
+          .map((interest) => interest.user_email);
 
-    const allInterests = await Promise.all(articleInterestsPromises);
+        commentsMap[article.id] = comments
+          .filter((comment) => comment.article_id === article.id)
+          .map((comment) => comment.user_email);
 
-    // Fetch all comments concurrently
-    const commentsPromises = otherArticles.map((article) =>
-      getComments(article.id)
-    );
-
-    const allComments = await Promise.all(commentsPromises);
-
-     // Fetch all comments concurrently
-     const viewPromises = otherArticles.map((article) =>
-        getArticleViewsByArticle(article.id)
-      );
-  
-      const allViews = await Promise.all(viewPromises);
-
-    const interestsMap = {};
-    const commentsMap = {};
-    const viewsMap = {};
-
-    // Prepare a map of interests and comments for quick access
-    otherArticles.forEach((article, index) => {
-      interestsMap[article.id] = allInterests[index].map(
-        (like) => like.user_email
-      );
-      commentsMap[article.id] = allComments[index].map(
-        (comment) => comment.author_email
-      );
-      viewsMap[article.id] = allViews[index].map(
-        (view) => view.user_email
-      );
-      
-    });
-
-    // Create a matrix for users
-    const matrix = users.map((user) => {
-      const row = new Array(otherArticles.length).fill(0); // Initialize row with zeros
-
-      // Check user interests and comments for each article
-      otherArticles.forEach((article) => {
-        // Check if the current user has liked this article
-        let hasLiked = false;
-        let hasCommented = false;
-        if (interestsMap[article.id].includes(user.email)) {
-          row[article.id-1] += 3; // Assuming 3 if liked
-          hasLiked = true;
-        }
-
-        // Check if the current user has commented on this article
-        if (commentsMap[article.id].includes(user.email)) {
-          row[article.id-1] += 5; // Assuming 5 if commented
-          hasCommented = true;
-        }
-
-         // Increment for views based on actual view counts
-        const userViewCount = viewsMap[article.id].filter(view => view.user_email === user.email);
-        if (userViewCount.length > 0) {
-          row[article.id - 1] += userViewCount.reduce((total, view) => total + view.view_count, 0);
-        }
+        viewsMap[article.id] = views
+          .filter((view) => view.article_id === article.id)
+          .map((view) => ({ user: view.user_email, count: view.view_count }));
       });
 
-      return { user: user.email, row }; // Include user info with the row
+      const matrix = users.map((user) => {
+        const row = new Array(articles.length).fill(0); // Initialize with zeros
+
+        // Populate matrix for each article
+        articles.forEach((article, index) => {
+          // Calculate the engagement score
+          let engagementScore = 0;
+
+          // Add points for likes
+          if (interestsMap[article.id].includes(user.email)) {
+            engagementScore += 3; // +3 for like
+          }
+
+          // Add points for comments
+          if (commentsMap[article.id].includes(user.email)) {
+            engagementScore += 5; // +5 for comment
+          }
+
+          // Add points for views
+          const userViews = viewsMap[article.id].filter(
+            (view) => view.user === user.email
+          );
+          if (userViews.length > 0) {
+            engagementScore += userViews[0].count; // Add the actual view count
+          }
+
+          // Set the engagement score for this article
+          row[index] = engagementScore; // Assign the computed score
+        });
+
+        return { user: user.email, row }; // Include user info with the row
+      });
+
+      return matrix;
+    };
+
+    const matrix = createUserArticleMatrix(
+      users,
+      articles,
+      views,
+      comments,
+      interests
+    );
+
+    function matrixFactorization(
+      R,
+      numFeatures = 1, // Ensure only 1 feature
+      steps = 5000,
+      alpha = 0.0002,
+      beta = 0.02
+    ) {
+      const numUsers = R.length;
+      const numArticles = R[0].row.length;
+
+      // Initialize user (P) and article (Q) matrices with random values
+      let P = Array.from({ length: numUsers }, () =>
+        new Array(numFeatures).fill(0).map(() => Math.random())
+      );
+      let Q = Array.from({ length: numArticles }, () =>
+        new Array(numFeatures).fill(0).map(() => Math.random())
+      );
+
+      //Q = transposeMatrix(Q); // Transpose Q for easier matrix multiplication
+
+      // Perform Gradient Descent
+      for (let step = 0; step < steps; step++) {
+        for (let i = 0; i < numUsers; i++) {
+          for (let j = 0; j < numArticles; j++) { // Ensure j iterates over articles
+            if (R[i].row[j] > 0) {
+              // Only factorize known values
+              const error = R[i].row[j] - dotProduct(P[i], Q[j]);
+
+              for (let k = 0; k < numFeatures; k++) {
+                P[i][0] += alpha * (2 * error * Q[j][0] - beta * P[i][0]); // Use only the first feature
+                Q[j][0] += alpha * (2 * error * P[i][0] - beta * Q[j][0]); // Use only the first feature
+              }
+            }
+          }
+        }
+      }
+      return { P, Q };
+    }
+
+
+    function transposeMatrix(matrix) {
+      return matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]));
+    }
+
+    function dotProduct(vec1, vec2) {
+      return vec1[0] * vec2[0]; // Since each is a single value
+    }
+
+    const { P, Q } = matrixFactorization(matrix);
+
+
+    const predictedRatings = users.map((user, userIndex) => {
+      return articles.map((article, articleIndex) => {
+        return {
+          user: user.email,
+          articleId: article.id,
+
+          predictedRating: dotProduct(P[userIndex], Q[articleIndex]), // Calculate predicted rating
+        };
+      });
     });
 
-    console.log("Matrix:", matrix);
+
+    return predictedRatings;
   } catch (err) {
-    console.error("Error:", err); // Log the error for debugging
+    console.log("Error:", err);
   }
 };
-
-// Call the function immediately (could be done on button click or any event)
-MatrixFactorizationArticles();
 
 export default MatrixFactorizationArticles;

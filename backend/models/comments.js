@@ -38,6 +38,25 @@ const getComments = async (articleId) => {
     }
 };
 
+
+// Function to get all comments
+const getAllComments = async (articleId) => {
+    try {
+        const { data, error } = await supabase
+            .from('comments')
+            .select('*')
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('Comments:', data);
+        return data;
+    } catch (err) {
+        console.error('Error fetching comments:', err);
+    }
+};
+
 // Function to get comments of a user
 const getCommentsOfUser = async (authorEmail) => {
     try {
@@ -86,5 +105,6 @@ module.exports = {
     addComment,
     getComments,
     getCommentsOfUser,
+    getAllComments,
     deleteComment
 };
