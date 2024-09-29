@@ -75,7 +75,7 @@ const formatTime = (date) => {
 };
 
 function formatDateRange(startIso, endIso) {
-    const options = { year: 'numeric', month: 'short' }; // Formatting options
+    const options = { year: 'numeric', month: 'short' };
     const startDate = new Date(startIso);
     const endDate = new Date(endIso);
   

@@ -87,22 +87,14 @@
 
 .icon-circle2 {
   width: 30px;
-  /* Width and height should be equal for a perfect circle */
   height: 30px;
-  /* Same as width */
   background-color: #ffffff;
-  /* Grey background color */
   border: 3px solid var(--text-dark-grey2);
   border-radius: 50%;
-  /* Makes the container a circle */
   display: flex;
-  /* Flexbox for centering */
   align-items: center;
-  /* Center vertically */
   justify-content: center;
-  /* Center horizontally */
   margin-right: 20px;
-  /* Space between icon and text */
   margin-left: 850px;
   cursor: pointer;
 }

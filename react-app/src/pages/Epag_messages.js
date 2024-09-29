@@ -5,7 +5,7 @@ import MainBottom from '../components/MainBottom';
 import '../css/epag-messages.css';
 import Breadcrumbs from "../components/Breadcrumbs";
 import MessageContainer from "../components/MessageContainer";
-import { parseRelativeTime, formatRelativeTime, formatTime } from "../utils/timeUtils";
+import { formatRelativeTime} from "../utils/timeUtils";
 import { getAllContactsByUserEmail, getMessagesBetweenUsers, addMessage, getUser } from "../api";
 import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
@@ -17,9 +17,7 @@ export default function Epag_messages() {
     const [selectedContact, setSelectedContact] = useState(null);
 
     useEffect(() => {
-        console.log("message contact", messageContact);
 
-        // Fetch contacts and messages
         fetchContactsAndMessages();
 
         // Polling messages every 5 seconds
@@ -78,7 +76,7 @@ export default function Epag_messages() {
                 }));
             }
         } catch (err) {
-            console.log("Error fetching messages");
+            console.error("Error fetching messages");
         }
     }
 
@@ -164,7 +162,7 @@ export default function Epag_messages() {
                     {selectedContact ? (
                         <MessageContainer
                             messages={messages[selectedContact?.email]}
-                            contact={selectedContact} // Make sure this is correctly passed
+                            contact={selectedContact} 
                             onSendMessage={handleNewMessage}
                         />
                     ) : (

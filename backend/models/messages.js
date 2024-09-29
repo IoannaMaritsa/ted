@@ -1,14 +1,12 @@
 const supabase = require('../supabaseClient');
 
+// Get messages between 2 users
 const getMessagesBetweenUsers = async(email1, email2) => {
     try {
-        console.log("yo", email1, email2);
         const {data, error} = await supabase 
             .from('messages')
             .select('*')
             .or(`and(sender_email.eq.${email1},receiver_email.eq.${email2}),and(sender_email.eq.${email2},receiver_email.eq.${email1})`);
-       
-        console.log(`Successfully fetched messages`);
 
         return data;
     } catch(err) {
@@ -17,6 +15,7 @@ const getMessagesBetweenUsers = async(email1, email2) => {
     }
 }
 
+// Add a new message
 const addMessage = async(senderEmail, receiverEmail, message, created_at) => {
 
     try {

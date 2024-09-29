@@ -41,13 +41,12 @@ const FindJobRecommendations = async (user, jobs) => {
         // Network-based recommendations
         let networkJobRecommendations = [];
         if (contactJobs.length > 0) {
-            // If contactJobs is not empty, proceed with filtering and assigning priority based on contacts' jobs
             networkJobRecommendations = jobs
                 .filter(job => contactJobs.some(contactJob => contactJob.id === job.id))
                 .map(job => ({ job, priority: 1 }));
         } else {
             // If no contact jobs, assign the same default priority to all jobs
-            networkJobRecommendations = jobs.map(job => ({ job, priority: 1 })); // Default priority for all jobs
+            networkJobRecommendations = jobs.map(job => ({ job, priority: 1 })); 
         }
 
         // Skill-based recommendations
@@ -67,8 +66,6 @@ const FindJobRecommendations = async (user, jobs) => {
             return { job, skillMatchScore };
         }));
         
-        console.log('skillscore',skillBasedRecommendations);
-
         // Matrix Factorization Recommendations
         const mfRecommendations = await MatrixFactorization(user, jobs);
 

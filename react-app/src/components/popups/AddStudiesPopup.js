@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 
+// Popup for studies addition
 const AddStudiesPopup = ({ isOpen, onClose, onAddStudies }) => {
     const [school, setSchool] = useState('');
     const [degree, setDegree] = useState('');

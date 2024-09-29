@@ -11,8 +11,6 @@ const getAllContactsByEmail = async (userEmail) => {
             console.error('Error getting contacts:', error);
             throw error;
         }
-        console.log(`Successfully retrieved contacts for user with email ${userEmail}.`);
-        console.log(data);
         return data;
     } catch (err) {
         console.error('Error getting contacts:', err);
@@ -34,7 +32,6 @@ const addContact = async (userEmail, contactEmail) => {
             console.error('Error adding contact:', error);
             throw error;
         }
-        console.log('Successfully added contact.');
         return data;
     } catch (err) {
         console.error('Error adding contact:', err);
@@ -46,7 +43,6 @@ const addContact = async (userEmail, contactEmail) => {
 // Remove a contact for a user by email
 const removeContact = async (userEmail, contactEmail) => {
     try {
-        // Delete contact where user_email is userEmail and contact_email is contactEmail
         const { data: data1, error: error1 } = await supabase
             .from('contacts')
             .delete()
@@ -57,7 +53,6 @@ const removeContact = async (userEmail, contactEmail) => {
             throw error1;
         }
 
-        // Delete contact where user_email is contactEmail and contact_email is userEmail
         const { data: data2, error: error2 } = await supabase
             .from('contacts')
             .delete()
@@ -68,7 +63,6 @@ const removeContact = async (userEmail, contactEmail) => {
             throw error2;
         }
 
-        console.log('Successfully removed contact.');
         return { data1, data2 };
     } catch (err) {
         console.error('Error removing contact:', err);

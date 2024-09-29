@@ -1,6 +1,6 @@
 const supabase = require('../supabaseClient');
 
-// Function to add a comment
+// Add a comment
 const addComment = async (articleId, authorEmail, text) => {
     const now = new Date();
 
@@ -13,13 +13,12 @@ const addComment = async (articleId, authorEmail, text) => {
             throw error;
         }
 
-        console.log('Comment added successfully:', data);
     } catch (err) {
         console.error('Error adding comment:', err);
     }
 };
 
-// Function to get comments for an article
+// Get comments for an article
 const getComments = async (articleId) => {
     try {
         const { data, error } = await supabase
@@ -31,7 +30,6 @@ const getComments = async (articleId) => {
             throw error;
         }
 
-        console.log('Comments:', data);
         return data;
     } catch (err) {
         console.error('Error fetching comments:', err);
@@ -39,7 +37,7 @@ const getComments = async (articleId) => {
 };
 
 
-// Function to get all comments
+// Get all comments
 const getAllComments = async (articleId) => {
     try {
         const { data, error } = await supabase
@@ -50,7 +48,6 @@ const getAllComments = async (articleId) => {
             throw error;
         }
 
-        console.log('Comments:', data);
         return data;
     } catch (err) {
         console.error('Error fetching comments:', err);
@@ -69,14 +66,13 @@ const getCommentsOfUser = async (authorEmail) => {
             throw error;
         }
 
-        console.log('Comments:', data);
         return data;
     } catch (err) {
         console.error('Error fetching comments:', err);
     }
 };
 
-// Function to delete a comment
+// Delete a comment
 const deleteComment = async (commentId) => {
     try {
         const { data, error } = await supabase
@@ -89,11 +85,10 @@ const deleteComment = async (commentId) => {
         }
 
         if (data.length === 0) {
-            console.log(`No comment with ID ${commentId} found.`);
+            console.error(`No comment with ID ${commentId} found.`);
             return { success: false, message: 'Comment not found' };
         }
 
-        console.log(`Comment with ID ${commentId} deleted.`);
         return { success: true, message: 'Comment deleted' };
     } catch (err) {
         console.error('Error deleting comment:', err);

@@ -9,6 +9,9 @@ const sanitizeTagName = (name) => {
 };
 
 const escapeXML = (str) => {
+    if (typeof str !== 'string') {
+        return ''; // Return empty string or handle non-string cases as needed
+    }
     return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -17,93 +20,92 @@ const escapeXML = (str) => {
         .replace(/'/g, '&apos;');
 };
 
+
 const convertToXML1 = (objArray, rootElement) => {
     let xml = `<${rootElement}>`;
+    
     objArray.forEach(obj => {
         xml += `<user>`;
+        
         for (const [key, value] of Object.entries(obj)) {
             let sanitizedKey = sanitizeTagName(key);
-            xml += `<${sanitizedKey}>${escapeXML(value)}</${sanitizedKey}>`;
+            
+            // Add a label for the field
+            xml += `<${sanitizedKey}Label>${escapeXML(sanitizedKey)}</${sanitizedKey}Label>`;
+            
+            if (Array.isArray(value)) {
+                xml += `<${sanitizedKey}>`;
+                value.forEach(item => {
+                    xml += `<item>`;
+                    for (const [subKey, subValue] of Object.entries(item)) {
+                        let sanitizedSubKey = sanitizeTagName(subKey);
+                        xml += `<${sanitizedSubKey}>${escapeXML(subValue)}</${sanitizedSubKey}>`;
+                    }
+                    xml += `</item>`;
+                });
+                xml += `</${sanitizedKey}>`;
+            } else if (typeof value === 'object' && value !== null) {
+                xml += `<${sanitizedKey}>`;
+                for (const [subKey, subValue] of Object.entries(value)) {
+                    let sanitizedSubKey = sanitizeTagName(subKey);
+                    xml += `<${sanitizedSubKey}>${escapeXML(subValue)}</${sanitizedSubKey}>`;
+                }
+                xml += `</${sanitizedKey}>`;
+            } else {
+                xml += `<${sanitizedKey}>${escapeXML(value)}</${sanitizedKey}>`;
+            }
         }
+        
         xml += `</user>`;
     });
+    
     xml += `</${rootElement}>`;
     return xml;
 };
 
-const convertToXML2 = (data, rootElement) => {
-    let xmlString = `<${rootElement}>`;
-
-    const toXML = (obj, sectionTitle) => {
-        for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                let sanitizedKey = sanitizeTagName(key);
-
-                if (Array.isArray(obj[key])) {
-                    if (sectionTitle) {
-                        xmlString += `<${sectionTitle}>`;
-                    }
-                    obj[key].forEach((item, index) => {
-                        xmlString += `<${sanitizedKey}>`;
-                        toXML(item);
-                        xmlString += `</${sanitizedKey}>`;
-                    });
-                    if (sectionTitle) {
-                        xmlString += `</${sectionTitle}>`;
-                    }
-                } else if (typeof obj[key] === 'object') {
-                    xmlString += `<${sanitizedKey}>`;
-                    toXML(obj[key]);
-                    xmlString += `</${sanitizedKey}>`;
-                } else {
-                    xmlString += `<${sanitizedKey}>${escapeXML(obj[key].toString())}</${sanitizedKey}>`;
+const convertToXML2 = (obj, rootElement) => {
+    let xml = `<${rootElement}>`;
+    xml += `<user>`;
+    
+    for (const [key, value] of Object.entries(obj)) {
+        let sanitizedKey = sanitizeTagName(key);
+        
+        // Add a label for the field
+        xml += `<${sanitizedKey}Label>${escapeXML(sanitizedKey)}</${sanitizedKey}Label>`;
+        
+        if (Array.isArray(value)) {
+            xml += `<${sanitizedKey}>`;
+            value.forEach(item => {
+                xml += `<item>`;
+                for (const [subKey, subValue] of Object.entries(item)) {
+                    let sanitizedSubKey = sanitizeTagName(subKey);
+                    xml += `<${sanitizedSubKey}>${escapeXML(subValue)}</${sanitizedSubKey}>`;
                 }
+                xml += `</item>`;
+            });
+            xml += `</${sanitizedKey}>`;
+        } else if (typeof value === 'object' && value !== null) {
+            xml += `<${sanitizedKey}>`;
+            for (const [subKey, subValue] of Object.entries(value)) {
+                let sanitizedSubKey = sanitizeTagName(subKey);
+                xml += `<${sanitizedSubKey}>${escapeXML(subValue)}</${sanitizedSubKey}>`;
             }
+            xml += `</${sanitizedKey}>`;
+        } else {
+            xml += `<${sanitizedKey}>${escapeXML(value)}</${sanitizedKey}>`;
         }
-    };
-
-    // Adding titles for each section with valid XML tags
-    xmlString += `<UserProfile>`;
-    toXML(data.userProfile);
-    xmlString += `</UserProfile>`;
-
-    xmlString += `<WorkExperience>`;
-    toXML(data.workExperience, 'Experience');
-    xmlString += `</WorkExperience>`;
-
-    xmlString += `<Studies>`;
-    toXML(data.studies, 'Study');
-    xmlString += `</Studies>`;
-
-    xmlString += `<Skills>`;
-    toXML(data.skills, 'Skill');
-    xmlString += `</Skills>`;
-
-    xmlString += `<JobAds>`;
-    toXML(data.jobAds, 'Ad');
-    xmlString += `</JobAds>`;
-
-    xmlString += `<Articles>`;
-    toXML(data.articles, 'Article');
-    xmlString += `</Articles>`;
-
-    xmlString += `<Comments>`;
-    toXML(data.comments, 'Comment');
-    xmlString += `</Comments>`;
-
-    xmlString += `<Likes>`;
-    toXML(data.likes, 'Like');
-    xmlString += `</Likes>`;
-
-    xmlString += `</${rootElement}>`;
-
-    return xmlString;
+    }
+    
+    xml += `</user>`;
+    xml += `</${rootElement}>`;
+    return xml;
 };
+
 
 const exportData = (data, exportFormat, fileName) => {
     let blob;
     if (exportFormat === 'xml') {
-        const xmlContent = convertToXML1(data, 'UserData');
+        const xmlContent = convertToXML1(data, 'users');
         blob = new Blob([xmlContent], { type: 'application/xml' });
     } else {
         blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -115,6 +117,10 @@ const exportData = (data, exportFormat, fileName) => {
     a.click();
     URL.revokeObjectURL(url);
 };
+
+
+
+
 
 const exportDataProfile = (data, exportFormat, fileName) => {
 

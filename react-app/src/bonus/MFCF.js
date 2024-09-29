@@ -1,18 +1,17 @@
 import { getAllUsers, getJobViewsByUser } from "../api";
 
-// Refactor MatrixFactorization to not use React hooks
 const MatrixFactorization = async (user, jobs) => {
     const UJMatrix = [];
     const userMatrix = [];
     const jobMatrix = [];
 
     try {
-        // Step 1: Fetch all users
+        // Fetch all users
         const users = await getAllUsers();
 
         if (!users || users.length === 0) {
             console.error("No users found.");
-            return; // Early exit if no users are found
+            return; 
         }
 
         if (!jobs || jobs.length === 0) {
@@ -20,16 +19,16 @@ const MatrixFactorization = async (user, jobs) => {
             return;
         }
 
-        // Step 2: Create matrix
+        // Create matrix
         const numofJobs = jobs.length;
 
-        // Step 3: Fill job views for each user
+        // Fill job views for each user
         await Promise.all(users.map(async (user) => {
-            const userViews = await getJobViewsByUser(user.email); // Fetch views for each user
+            const userViews = await getJobViewsByUser(user.email); 
 
             if (!userViews) {
                 console.error(`No views found for user: ${user.email}`);
-                return; // Skip this user if no views found
+                return; 
             }
             const row = [];
 
@@ -42,7 +41,7 @@ const MatrixFactorization = async (user, jobs) => {
             UJMatrix.push(row);
         }));
 
-        // Step 4: Initialize user and job matrices with random factors
+        // Initialize user and job matrices with random factors
         const numFactors = 50;
         for (let i = 0; i < users.length; i++) {
             userMatrix.push(Array.from({ length: numFactors }, () => Math.random()));
@@ -51,7 +50,7 @@ const MatrixFactorization = async (user, jobs) => {
             jobMatrix.push(Array.from({ length: numFactors }, () => Math.random()));
         }
 
-        // Step 5: Train the model using matrix factorization (SGD)
+        // Train the model using matrix factorization (SGD)
         const learningRate = 0.01;
         const numEpochs = 1000;
 
@@ -68,20 +67,20 @@ const MatrixFactorization = async (user, jobs) => {
             }
         }
 
-        // Step 6: Calculate user vector
+        // Calculate user vector
         const userIndexMap = {};
         users.forEach((user, index) => {
-            userIndexMap[user.id] = index; // Map user.id to its index in userMatrix
+            userIndexMap[user.id] = index; 
         });
         const userIndex = userIndexMap[user.id];
         const userVector = userMatrix[userIndex];
 
-        // Step 7: Get jobs unseen by the user and recommend based on the network
+        // Get jobs unseen by the user and recommend based on the network
         const userSeenJobs = (await getJobViewsByUser(user.email)).map(view => view.job_id);
         const unseenJobs = jobs.filter(job => !userSeenJobs.includes(job.id));
 
         const jobIndexMap = jobs.reduce((acc, job, index) => {
-            acc[job.id] = index; // Map job ID to its index
+            acc[job.id] = index; 
             return acc;
         }, {});
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
-//import { useAppContext } from "../context/appContext";
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/admin.css';
 import {exportDataProfile} from '../utils/exportUtils';
@@ -34,7 +33,7 @@ export default function Diax_Home() {
             if (userEmail) {
                 try {
 
-                    const profileData = await getUser(userEmail); // Assuming getUser returns a Promise
+                    const profileData = await getUser(userEmail); 
                     setOtherProfile(profileData);
                 } catch (error) {
                     console.error("Error fetching profile:", error);
@@ -108,7 +107,7 @@ export default function Diax_Home() {
             
             const comments2 = await Promise.all(
                 comments.map(async (comment) => {
-                    const article_name = await getSingleArticle(comment.article_id); // Await here to get the resolved value
+                    const article_name = await getSingleArticle(comment.article_id); 
                     
                     return {
                         article_name,
@@ -130,11 +129,10 @@ export default function Diax_Home() {
             const interests = await getUserInterests(otherProfile.email);
             const interests2 = await Promise.all(
                 interests.map(async (interest) => {
-                    const article_name = await getSingleArticle(interest); // Await here to get the resolved value
+                    const article_name = await getSingleArticle(interest); 
                     
                     return {
                         article: article_name,
-                        // date: format(new Date(interest.date), 'yyyy-MM-dd hh:mm:ss')
                     };
                 })
             );
@@ -151,7 +149,7 @@ export default function Diax_Home() {
             const contactDetailsPromises = contactEmails.map(email => getUser(email));
             const contactsData = await Promise.all(contactDetailsPromises);
 
-            setContacts(contactsData); // Store the full contact details in state
+            setContacts(contactsData); 
         } catch (error) {
             console.error('Error getting articles:', error);
         }
@@ -179,7 +177,8 @@ export default function Diax_Home() {
             jobAds,
             articles,
             comments,
-            interests
+            interests,
+            contacts
         };
         exportDataProfile(data, exportFormat, 'export');
       };
@@ -196,7 +195,7 @@ export default function Diax_Home() {
                 <div className="main-container">
                 <div className="back-icon-container">
                         <img
-                            src="/back-icon.png" // Replace with your icon path
+                            src="/back-icon.png" 
                             alt="Back"
                             className="back-icon"
                             onClick={handleBackClick}
@@ -343,7 +342,6 @@ export default function Diax_Home() {
                                     interests.map((interest, index) => (
                                         <div key={index} className="work-experience-row">
                                             <div className="post-name">{interest.article}</div>
-                                            {/* <div className="work-duration">{interest}</div> */}
                                         </div>
                                     ))
                                 ) : (

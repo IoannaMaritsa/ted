@@ -1,6 +1,6 @@
 const supabase = require('../supabaseClient');
 
-// Function to add a new experience
+// Add a new experience
 const addExperience = async (userId, profession, workplace, startDate, endDate) => {
     try {
         const { data, error } = await supabase
@@ -20,7 +20,7 @@ const addExperience = async (userId, profession, workplace, startDate, endDate) 
     }
 };
 
-// Function to get experiences by user ID
+// Get experiences by user ID
 const getExperiencesByUserId = async (userId) => {
     try {
         const { data, error } = await supabase
@@ -40,7 +40,7 @@ const getExperiencesByUserId = async (userId) => {
     }
 };
 
-// Function to delete an experience
+// Delete an experience
 const deleteUserExperience = async (experienceId) => {
     try {
         const { data, error } = await supabase
@@ -51,14 +51,13 @@ const deleteUserExperience = async (experienceId) => {
 
         if (error) {
             if (error.code === 'PGRST115') { // Not found error in Supabase
-                console.log(`Experience with ID ${experienceId} not found.`);
+                console.error(`Experience with ID ${experienceId} not found.`);
                 return { success: false, message: 'Experience not found' };
             }
             console.error('Error deleting experience:', error);
             throw error;
         }
 
-        console.log(`Experience with ID ${experienceId} deleted.`);
         return { success: true, message: 'Experience deleted successfully' };
     } catch (err) {
         console.error('Error deleting experience:', err);

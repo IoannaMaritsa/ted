@@ -1,6 +1,6 @@
 const supabase = require('../supabaseClient');
 
-// Function to add a view to a job
+// Add a view to a job
 async function addViewtoJob(userEmail, jobId) {
     try {
         // Check if the view already exists
@@ -20,7 +20,6 @@ async function addViewtoJob(userEmail, jobId) {
             const newView = {
                 count: view[0].count + 1,
             };
-            console.log('newcount', newView);
 
             const { data, error } = await supabase
                 .from('job_views')
@@ -42,19 +41,17 @@ async function addViewtoJob(userEmail, jobId) {
                 throw jobViewError;
             }
 
-            console.log(`View added to job ID ${jobId}`);
         }
 
     } catch (error) {
         console.error('Error adding view to job:', error);
-        throw error; // Optional: re-throw error for further handling
+        throw error; 
     }
 }
 
-// Function to get job views of a user
+// Get job views of a user
 const getJobViewsByUser = async (userEmail) => {
     try {
-        // Fetch views associated with the user
         const { data: userViews, error: userViewsError } = await supabase
             .from('job_views')
             .select('*')
@@ -62,10 +59,6 @@ const getJobViewsByUser = async (userEmail) => {
 
         if (userViewsError) {
             throw userViewsError;
-        }
-
-        if (!userViews || userViews.length === 0) {
-            return []; // No views found for the user
         }
 
         return userViews;

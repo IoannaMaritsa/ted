@@ -108,16 +108,16 @@ export default function Epag_network() {
             const bHasSentRequest = hasSentRequest(b.email);
     
             if (aHasRequest && !bHasRequest) {
-                return -1; // a should come before b
+                return -1; 
             }
             if (!aHasRequest && bHasRequest) {
-                return 1; // b should come before a
+                return 1; 
             }
             if (aHasSentRequest && !bHasSentRequest) {
-                return 1; // a should come after b
+                return 1; 
             }
             if (!aHasSentRequest && bHasSentRequest) {
-                return -1; // b should come after a
+                return -1; 
             }
             return 0; // maintain original order if both have or don't have requests
         });
@@ -206,7 +206,6 @@ export default function Epag_network() {
                     <h1 className="title2">Δίκτυο</h1>
                 </div>
 
-                {/* Connected Users Section */}
                 <div className="user-section">
                     <div className="header-header">
                         <span className="section-title">Συνδέσεις</span>
@@ -271,8 +270,6 @@ export default function Epag_network() {
                         </div>
                     )}
                 </div>
-
-                {/* Other Users Section */}
                 <div className="user-section">
                     <div className="header-header2">
                         <span className="section-title2">Μη Συνδεδεμένοι Χρήστες</span>
@@ -294,7 +291,7 @@ export default function Epag_network() {
                                         <img src={getImageUrl(user.profilepic, "profilepics")} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
                                         <div className="user-info">
                                             <h3 className="name">{user.name}</h3>
-                                            {user.profession && <p className="e-profession">{user.profession}</p>}
+                                            {user.profession && <p className="e-profession" id="professionnp">{user.profession}</p>}
                                             {user.workplace && (
                                                 <div className="workplace-container">
                                                     <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />

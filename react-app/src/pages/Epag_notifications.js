@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { getReceivedFriendRequests, getUser, deleteFriendRequest, getFriendRequestByEmails, updateFriendRequestStatus, addContact, getComments, getArticleInterests, getArticle } from '../api';
 import getImageUrl from '../hooks/getImageUrl';
-import { formatRelativeTime } from '../utils/timeUtils'; // Adjust the path as needed
+import { formatRelativeTime } from '../utils/timeUtils'; 
 
 
 const NotificationItem = ({ user, time, action, comment, articleId, onAccept, onDecline }) => {
@@ -19,7 +19,6 @@ const NotificationItem = ({ user, time, action, comment, articleId, onAccept, on
 
     // On profile pick navigate to the selected user's profile
     const handleProfileClick = (user) => {
-        console.log("email2", user.email);
         navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
         window.scrollTo(0, 0);
     };
@@ -130,10 +129,10 @@ const Epag_notifications = () => {
                                     return null;
                                 }
                                 else {
-                                    const user = await getUser(react.user_email); // Assuming getUser fetches the user by email
+                                    const user = await getUser(react.user_email); 
                                     return {
                                         article: article.id,
-                                        user,  // Replace user_email with full user details
+                                        user, 
                                         date: creationdate,
                                         action: 'likes your article'
                                     };
@@ -142,7 +141,7 @@ const Epag_notifications = () => {
                         )
                         .then(results => results.filter(interest => interest !== null));
                     }
-                    return []; // Return an empty array if there are no interests for this article
+                    return []; 
                 })
             );
 
@@ -162,7 +161,7 @@ const Epag_notifications = () => {
         try {
             const comments = await Promise.all(
                 articles.map(async (article) => {
-                    console.log('Fetching comments for article:', article.id); // Log article IDs
+                    console.log('Fetching comments for article:', article.id);
 
                     try {
                         const reacts = await getComments(article.id);
@@ -183,7 +182,7 @@ const Epag_notifications = () => {
                                 else {const user = await getUser(react.author_email);
                                 return {
                                     article: article.id,
-                                    user,  // Replace user_email with full user details
+                                    user,  
                                     date: creationdate,
                                     text: react.text,
                                 };
@@ -238,8 +237,8 @@ const Epag_notifications = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await fetchArticles();  // Fetch the articles first
-                await fetchInterests(); // Only fetch interests after articles are available
+                await fetchArticles();  
+                await fetchInterests(); 
                 await fetchComments();
 
             } catch (error) {
@@ -247,7 +246,7 @@ const Epag_notifications = () => {
             }
         };
 
-        fetchData(); // Call the async function
+        fetchData(); 
     }, []);
 
 
@@ -263,7 +262,6 @@ const Epag_notifications = () => {
                 await addContact(senderEmail, user.email);
                 await deleteFriendRequest(friendRequest.id);
             }
-            // Reload friend requests
             fetchFriendRequests();
         } catch (error) {
             console.error('Error accepting friend request:', error);
@@ -280,7 +278,7 @@ const Epag_notifications = () => {
                 await updateFriendRequestStatus(friendRequest.id, 'rejected');
                 await deleteFriendRequest(friendRequest.id);
             }
-            // Reload friend requests
+
             fetchFriendRequests();
         } catch (error) {
             console.error('Error rejecting friend request:', error);
@@ -294,17 +292,13 @@ const Epag_notifications = () => {
         return <div>Loading...</div>;
     }
 
-    // Sort requests by timestamp in descending order (newest first)
+    // Sort requests by timestamp in descending order 
     const sortedRequests = requests.sort((a, b) => b.time.getTime() - a.time.getTime());
 
     const combinedData = [...interests, ...comments];
-    console.log('data', combinedData);
     const sortedReactions = combinedData.sort((a, b) => b.date.getTime() - a.date.getTime());
 
-    console.log('Fetched Articles:', articles);
-    console.log('Interests for article:', interests);
-    console.log('Fetched comments:', comments);
-    console.log('Fetched reactions', reactions);
+
     return (
         <div>
             <Header variant="professional" />

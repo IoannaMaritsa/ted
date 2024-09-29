@@ -9,7 +9,7 @@ import { useAppContext } from "../context/appContext";
 import getImageUrl from "../hooks/getImageUrl";
 import { format } from "date-fns";
 import { formatDateRange } from "../utils/timeUtils";
-import MatrixFactorizationArticles from "../context/MFarticles";
+import MatrixFactorizationArticles from "../bonus/MFarticles";
 import {
   addArticle,
   getArticle,
@@ -27,7 +27,7 @@ import "../css/epag-home.css";
 
 export default function Epag_Home() {
   const user_info = useAppContext().user;
-  const [articles, setArticles] = useState([]); // Initialize with an empty array
+  const [articles, setArticles] = useState([]); 
   const [my_articles, setMy_articles] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [studies, setStudies] = useState([]);
@@ -42,32 +42,26 @@ export default function Epag_Home() {
 
       // Find the recommended articles for the user
       const userRecommendations = predictions.find(
-        (user) => user[0].user === user_info.email // Assuming the user object is at index 0
+        (user) => user[0].user === user_info.email 
       );
 
-      // Extract recommended article IDs based on predicted ratings
       const recommendedArticlesData = userRecommendations
         .filter(({ predictedRating }) => predictedRating > 0) // Filter out non-recommended articles
         .sort((a, b) => b.predictedRating - a.predictedRating) // Sort by predicted rating
         .map(({ articleId }) => {
-          // Find the full article data by ID and maintain order
           return articles.find((article) => article.id === articleId);
         })
-        .filter((article) => article !== undefined); // Filter out any undefined values
-      // Filter full articles based on recommended IDs
+        .filter((article) => article !== undefined); 
 
-      // Get contact emails
+
       const cont = await getAllContactsByUserEmail(user_info.email);
       const contactEmails = cont.map((contact) => contact.contact_email);
-      console.log("contacts",cont)
-      console.log("emails",contactEmails)
-
+ 
       // Sort recommended articles by whether the author is in the user's network
       const sortedRecommendedArticles = recommendedArticlesData.sort((a, b) => {
         const isAInNetwork = contactEmails.includes(a.author_email);
         const isBInNetwork = contactEmails.includes(b.author_email);
-        if(isAInNetwork === true || isBInNetwork === true)
-        {console.log(a.title, b.title, isAInNetwork, isBInNetwork)}
+
         return isAInNetwork === isBInNetwork ? 0 : isAInNetwork ? -1 : 1;
       });
 
@@ -80,7 +74,6 @@ export default function Epag_Home() {
   const getArticles = async (userEmail) => {
     try {
       const response = await getOtherUsersArticles(userEmail);
-      console.log("articles", response);
       setArticles(response);
     } catch (error) {
       console.error("Error getting articles:", error);
@@ -132,7 +125,7 @@ export default function Epag_Home() {
       );
       const contactsData = await Promise.all(contactDetailsPromises);
 
-      setContacts(contactsData); // Store the full contact details in state
+      setContacts(contactsData); 
     } catch (error) {
       console.error("Error getting articles:", error);
     }
@@ -153,11 +146,10 @@ export default function Epag_Home() {
       await getMyArticles(user_info.email);
     } catch (error) {
       console.error("Error deleting article:", error);
-      // You might want to show an error message to the user here
+
     }
   };
 
-  const { setOtherProfile, otherProfile } = useAppContext();
 
   const navigate = useNavigate();
 
@@ -212,7 +204,6 @@ export default function Epag_Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const now = new Date();
-    // Handle the form submission logic here
     let articleId;
     try {
       articleId = await addArticle(title, user_info.email, now, body);

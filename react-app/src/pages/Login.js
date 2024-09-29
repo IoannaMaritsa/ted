@@ -25,7 +25,7 @@ export default function Login() {
             const decoded = jwtDecode(token);
             if(decoded.role === "user") {
             navigate('/epaggelmatias_homepage'); 
-            }// Use navigate for redirection
+            }
             else if (decoded.role === "admin") {
                 navigate('/admin'); 
             }

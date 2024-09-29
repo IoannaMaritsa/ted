@@ -1,7 +1,6 @@
-// api.js
 import axios from 'axios';
 
-//const API_BASE_URL = 'https://localhost'; // Replace with your API base URL
+// ! Replace with const API_BASE_URL  = 'https://localhost'; for https connection
 const API_BASE_URL = 'http://localhost:5001';
 
 // Get all users
@@ -43,15 +42,11 @@ export const addUser = async (userData) => {
         return response;
     } catch (error) {
         if (error.response) {
-            // Request made and server responded with a status code
-            // that falls out of the range of 2xx
             return error.response;
         } else if (error.request) {
-            // The request was made but no response was received
             console.error('Error request:', error.request);
             throw new Error('No response from server');
         } else {
-            // Something happened in setting up the request that triggered an Error
             console.error('Error message:', error.message);
             throw new Error('Error setting up request');
         }
@@ -73,7 +68,6 @@ export const updateUser = async (email, updateData) => {
 export const deleteUser = async (email) => {
     try {
         await axios.delete(`${API_BASE_URL}/users/${email}`);
-        console.log('User deleted successfully');
     } catch (error) {
         console.error('Error deleting user:', error);
         throw error;
@@ -83,27 +77,23 @@ export const deleteUser = async (email) => {
 // Login a user
 export const loginUser = async (email, password) => {
     try {
-        console.log("Logging in with", email, password);
         const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
-        console.log("Login response:", response);
-        localStorage.setItem('token', response.data.token); // Store token in localStorage
+        localStorage.setItem('token', response.data.token); 
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             const { data } = error.response;
             throw new Error(data.error || 'An error occurred during login');
         } else if (error.request) {
-            // Request was made but no response received
             throw new Error('No response from server');
         } else {
-            // Something happened in setting up the request
             throw new Error('Error setting up login request');
         }
     }
 };
 
 
+// Check password validity
 export const checkPassword = async (email, password) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/password`, { params: { email, password } });
@@ -114,18 +104,17 @@ export const checkPassword = async (email, password) => {
     }
 }
 
-// Get a article using userId
+// Get articles using userId
 export const getArticle = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/articles/${userEmail}`);
-        console.log('article is', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching article by userid:', error);
         throw error;
     }
 };
-// Get a articles using userId
+// Get articles by other uses using userId
 export const getOtherUsersArticles = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/notarticles/${userEmail}`);
@@ -139,17 +128,16 @@ export const getOtherUsersArticles = async (userEmail) => {
 export const getArticleById = async (id) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/article/${id}`);
-        console.log('article is', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching article by its id:', error);
         throw error;
     }
 };
-//get all the articles
+
+// Get all the articles
 export const getAllArticles = async (userEmail) => {
     try {
-        // Fetch all users and contacts
         const [myarticles, othersarticles] = await Promise.all([
             getArticle(userEmail),
             getOtherUsersArticles(userEmail)
@@ -161,11 +149,11 @@ export const getAllArticles = async (userEmail) => {
         throw error;
     }
 };
+
 // Delete an article
 export const deleteArticle = async (articleId) => {
     try {
         await axios.delete(`${API_BASE_URL}/articles/${articleId}`);
-        console.log('Article deleted successfully');
     } catch (error) {
         console.error('Error deleting article:', error);
         throw error;
@@ -227,7 +215,7 @@ export const getArticleInterests = async (articleId) => {
     }
 };
 
-// Get all users interested in a specific article
+// Get all user interests for every article
 export const getAllInterests = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/interests`);
@@ -242,20 +230,16 @@ export const getAllInterests = async () => {
 export const getAllContactsByUserEmail = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/contacts/${userEmail}`);
-        console.log('Contacts fetched successfully:', response.data); // Added logging
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
         } else if (error.request) {
-            // No response received
             console.error('No response received from server:', error.request);
         } else {
-            // Error setting up request
             console.error('Error setting up request:', error.message);
         }
-        throw error; // Rethrow to handle higher up if necessary
+        throw error; 
     }
 };
 
@@ -282,15 +266,13 @@ export const removeContact = async (userEmail, contactEmail) => {
     }
 };
 
-
+// Get all users not connected with the given user
 export const getNonConnectedUsersByEmail = async (userEmail) => {
     try {
-        // Fetch all users and contacts
         const [allUsers, connectedUsers] = await Promise.all([
             getAllUsers(),
             getAllContactsByUserEmail(userEmail)
         ]);
-        // Create a set of connected user emails for quick lookup
         const connectedEmails = new Set(connectedUsers.map(contact => contact.contact_email));
 
         // Filter out the current user and connected users from all users
@@ -308,7 +290,6 @@ export const getNonConnectedUsersByEmail = async (userEmail) => {
 // Send a friend request
 export const sendFriendRequest = async (senderEmail, receiverEmail) => {
     try {
-        console.log("api", senderEmail, receiverEmail)
         const response = await axios.post(`${API_BASE_URL}/send`, { senderEmail, receiverEmail });
         return response.data;
     } catch (error) {
@@ -378,20 +359,16 @@ export const getFriendRequestByEmails = async (email1, email2) => {
 export const getAllExperiencesForUser = async (userId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/experiences/${userId}`);
-        console.log('Experiences fetched successfully:', response.data); // Added logging
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
         } else if (error.request) {
-            // No response received
             console.error('No response received from server:', error.request);
         } else {
-            // Error setting up request
             console.error('Error setting up request:', error.message);
         }
-        throw error; // Rethrow to handle higher up if necessary
+        throw error;
     }
 };
 
@@ -422,20 +399,16 @@ export const deleteExperience = async (id) => {
 export const getAllStudiesForUser = async (userId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/studies/${userId}`);
-        console.log('Studies fetched successfully:', response.data); // Added logging
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
         } else if (error.request) {
-            // No response received
             console.error('No response received from server:', error.request);
         } else {
-            // Error setting up request
             console.error('Error setting up request:', error.message);
         }
-        throw error; // Rethrow to handle higher up if necessary
+        throw error; 
     }
 };
 
@@ -461,11 +434,10 @@ export const deleteStudy = async (id) => {
     }
 };
 
-// Function to add a skill to a user
+// Add a skill to a user
 export const addSkillToUser = async (userId, skillName) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/skills`, { userId, skillName });
-        console.log(`Skill '${skillName}' added to user ID ${userId}:`, response.data);
         return response;
     } catch (error) {
         console.error('Error adding skill:', error);
@@ -473,11 +445,10 @@ export const addSkillToUser = async (userId, skillName) => {
     }
 };
 
-// Function to delete a skill from a user
+// Delete a skill from a user
 export const deleteSkillFromUser = async (userId, skillId) => {
     try {
         const response = await axios.delete(`${API_BASE_URL}/skills`, { data: { userId, skillId } });
-        console.log(`Skill with ID ${skillId} deleted for user ID ${userId}:`, response);
         return response;
     } catch (error) {
         console.error('Error deleting skill:', error);
@@ -485,64 +456,56 @@ export const deleteSkillFromUser = async (userId, skillId) => {
     }
 };
 
-// Function to get all skills for a specific user by user ID
+// Get all skills for a specific user by user ID
 export const getAllSkillsForUser = async (userId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/skills/${userId}`);
-        console.log('Skills fetched successfully:', response.data);
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
             return [];
         } else if (error.request) {
-            // No response received
             console.error('No response received from server:', error.request);
             return [];
         } else {
-            // Error setting up request
             console.error('Error setting up request:', error.message);
             return [];
         }
-        throw error; // Rethrow to handle higher up if necessary
+       
     }
 };
 
-// Function to get all skills for a specific job
+// Get all skills for a specific job
 export const getAllSkillsForJob = async (jobId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/job_skills/${jobId}`);
-        console.log('Skills fetched successfully:', response.data);
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
         } else if (error.request) {
-            // No response received
             console.error('No response received from server:', error.request);
         } else {
-            // Error setting up request
             console.error('Error setting up request:', error.message);
         }
-        throw error; // Rethrow to handle higher up if necessary
+        throw error; 
     }
 };
 
-// Function to update the skills of a job
+// Update the skills of a job
 export const updateJobSkills = async (jobId, skills) => {
     try {
         const response = await axios.put(`${API_BASE_URL}/job/${jobId}/skills`, { skills } );
 
-        return response.data; // Return response data, success message, etc.
+        return response.data; 
     } catch (error) {
         console.error('Error updating job skills:', error);
-        throw error; // Rethrow error for further handling if needed
+        throw error; 
     }
 };
 
-//Function to get all the skills
+// Get all the skills
 export const getAllSkills = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/api/skills`);
@@ -553,7 +516,7 @@ export const getAllSkills = async () => {
     }
 };
 
-// Function to add a comment
+// Add a comment
 export const addComment = async (articleId, authorEmail, text) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/comments`, {
@@ -564,66 +527,66 @@ export const addComment = async (articleId, authorEmail, text) => {
         return response.data;
     } catch (error) {
         console.error('Error adding comment:', error);
-        throw error; // Rethrow the error to handle it further up if necessary
+        throw error; 
     }
 };
 
-// Function to get all comments for a specific article
+// Get all comments for a specific article
 export const getComments = async (articleId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/comments/${articleId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching comments:', error);
-        throw error; // Rethrow the error to handle it further up if necessary
+        throw error; 
     }
 };
 
-// Function to get all comments 
+// Get all comments 
 export const getAllComments = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/comments`);
         return response.data;
     } catch (error) {
         console.error('Error fetching comments:', error);
-        throw error; // Rethrow the error to handle it further up if necessary
+        throw error; 
     }
 };
 
 
-// Function to get all comments by a specific user
+// Get all comments by a specific user
 export const getCommentsOfUser = async (authorEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/comments/user/${authorEmail}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching comments by user:', error);
-        throw error; // Rethrow the error to handle it further up if necessary
+        throw error; 
     }
 };
 
-// Function to delete a comment
+// Delete a comment
 export const deleteComment = async (commentId) => {
     try {
         const response = await axios.delete(`${API_BASE_URL}/comments/${commentId}`);
         return response.data;
     } catch (error) {
         console.error('Error deleting comment:', error);
-        throw error; // Rethrow the error to handle it further up if necessary
+        throw error; 
     }
 };
 
-// Function to add an attachment to an article
+// Add an attachment to an article
 export const addAttachment = async (articleId, type, attachedFile) => {
     try {
         const formData = new FormData();
         formData.append('articleId', articleId);
         formData.append('type', type);
-        formData.append('file', attachedFile); // 'file' should match the key expected on the server
+        formData.append('file', attachedFile); 
 
         const response = await axios.post(`${API_BASE_URL}/attachments`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data', // Set the correct content type for form data
+                'Content-Type': 'multipart/form-data', 
             },
         });
 
@@ -634,7 +597,7 @@ export const addAttachment = async (articleId, type, attachedFile) => {
     }
 };
 
-// Function to get attachments for a specific article by article ID
+// Get attachments for a specific article by article ID
 export const getAttachments = async (articleId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/attachments/${articleId}`);
@@ -656,7 +619,7 @@ export const addJob = async (title, company, location, publishDate, type, profes
     }
 };
 
-//Update an existing job
+// Update an existing job
 export const updateJob = async (jobId, updatedData) => {
     try {
         const response = await axios.put(`${API_BASE_URL}/jobs/${jobId}`, updatedData);
@@ -667,7 +630,7 @@ export const updateJob = async (jobId, updatedData) => {
     }
 };
 
-//Delete a job
+// Delete a job
 export const deleteJob = async (jobId) => {
     try {
         const response = await axios.delete(`${API_BASE_URL}/jobs/${jobId}`);
@@ -678,7 +641,7 @@ export const deleteJob = async (jobId) => {
     }
 };
 
-//Get job adds for a user
+// Get job adds for a user
 export const getJobsOfUser = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/jobs/user/${userEmail}`);
@@ -689,7 +652,7 @@ export const getJobsOfUser = async (userEmail) => {
     }
 };
 
-//Add a submission
+// Add a submission
 export const addSubmission = async (jobId, userEmail, submissionDate) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/submissions`, {
@@ -704,7 +667,7 @@ export const addSubmission = async (jobId, userEmail, submissionDate) => {
     }
 };
 
-//get all submissions for a job
+// Get all submissions for a job
 export const getSubmissionsForJob = async (jobId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/submissions/job/${jobId}`);
@@ -715,17 +678,15 @@ export const getSubmissionsForJob = async (jobId) => {
     }
 };
 
-// add a new message
+// Add a new message
 export const addMessage = async (senderEmail, receiverEmail, message, created_at) => {
     try {
-        console.log("hello3", senderEmail, receiverEmail, message, created_at)
         const response = await axios.post(`${API_BASE_URL}/messages`, {
             senderEmail,
             receiverEmail,
             message,
             created_at
         });
-        console.log(response)
         return response.data;
     } catch (err) {
         console.error('Error adding message:', err);
@@ -733,11 +694,11 @@ export const addMessage = async (senderEmail, receiverEmail, message, created_at
     }
 }
 
-// fetch messages between 2 users
+// Fetch messages between 2 users
 export const getMessagesBetweenUsers = async (email1, email2) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/messages`, {
-            params: { email1, email2 } // Pass emails as query parameters
+            params: { email1, email2 } 
         });
         return response.data;
     } catch (err) {
@@ -750,24 +711,20 @@ export const getMessagesBetweenUsers = async (email1, email2) => {
 export const getPrivacySettings = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/privacy/${userEmail}`);
-        console.log('Settings fetched successfully:', response.data); // Added logging
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
         } else if (error.request) {
-            // No response received
             console.error('No response received from server:', error.request);
         } else {
-            // Error setting up request
             console.error('Error setting up request:', error.message);
         }
-        throw error; // Rethrow to handle higher up if necessary
+        throw error; 
     }
 };
 
-//update a field of privacy for a specific user
+// Update a field of privacy for a specific user
 export const updatePrivacy = async (email, privacyField, newValue) => {
     try {
         const response = await axios.put(`${API_BASE_URL}/api/users/privacy`, {
@@ -782,9 +739,10 @@ export const updatePrivacy = async (email, privacyField, newValue) => {
     }
 };
 
+// Update the user's password
 export const updatePassword = async (email, password) => {
     try {
-        const response = await axios.put(`${API_BASE_URL}/password`, {
+        await axios.put(`${API_BASE_URL}/password`, {
             email,
             password
         });
@@ -794,13 +752,13 @@ export const updatePassword = async (email, password) => {
     }
 };
 
+// Update user's email
 export const updateEmail = async (email, newemail) => {
     try {
         const token = await axios.put(`${API_BASE_URL}/email`, {
             email,
             newemail
         });
-        console.log("new token", token.data.token);
         return token.data.token;
     } catch (err) {
         console.error('Error updating email:', err);
@@ -808,7 +766,7 @@ export const updateEmail = async (email, newemail) => {
     }
 };
 
-// Function to add a view to a job
+// Add a view to a job
 export const addViewToJob = async (userEmail, jobId) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/job-views`, {
@@ -823,7 +781,7 @@ export const addViewToJob = async (userEmail, jobId) => {
     }
 };
 
-// Function to get job views for a specific user
+// Get job views for a specific user
 export const getJobViewsByUser = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/job-views-user/${userEmail}`);
@@ -831,20 +789,17 @@ export const getJobViewsByUser = async (userEmail) => {
         return response.data;
     } catch (error) {
         if (error.response) {
-            // Server responded with a status other than 2xx
             console.error('Server responded with an error:', error.response.data);
         } else if (error.request) {
-            // No response received
             console.error('No response received from server:', error.request);
         } else {
-            // Error setting up request
             console.error('Error setting up request:', error.message);
         }
-        throw error; // Rethrow to handle higher up if necessary
+        throw error; 
     }
 };
 
-// Function to add a view to a article
+// Add a view to a article
 export const addViewtoArticle = async (userEmail, articleId) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/article-views`, {
@@ -860,7 +815,7 @@ export const addViewtoArticle = async (userEmail, articleId) => {
     }
 };
 
-// Function to get article views for a specific user
+// Get article views for a specific user
 export const getArticleViewsByUser = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/article-views`, {
@@ -876,13 +831,12 @@ export const getArticleViewsByUser = async (userEmail) => {
     }
 };
 
+// Get article views by article
 export const getArticleViewsByArticle = async (articleId) => {
     try {
-        console.log(`Fetching views for article ID: ${articleId}`);
         const response = await axios.get(`${API_BASE_URL}/article-views/article`, {
             params: { articleId },
         });
-        console.log(`Response for article ${articleId}:`, response.data);
         return response.data;
     } catch (error) {
         console.error(`Error fetching article views for article ${articleId}:`, error);
@@ -890,7 +844,7 @@ export const getArticleViewsByArticle = async (articleId) => {
     }
 };
 
-
+// Get article views for all articles and users
 export const getArticleViews= async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/article-views/all`);

@@ -4,7 +4,6 @@ const sendFriendRequest = async (senderEmail, receiverEmail) => {
     try {
         // Get the current timestamp in ISO format
         const createdAt = new Date().toISOString();
-        console.log(senderEmail, receiverEmail);
         const { data, error } = await supabase
             .from('friend_requests')
             .insert([{ sender_email: senderEmail, receiver_email: receiverEmail, status: 'pending', created_at: createdAt  }])
@@ -12,11 +11,10 @@ const sendFriendRequest = async (senderEmail, receiverEmail) => {
 
         
         if (error) {
-            console.log(error);
+            console.error(error);
             throw error;
         }
 
-        console.log('Friend request sent:', data);
         return data;
     } catch (err) {
         console.error('Error sending friend request:', err);
@@ -25,7 +23,7 @@ const sendFriendRequest = async (senderEmail, receiverEmail) => {
 };
 
 
-// Function to get sent friend requests
+// Get sent friend requests
 const getSentFriendRequests = async (userEmail) => {
     const { data, error } = await supabase
         .from('friend_requests')
@@ -37,7 +35,7 @@ const getSentFriendRequests = async (userEmail) => {
     return data;
 };
 
-// Function to get received friend requests
+// Get received friend requests
 const getReceivedFriendRequests = async (userEmail) => {
     const { data, error } = await supabase
         .from('friend_requests')
@@ -49,6 +47,7 @@ const getReceivedFriendRequests = async (userEmail) => {
     return data;
 };
 
+// Update friend request status
 const updateFriendRequestStatus = async (id, newStatus) => {
     try {
         const { data, error } = await supabase
@@ -61,7 +60,6 @@ const updateFriendRequestStatus = async (id, newStatus) => {
             throw error;
         }
 
-        console.log('Friend request status updated:', data);
         return data;
     } catch (err) {
         console.error('Error updating friend request status:', err);
@@ -69,6 +67,7 @@ const updateFriendRequestStatus = async (id, newStatus) => {
     }
 };
 
+// Delete friend request
 const deleteFriendRequest = async (id) => {
     try {
         const { data, error } = await supabase
@@ -80,7 +79,6 @@ const deleteFriendRequest = async (id) => {
             throw error;
         }
 
-        console.log('Friend request deleted:', data);
         return data;
     } catch (err) {
         console.error('Error deleting friend request:', err);
@@ -88,6 +86,8 @@ const deleteFriendRequest = async (id) => {
     }
 };
 
+
+// Get friend request by sender and receiver emails
 const getFriendRequestByEmails = async (senderEmail, receiverEmail) => {
     try {
         const { data, error } = await supabase
@@ -95,7 +95,7 @@ const getFriendRequestByEmails = async (senderEmail, receiverEmail) => {
             .select('*')
             .eq('sender_email', senderEmail)
             .eq('receiver_email', receiverEmail)
-            .single(); // Use `single` to get the first matching request
+            .single();
 
         if (error) {
             throw error;

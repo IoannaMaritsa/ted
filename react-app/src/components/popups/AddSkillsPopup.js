@@ -3,13 +3,14 @@ import { getAllSkills, getAllSkillsForUser } from '../../api';
 import { useAppContext } from "../../context/appContext";
 import "../../css/popup.css";
 
+// Popup for skill addition
 const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
     const { user } = useAppContext();
     const [skills, setSkills] = useState([]);
     const [chosen, setChosen] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const skillsPerPage = 12; // 3 rows * 4 columns
+    const skillsPerPage = 12;
     const [currentPage, setCurrentPage] = useState(1);
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -25,7 +26,6 @@ const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
     const indexOfLastSkill = currentPage * skillsPerPage;
     const indexOfFirstSkill = indexOfLastSkill - skillsPerPage;
     const currentSkills = searchSkills.slice(indexOfFirstSkill, indexOfLastSkill);
-
     const totalPages = Math.ceil(searchSkills.length / skillsPerPage);
 
 
@@ -59,10 +59,7 @@ const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
         try {
             // Filter out skills that the user already has
             const response = await getAllSkills();
-            console.log('allskills', response);
-
             const userskills = await getAllSkillsForUser(user.id);
-            console.log('userskills', userskills);
 
             if (userskills && userskills.length > 0) {
                 const filteredSkills = response.filter(skill => {
@@ -138,7 +135,6 @@ const AddSkillsPopup = ({ isOpen, onClose, onAddSkills }) => {
 
                     </div>
 
-                    {/* Display chosen skills */}
                     <div className="chosen-skills-container">
 
                         <div className='chosen-skills-head'>

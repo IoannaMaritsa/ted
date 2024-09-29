@@ -1,9 +1,8 @@
 const supabase = require('../supabaseClient');
 
-// Function to create a new privacy row
+// Create a new privacy row
 const addPrivacy = async (userEmail) => {
     try {
-        // Insert a new row into the privacy table
         const { data, error } = await supabase
             .from('privacy')
             .insert({
@@ -16,14 +15,13 @@ const addPrivacy = async (userEmail) => {
                 studies_private: true,
                 skills_private: true
             })
-            .single(); // Ensure only one row is inserted
+            .single(); 
 
         if (error) {
             console.error('Error creating privacy record:', error);
             throw error;
         }
 
-        console.log('Privacy record created successfully:', data);
         return data;
     } catch (err) {
         console.error('Error in createPrivacyRecord function:', err);
@@ -31,7 +29,7 @@ const addPrivacy = async (userEmail) => {
     }
 };
 
-// Function to get privacy settings for a user
+// Get privacy settings for a user
 const getPrivacySettings = async (user_email) => {
     try {
         const { data, error } = await supabase
@@ -51,10 +49,10 @@ const getPrivacySettings = async (user_email) => {
     }
 };
 
+// Update the privacy field of a user
 const updatePrivacy = async (userEmail, privacyField, newValue) => {
     try {
 
-        // Update the specific privacy field for the user
         const { data, error } = await supabase
             .from('privacy')
             .update({ [privacyField]: newValue })
@@ -66,10 +64,9 @@ const updatePrivacy = async (userEmail, privacyField, newValue) => {
             throw error;
         }
 
-        console.log(`Privacy field '${privacyField}' updated to '${newValue}' for user: ${userEmail}`);
     } catch (error) {
         console.error('Error in updatePrivacyFieldForUser:', error);
-        throw error; // Optional: re-throw error for further handling
+        throw error; 
     }
 };
 

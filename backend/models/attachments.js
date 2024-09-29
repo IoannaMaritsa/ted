@@ -31,7 +31,7 @@ const uploadfile = async (buffer, originalname) => {
 
     const { data, error } = await supabase
         .storage
-        .from('attachments') // Adjust the bucket name as necessary
+        .from('attachments') 
         .upload(timestampedFilename, buffer, {
             contentType: contentType,
         });
@@ -40,18 +40,18 @@ const uploadfile = async (buffer, originalname) => {
         throw error;
     }
 
-    return timestampedFilename; // Return the file path or key for the uploaded file
+    return timestampedFilename; 
 };
-// Function to add an attachment
+
+
+// Add an attachment
 const addAttachment = async (articleId, type, attachedFile) => {
     try {
 
         let attachmentUrl = null;
         if (attachedFile) {
-            console.log(attachedFile);
             // Upload profile picture and get its URL
             const attachmentPath = await uploadfile(attachedFile.buffer, attachedFile.originalname);
-            console.log(attachmentPath);
             attachmentUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/attachments/${attachmentPath}`;
         }
 
@@ -63,7 +63,6 @@ const addAttachment = async (articleId, type, attachedFile) => {
             throw error;
         }
 
-        console.log('Attachment added successfully:', data);
         return data;
     } catch (err) {
         console.error('Error adding attachment:', err);
@@ -71,7 +70,7 @@ const addAttachment = async (articleId, type, attachedFile) => {
     }
 };
 
-// Function to get attachments for an article
+// Get attachments for an article
 const getAttachments = async (articleId) => {
     try {
         const { data, error } = await supabase
@@ -83,7 +82,6 @@ const getAttachments = async (articleId) => {
             throw error;
         }
 
-        console.log('Attachments:', data);
         return data;
     } catch (err) {
         console.error('Error fetching attachments:', err);

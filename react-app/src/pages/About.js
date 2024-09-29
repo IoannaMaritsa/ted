@@ -21,7 +21,7 @@ export default function About() {
       <div className="help-secondary-section">
         <div className="help-back-icon-container">
           <img
-            src="/back-icon.png" // Replace with your icon path
+            src="/back-icon.png" 
             alt="Back"
             className="back-icon"
             onClick={handleBackClick}

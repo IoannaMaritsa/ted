@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
-import './MainBottom.css'; // We will create this CSS file next
+import './MainBottom.css';
 
 const MainBottom = () => {
   return (

@@ -58,7 +58,6 @@ const Job_create = ({ c_email, onSave }) => {
     };
     const handleClick = (e) => {
         e.preventDefault();
-        //add date
         const now = new Date();
         const timestamp = now.toISOString();
 
@@ -135,6 +134,7 @@ const Job_create = ({ c_email, onSave }) => {
             setSalary(0);
         }
     }, [type]);
+
     return (
         <div>
             <div className="black-frame">
@@ -247,7 +247,6 @@ const Job_create = ({ c_email, onSave }) => {
                             </div>
                         </div>
 
-                        {/* Display chosen skills */}
                         <div className="chosen-skills-container">
 
                             <div className='chosen-skills-head'>

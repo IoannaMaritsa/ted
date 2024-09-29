@@ -1,5 +1,7 @@
 const supabase = require('../supabaseClient');
 
+
+// Add a new job ad
 const addJob = async (title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills) => {
     try {
         const { data, error } = await supabase
@@ -45,11 +47,8 @@ const addJob = async (title, company, location, publishDate, type, profession, e
                 console.error(`Error adding skill ${skillId} to job ${jobId}:`, skillerror);
                 continue; // Skip this skill and continue with the rest
             }
-            console.log(`Skill ${skilldata} added successfully to job with id`, jobId);
         }
 
-
-        console.log('Job added successfully:', data);
         return { success: true, job: data };
     } catch (err) {
         console.error('Error adding job:', err);
@@ -71,11 +70,10 @@ const updateJob = async (jobId, updatedData) => {
         }
 
         if (!data) {
-            console.log(`No job with ID ${jobId} found.`);
+            console.error(`No job with ID ${jobId} found.`);
             return { success: false, message: 'Job not found' };
         }
 
-        console.log(`Job with ID ${jobId} updated:`, data);
         return { success: true, job: data };
     } catch (err) {
         console.error('Error updating job:', err);
@@ -83,6 +81,7 @@ const updateJob = async (jobId, updatedData) => {
     }
 };
 
+// Delete a job ad
 const deleteJob = async (jobId) => {
     try {
         const { data, error } = await supabase
@@ -97,11 +96,10 @@ const deleteJob = async (jobId) => {
         }
 
         if (!data) {
-            console.log(`No job with ID ${jobId} found.`);
+            console.error(`No job with ID ${jobId} found.`);
             return { success: false, message: 'Job not found' };
         }
 
-        console.log(`Job with ID ${jobId} deleted:`, data);
         return { success: true, message: 'Job deleted' };
     } catch (err) {
         console.error('Error deleting job:', err);
@@ -109,6 +107,8 @@ const deleteJob = async (jobId) => {
     }
 };
 
+
+// Get job ads created by a user
 const getJobOfUser = async (userEmail) => {
     try {
         const { data, error } = await supabase
@@ -122,11 +122,10 @@ const getJobOfUser = async (userEmail) => {
         }
 
         if (!data || data.length === 0) {
-            console.log(`No jobs found for user with ID ${userEmail}.`);
+            console.error(`No jobs found for user with ID ${userEmail}.`);
             return { success: false, message: 'No jobs found' };
         }
 
-        console.log(`Found jobs for user with ID ${userEmail}:`, data);
         return { success: true, data: data };
     } catch (err) {
         console.error('Error getting jobs for user:', err);

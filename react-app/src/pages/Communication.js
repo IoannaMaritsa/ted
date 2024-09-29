@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
@@ -22,7 +22,7 @@ export default function Communication() {
       <div className="help-main-section">
         <div className="help-back-icon-container">
           <img
-            src="/back-icon.png" // Replace with your icon path
+            src="/back-icon.png" 
             alt="Back"
             className="back-icon"
             onClick={handleBackClick}

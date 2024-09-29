@@ -21,7 +21,6 @@ const Breadcrumbs = () => {
     'epaggelmatias_settings' : 'Ρυθμίσεις',
     'epaggelmatias_messages' : 'Μηνύματα',
     'epaggelmatias_personal_info' : 'Προσωπικά Στοιχεία',
-    // Add more mappings as needed
   };
 
   return (

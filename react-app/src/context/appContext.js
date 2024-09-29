@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import {jwtDecode} from 'jwt-decode'; // Corrected import
+import {jwtDecode} from 'jwt-decode'; 
 import { loginUser, getUser } from '../api';
 
 // Create Context
@@ -18,14 +18,14 @@ export const ContextProvider = ({ children }) => {
 
     const fetchUserData = async (email) => {
         try {
-            const userData = await getUser(email);  // Fetch user profile
-            setUser(userData);  // Set user data to state
-            setIsLoggedIn(true); // Set login state
+            const userData = await getUser(email); 
+            setUser(userData); 
+            setIsLoggedIn(true); 
         } catch (error) {
             console.error('Error fetching user:', error);
             setIsLoggedIn(false);
         } finally {
-            setLoading(false);  // Finished loading
+            setLoading(false);  
         }
     };
 
@@ -33,38 +33,37 @@ export const ContextProvider = ({ children }) => {
         const currentTime = Date.now();
         const timeLeft = expirationTime - currentTime;
 
-        if (logoutTimer) clearTimeout(logoutTimer);  // Clear any previous timers
+        if (logoutTimer) clearTimeout(logoutTimer);  
 
         const timer = setTimeout(() => {
             logOut();
         }, timeLeft);
 
-        setLogoutTimer(timer);  // Save the timer reference
+        setLogoutTimer(timer);  
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');  // Check if token exists in localStorage
+        const token = localStorage.getItem('token');  
         if (token) {
             try {
-                const decodedToken = jwtDecode(token);  // Decode the token
-                 // Check if the token has expired
+                const decodedToken = jwtDecode(token);  
                  const expirationTime = decodedToken.exp * 1000;
                  if (Date.now() >= expirationTime) {
                      logOut();  // If token is expired, log out immediately
                  } else {
-                     fetchUserData(decodedToken.email);  // Fetch user data
-                     startLogoutTimer(expirationTime);  // Set a timer to log out when the token expires
+                     fetchUserData(decodedToken.email); 
+                     startLogoutTimer(expirationTime);  
                  }
             } catch (error) {
                 console.error('Error decoding token:', error);
                 setIsLoggedIn(false);
-                setLoading(false);  // Stop loading
+                setLoading(false); 
             }
         } else {
             setIsLoggedIn(false);
-            setLoading(false);  // Stop loading
+            setLoading(false); 
         }
-    }, []);  // Run this effect only once on mount
+    }, []); 
 
     const logIn = async (email, password) => {
         try {
@@ -119,5 +118,4 @@ export const ContextProvider = ({ children }) => {
     );
 };
 
-// Custom hook to use the AppContext in components
 export const useAppContext = () => useContext(AppContext);

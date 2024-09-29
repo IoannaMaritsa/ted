@@ -19,12 +19,9 @@ const Article = ({ id, title, author_email, date, content, onDelete }) => {
       console.error("Error getting articles:", error);
     }
   };
-
   
-
-
   const handleDeleteClick = () => {
-    onDelete(id); // Call the delete function passed as a prop
+    onDelete(id); 
   };
 
 
@@ -33,7 +30,7 @@ const Article = ({ id, title, author_email, date, content, onDelete }) => {
     try {
       const response = await addViewtoArticle(user_info.email, id);
     } catch (err) {
-      console.log("Error adding view:", err);
+      console.error("Error adding view:", err);
     }
   };
 

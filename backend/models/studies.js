@@ -1,6 +1,6 @@
 const supabase = require('../supabaseClient');
 
-// Function to add a new study
+// Add a new study
 const addStudies = async (userId, university, degree, startDate, endDate) => {
     try {
         const { data, error } = await supabase
@@ -12,7 +12,6 @@ const addStudies = async (userId, university, degree, startDate, endDate) => {
             throw error;
         }
 
-        console.log('Study added successfully.');
         return data;
     } catch (err) {
         console.error('Error adding studies:', err);
@@ -20,7 +19,7 @@ const addStudies = async (userId, university, degree, startDate, endDate) => {
     }
 };
 
-// Function to get studies by user ID
+// Get studies by user ID
 const getStudiesByUserId = async (userId) => {
     try {
         const { data, error } = await supabase
@@ -39,7 +38,7 @@ const getStudiesByUserId = async (userId) => {
     }
 };
 
-// Function to delete a study
+// Delete a study
 const deleteUserStudy = async (studyId) => {
     try {
         const { data, error } = await supabase
@@ -49,11 +48,10 @@ const deleteUserStudy = async (studyId) => {
             .single();
 
         if (error) {
-            console.log(`Study with ID ${studyId} not found.`);
+            console.error(`Study with ID ${studyId} not found.`);
             return { success: false, message: 'Study not found' };
         }
 
-        console.log(`Study with ID ${studyId} deleted.`);
         return { success: true, message: 'Study deleted successfully', data };
     } catch (err) {
         console.error('Error deleting study:', err);

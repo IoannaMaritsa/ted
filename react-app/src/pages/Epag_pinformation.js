@@ -63,7 +63,6 @@ export default function Epag_pinformation() {
         getStudies();
         getSkills();
         getPrivacy();
-        console.log('information', privacySettings);
     }, [user]);
 
     
@@ -89,7 +88,6 @@ export default function Epag_pinformation() {
 
     // Function to update privacy settings
     const changePrivacySetting = async (newPrivacy) => {
-        console.log('user', user.email, 'field', currentField, 'value', newPrivacy);
         try {
             updatePrivacy(user.email, currentField, newPrivacy);
         } catch (error) {
@@ -193,14 +191,12 @@ export default function Epag_pinformation() {
 
 
     const handleAddSkills = async (newSkills) => {
-        console.log('chosen skills', newSkills);
         try {
             await Promise.all(
                 newSkills.map(async (newSkill) => {
                     await addSkillToUser(user.id, newSkill);
                 })
             );
-            console.log('All skills added successfully');
             
         } catch (error) {
             console.error('Error adding skill:', error);
@@ -212,7 +208,6 @@ export default function Epag_pinformation() {
     const handleSaveProfile = async (updatedProfile) => {
         try {
             await updateUser(user.email, updatedProfile);
-            console.log('new profile', updatedProfile);
         } catch (error) {
             console.error('Error adding experience:', error);
         }
