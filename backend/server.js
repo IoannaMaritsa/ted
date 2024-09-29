@@ -5,7 +5,7 @@
 // const express = require('express');
 // const multer = require('multer');
 // const cors = require('cors');
-// const jose = require('node-jose');
+// onst jwt = require("jsonwebtoken");
 // const https = require('https');
 // const http = require('http');
 // const bcrypt = require('bcrypt');
@@ -46,14 +46,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-// const keyData = fs.readFileSync('jwtKey.json', 'utf8');
-// let key;
-
-// // Load the key into a keystore
-// (async function loadKey() {
-//     const keystore = jose.JWK.createKeyStore();
-//     key = await keystore.add(JSON.parse(keyData), 'json');
-// })();
 
 // Initialize Multer for handling file uploads
 const storage = multer.memoryStorage(); // Use memoryStorage if you are directly uploading to Supabase
