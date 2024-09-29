@@ -11,11 +11,9 @@ import { checkPassword, updatePassword, updateEmail} from '../api';
 const Epag_settings = () => {
 
     const { user, setUser } = useAppContext();
-    const [showPassword, setShowPassword] = useState(false);
 
     const [isModal1Open, setIsModal1Open] = useState(false);
     const [isModal2Open, setIsModal2Open] = useState(false);
-    const [isModal3Open, setIsModal3Open] = useState(false);
 
     const [error1, setError1] = useState(false);
     const [error2, setError2] = useState(false);
@@ -121,8 +119,6 @@ const Epag_settings = () => {
         }
 
     };
-
-
 
     useEffect(() => {
 
@@ -285,20 +281,6 @@ const Epag_settings = () => {
                             </div>
                             <div className="add-work-experience-modal-footer">
                                 <button onClick={handleSave2} >Αποθήκευση</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {isModal3Open && (
-                    <div className="modal-overlay" onClick={() => setIsModal3Open(false)}>
-                        <div className="modal-content" onClick={handleModalClick}>
-                            <h2>Είστε σίγουροι ότι θέλετε να προχωρήσετε;</h2>
-                            <h3>Η αλλαγές σας θα αποθηκευτούν οριστικά.</h3>
-                            <br></br>
-                            <div className='settings-button-area'>
-                                <button onClick={() => setIsModal3Open(false)} className='modal-button-close'>Όχι</button>
-                                <button onClick={HandleSave} className="modal-button-confirm">Ναι</button>
                             </div>
                         </div>
                     </div>
