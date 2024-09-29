@@ -5,7 +5,7 @@
 // const express = require('express');
 // const multer = require('multer');
 // const cors = require('cors');
-// onst jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 // const https = require('https');
 // const http = require('http');
 // const bcrypt = require('bcrypt');

@@ -267,7 +267,7 @@ export default function Epag_job_ad() {
       await deleteJob(jobid);
       console.log("job deleted sucessfully");
 
-      await getMyJobs(user_info.email);
+      window.location.reload();
     } catch (error) {
       console.error(`Error adding a job`, error);
     }
