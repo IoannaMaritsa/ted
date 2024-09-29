@@ -742,7 +742,7 @@ export const updatePrivacy = async (email, privacyField, newValue) => {
 // Update the user's password
 export const updatePassword = async (email, password) => {
     try {
-        const response = await axios.put(`${API_BASE_URL}/password`, {
+        await axios.put(`${API_BASE_URL}/password`, {
             email,
             password
         });
