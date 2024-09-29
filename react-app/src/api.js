@@ -104,7 +104,7 @@ export const checkPassword = async (email, password) => {
     }
 }
 
-// Get a article using userId
+// Get articles using userId
 export const getArticle = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/articles/${userEmail}`);
@@ -114,7 +114,7 @@ export const getArticle = async (userEmail) => {
         throw error;
     }
 };
-// Get a articles using userId
+// Get articles by other uses using userId
 export const getOtherUsersArticles = async (userEmail) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/notarticles/${userEmail}`);

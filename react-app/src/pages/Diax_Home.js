@@ -1,12 +1,14 @@
-import React, { useState, useMemo , useEffect} from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MainBottom from '../components/MainBottom';
-import { useAppContext } from "../context/appContext";
 import '../css/admin.css';
-import {exportData} from '../utils/exportUtils';
+import { exportData } from '../utils/exportUtils';
 import UserRow from "../components/UserRow";
-import { getAllUsers } from "../api";
+import {
+  getAllUsers, getAllStudiesForUser, getAllExperiencesForUser, getAllSkillsForUser, getAllArticles, getCommentsOfUser, getAllContactsByUserEmail,
+  getUserInterests, getJobsOfUser
+} from "../api";
 import { useNavigate } from 'react-router-dom';
 
 export default function Diax_Home() {
@@ -17,40 +19,39 @@ export default function Diax_Home() {
 
   const itemsPerPage = 6;
 
-   // Reset currentPage to 1 whenever searchQuery changes
-   useEffect(() => {
+  // Reset currentPage to 1 whenever searchQuery changes
+  useEffect(() => {
     setCurrentPage(1);
-}, [searchQuery]);
+  }, [searchQuery]);
 
   const [users, setUsers] = useState([]);
 
   const getUsers = async () => {
     try {
-        const response = await getAllUsers();
-        setUsers(response);
+      const response = await getAllUsers();
+      setUsers(response);
     } catch (error) {
-        console.error('Error getting all the users:', error);
+      console.error('Error getting all the users:', error);
     }
-};
-  
-useEffect(() => {
-  getUsers();
-}, []);
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   // Filter and sort users
   const filteredUsers = useMemo(() => {
     const query = searchQuery.toLowerCase();
     return users
       .filter(user =>
-        user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query) ||
-        user.profession.toLowerCase().includes(query)
+        (user.name && user?.name.toLowerCase().includes(query)) ||
+        (user.email && user?.email.toLowerCase().includes(query)) ||
+        (user.profession && user?.profession.toLowerCase().includes(query))
       )
       .sort((a, b) => {
-          if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
-          if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
-          return 0;
-        
+        if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
+        if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
+        return 0;
       });
   }, [searchQuery, sortConfig, users]);
 
@@ -69,27 +70,48 @@ useEffect(() => {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     // Filter users to only include those that are selected
     const selectedUsers = filteredUsers.filter(user => user.isSelected);
-  
+
     // If no users are selected, do not proceed with the export
     if (selectedUsers.length === 0) {
       alert('Please select at least one user to export.');
-      return; 
+      return;
     }
-  
-    const data = selectedUsers.map(user => ({
-      name: user.name,
-      email: user.email,
-      profession: user.profession
-    }));
-  
+
+
+
+    const dataPromises = selectedUsers.map(async user => {
+      const userDetails = {
+        name: user.name,
+        email: user.email,
+        dob: user.dob,
+        id: user.id,
+        location: user.location,
+        profilepic: user.profilepic,
+        profession: user.profession,
+        workplace: user.workplace,
+        studies: await getAllStudiesForUser(user.id),
+        skills: await getAllSkillsForUser(user.id),
+        experiences: await getAllExperiencesForUser(user.id),
+        articles: (await getAllArticles(user.email)).myarticles,
+        jobads: await getJobsOfUser(user.email),
+        likes: await getUserInterests(user.email),
+        comments: await getCommentsOfUser(user.email),
+        contacts: await getAllContactsByUserEmail(user.email)
+
+      };
+      return userDetails;
+
+    });
+    const data = await Promise.all(dataPromises);
+
     // Export the selected users
     exportData(data, exportFormat, 'export');
   };
-  
-  
+
+
 
 
 
@@ -111,7 +133,7 @@ useEffect(() => {
     }));
     setUsers(updatedUsers);
   };
-  
+
 
   const navigate = useNavigate();
 
@@ -133,10 +155,10 @@ useEffect(() => {
   return (
     <div className="admin">
       <Header variant="admin" />
-      <nav className="breadcrumbs"> <img src="/home.png" className='home-icon' alt="Home"/> &nbsp; /</nav>
+      <nav className="breadcrumbs"> <img src="/home.png" className='home-icon' alt="Home" /> &nbsp; /</nav>
       <main className="admin-main-div">
         <div className="box-header2">
-        <h1 className="title-admin">Λίστα Χρηστών</h1>
+          <h1 className="title-admin">Λίστα Χρηστών</h1>
         </div>
         <div className="row1">
           <div className="ebutton-div">
@@ -147,7 +169,7 @@ useEffect(() => {
             >
               <option value="json">JSON</option>
               <option value="xml">XML</option>
-            </select> 
+            </select>
             <button class="a-export-button" onClick={handleExport}> <img src="export.png" alt="Export Icon" class="export-icon"></img>
               Export</button>
           </div>
@@ -163,38 +185,38 @@ useEffect(() => {
           </div>
         </div>
         <div className="admin-box">
-        <table>
-          <thead>
-            <tr>
-              <th style={{ width: '5%' }}>
-                <input
-                  type="checkbox"
-                  onChange={(e) =>handleSelectAllChange(e.target.checked)}
+          <table>
+            <thead>
+              <tr>
+                <th style={{ width: '5%' }}>
+                  <input
+                    type="checkbox"
+                    onChange={(e) => handleSelectAllChange(e.target.checked)}
+                  />
+                </th>
+                <th style={{ width: '15%' }}></th>
+                <th style={{ width: '25%' }} onClick={() => handleSort('name')} className={sortConfig.key === 'name' ? 'sortable active' : 'sortable'}>
+                  Όνομα {sortConfig.key === 'name' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                </th>
+                <th style={{ width: '25%' }} onClick={() => handleSort('email')} className={sortConfig.key === 'email' ? 'sortable active' : 'sortable'}>
+                  Email {sortConfig.key === 'email' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                </th>
+                <th style={{ width: '20%' }} onClick={() => handleSort('profession')} className={sortConfig.key === 'profession' ? 'sortable active' : 'sortable'}>
+                  Επάγγελμα {sortConfig.key === 'profession' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentUsers.map(user => (
+                <UserRow
+                  key={user.id}
+                  user={user}
+                  onProfileClick={handleProfileClick}
+                  onCheckboxChange={handleCheckboxChange}
                 />
-              </th>
-              <th style={{ width: '15%' }}></th>
-              <th style={{ width: '25%' }} onClick={() => handleSort('name')} className={sortConfig.key === 'name' ? 'sortable active' : 'sortable'}>
-                Όνομα {sortConfig.key === 'name' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-              </th>
-              <th style={{ width: '25%' }} onClick={() => handleSort('email')} className={sortConfig.key === 'email' ? 'sortable active' : 'sortable'}>
-                Email {sortConfig.key === 'email' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-              </th>
-              <th style={{ width: '20%' }} onClick={() => handleSort('profession')} className={sortConfig.key === 'profession' ? 'sortable active' : 'sortable'}>
-                Επάγγελμα {sortConfig.key === 'profession' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : ''}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentUsers.map(user => (
-              <UserRow
-                key={user.id}
-                user={user}
-                onProfileClick={handleProfileClick}
-                onCheckboxChange={handleCheckboxChange}
-              />
-            ))}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div className="pagination">
           <button

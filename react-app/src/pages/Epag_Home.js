@@ -9,7 +9,7 @@ import { useAppContext } from "../context/appContext";
 import getImageUrl from "../hooks/getImageUrl";
 import { format } from "date-fns";
 import { formatDateRange } from "../utils/timeUtils";
-import MatrixFactorizationArticles from "../context/MFarticles";
+import MatrixFactorizationArticles from "../bonus/MFarticles";
 import {
   addArticle,
   getArticle,

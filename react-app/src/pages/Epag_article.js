@@ -19,7 +19,6 @@ import {
   getUserInterests,
   addComment,
 } from "../api";
-import MatrixFactorizationArticles from "../context/MFarticles";
 import getImageUrl from "../hooks/getImageUrl";
 import { formatRelativeTime } from "../utils/timeUtils";
 
@@ -151,9 +150,7 @@ const Epag_article = () => {
       console.error("Error adding comment:", error);
     }
   };
-  useEffect(() => {
-    MatrixFactorizationArticles();
-  }, [])
+
 
 
   return (

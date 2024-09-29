@@ -4,7 +4,7 @@ const multer = require("multer");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const usersModel = require("./models/users"); 
+const usersModel = require("./models/users");
 const articlesModel = require("./models/articles");
 const contactsModel = require("./models/contacts");
 const friend_requestsModel = require("./models/friendrequests");
@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Initialize Multer for handling file uploads
-const storage = multer.memoryStorage(); 
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 
@@ -142,7 +142,7 @@ app.delete("/users/:email", upload.none(), async (req, res) => {
 app.put("/users/:email", upload.single("profilepic"), async (req, res) => {
   const { email } = req.params;
   const { name, profession, workplace, location, dob, previousPic } = req.body;
-  const profilepic = req.file; 
+  const profilepic = req.file;
 
   try {
     const updatedUser = await usersModel.updateUser(
@@ -381,11 +381,9 @@ app.get("/interests/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
   try {
     const articles = await articlesModel.getUserInterests(userEmail);
-    if (articles.length > 0) {
-      res.json(articles);
-    } else {
-      res.status(404).json({ error: "No interests found for this user" });
-    }
+
+    res.json(articles);
+
   } catch (err) {
     console.error("Error retrieving user interests:", err);
     res.status(500).json({ error: "Failed to retrieve user interests" });
@@ -618,9 +616,7 @@ app.get("/studies/:userId", async (req, res) => {
   const { userId } = req.params;
   try {
     const studies = await studiesModel.getStudiesByUserId(userId);
-    if (!studies || studies.length === 0) {
-      return res.status(404).json({ message: "No studies found" });
-    }
+
     res.status(200).json(studies);
   } catch (error) {
     console.error("Error fetching studies:", error);
@@ -706,7 +702,7 @@ app.get("/skills/:userId", async (req, res) => {
   try {
     const skills = await skillsModel.getAllSkillsForUser(userId);
     if (!skills || skills.length === 0) {
-      return res.status(404).json({ message: "No skills found for user" }); 
+      return res.status(404).json({ message: "No skills found for user" });
     }
     res.status(200).json(skills);
   } catch (error) {
@@ -723,7 +719,7 @@ app.get("/job_skills/:jobId", async (req, res) => {
   try {
     const skills = await skillsModel.getAllSkillsForJob(jobId);
     if (!skills || skills.length === 0) {
-      return res.status(404).json({ message: "No skills found for job" }); 
+      return res.status(404).json({ message: "No skills found for job" });
     }
     res.status(200).json(skills);
   } catch (error) {
@@ -767,7 +763,7 @@ app.put("/job/:jobId/skills", async (req, res) => {
 app.get("/api/skills", async (req, res) => {
   try {
     const skills = await skillsModel.getAllSkills();
-    res.status(200).json(skills); 
+    res.status(200).json(skills);
   } catch (error) {
     console.error("Error fetching skills:", error);
     res.status(500).json({ error: "Failed to fetch skills" });

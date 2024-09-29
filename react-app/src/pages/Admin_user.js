@@ -177,7 +177,8 @@ export default function Diax_Home() {
             jobAds,
             articles,
             comments,
-            interests
+            interests,
+            contacts
         };
         exportDataProfile(data, exportFormat, 'export');
       };

@@ -291,7 +291,7 @@ export default function Epag_network() {
                                         <img src={getImageUrl(user.profilepic, "profilepics")} onClick={() => handleProfileClick(user)} alt="Profile Picture" className="e-profile-pic" />
                                         <div className="user-info">
                                             <h3 className="name">{user.name}</h3>
-                                            {user.profession && <p className="e-profession">{user.profession}</p>}
+                                            {user.profession && <p className="e-profession" id="professionnp">{user.profession}</p>}
                                             {user.workplace && (
                                                 <div className="workplace-container">
                                                     <img src="work-icon.png" alt="Workplace Icon" className="workplace-icon" />

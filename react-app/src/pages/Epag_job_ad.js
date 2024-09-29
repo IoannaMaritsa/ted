@@ -13,7 +13,7 @@ import { default_locations } from "../context/locations";
 import { format } from 'date-fns';
 import { useState, useMemo, useEffect } from 'react';
 import { getJobsOfUser, updateJob, addJob, deleteJob, getAllUsers, updateJobSkills } from '../api';
-import FindJobRecommendations from '../context/job_recommendations';
+import FindJobRecommendations from '../bonus/job_recommendations';
 
 export default function Epag_job_ad() {
   const locations = ["Περιοχές Όλες", ...default_locations];
