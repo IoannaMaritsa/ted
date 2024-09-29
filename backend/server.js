@@ -1,9 +1,17 @@
+
+// ! Uncomment this for https connection
+// if (typeof globalThis === 'undefined') {
+//     global.globalThis = global;
+//   }
+
+
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const https = require("https");
 const usersModel = require("./models/users");
 const articlesModel = require("./models/articles");
 const contactsModel = require("./models/contacts");
