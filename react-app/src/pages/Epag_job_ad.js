@@ -30,14 +30,14 @@ export default function Epag_job_ad() {
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 4;
   const [totalPages, setTotalPages] = useState("");
-  const [currentJobs, setCurrentJobs] = useState([]); // Jobs to display currently
-  const [selectedJob, setSelectedJob] = useState(null); // Job selected by user
+  const [currentJobs, setCurrentJobs] = useState([]); 
+  const [selectedJob, setSelectedJob] = useState(null); 
 
   const [mycurrentPage, setMyCurrentPage] = useState(1);
   const myjobsPerPage = 4;
   const [mytotalPages, setMytotalPages] = useState("");
-  const [mycurrentJobs, setMycurrentJobs] = useState([]); // Jobs to display currently
-  const [myselectedJob, setMyselectedJob] = useState(null); // Job selected by user
+  const [mycurrentJobs, setMycurrentJobs] = useState([]); 
+  const [myselectedJob, setMyselectedJob] = useState(null); 
 
   const [mysearchQuery, setMysearchQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,7 +45,7 @@ export default function Epag_job_ad() {
   const getJobs = async () => {
     try {
       const users = await getAllUsers();
-      const jobsSet = new Set(); // To store unique job IDs
+      const jobsSet = new Set();
 
       let fetchedJobs = await Promise.all(users
         .filter(user => user.email !== user_info.email) // Filter out the current user's email
@@ -60,7 +60,7 @@ export default function Epag_job_ad() {
 
               // Add job IDs to the Set after filtering nulls
               uniqueJobs.forEach(job => jobsSet.add(job.id));
-              return uniqueJobs; // Return the unique jobs for this user
+              return uniqueJobs; 
             }
             return []; // Return an empty array if newjobs is not successful
           } catch (error) {
@@ -72,7 +72,6 @@ export default function Epag_job_ad() {
       fetchedJobs = fetchedJobs.flat().filter(job => job !== undefined && Object.keys(job).length > 0);
 
       const recommendedjobs = await FindJobRecommendations(user_info, fetchedJobs);
-      // Update state with filtered jobs
       setJobs(recommendedjobs);
       setIsLoading(false);
     } catch (error) {
@@ -84,7 +83,6 @@ export default function Epag_job_ad() {
   const getMyJobs = async (userEmail) => {
     try {
       const newjobs = await getJobsOfUser(userEmail);
-      console.log(`Got a job successfully.`);
       if (newjobs.success) setMyjobs(newjobs.data);
       setIsMyLoading(false);
     } catch (error) {
@@ -175,7 +173,7 @@ export default function Epag_job_ad() {
       })
     );
 
-    return filteredJobs.filter((job) => job !== null); // Remove null values
+    return filteredJobs.filter((job) => job !== null); 
   };
 
   const searchJobs = useMemo(() => {
@@ -232,23 +230,22 @@ export default function Epag_job_ad() {
   //options
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
-    setMyselectedJob(null); // Clear myselectedJob when switching options
-    setSelectedJob(null); // Clear selectedJob when switching options
+    setMyselectedJob(null); 
+    setSelectedJob(null); 
   };
 
   const HandleJobSelect = (job) => {
-    setSelectedJob(job); // This will trigger a re-render with the new job's details
+    setSelectedJob(job); 
   };
 
   const HandleMyJobSelect = (job) => {
-    setMyselectedJob(job); // This will trigger a re-render with the new job's details
+    setMyselectedJob(job); 
   };
 
   //add job
   const HandleAddJob = async (title, company, location, publishDate, type, profession, experience, salary, skills, details, creatorEmail) => {
     try {
       await addJob(title, company, location, publishDate, type, profession, experience, salary, details, creatorEmail, skills);
-      console.log(`Added a job successfully.`);
 
       await getMyJobs(user_info.email);
     } catch (error) {
@@ -265,7 +262,6 @@ export default function Epag_job_ad() {
   const handleDeleteClick = async (jobid) => {
     try {
       await deleteJob(jobid);
-      console.log("job deleted sucessfully");
 
       await getMyJobs(user_info.email);
     } catch (error) {
@@ -280,11 +276,10 @@ export default function Epag_job_ad() {
   }, [user_info, selectedOption]);
 
   useEffect(() => {
-    // Ensure that jobs and filters are applied only after data is loaded
     const fetchFilteredJobs = async () => {
       if (!isLoading && jobs.length > 0) {
-        const updatedFilteredJobs = await filterJobs(searchJobs); // Filter based on the latest job data
-        setTotalPages(Math.ceil(updatedFilteredJobs.length / jobsPerPage)); // Update the total pages for pagination
+        const updatedFilteredJobs = await filterJobs(searchJobs); 
+        setTotalPages(Math.ceil(updatedFilteredJobs.length / jobsPerPage)); 
 
         const indexOfLastJob = currentPage * jobsPerPage;
         const indexOfFirstJob = indexOfLastJob - jobsPerPage;
@@ -293,8 +288,8 @@ export default function Epag_job_ad() {
           indexOfLastJob
         ); // Paginate jobs
 
-        setCurrentJobs(jobsToDisplay); // Set the jobs to be displayed for the current page
-        setSelectedJob(null); // Safely set selected job or null if no jobs available
+        setCurrentJobs(jobsToDisplay); 
+        setSelectedJob(null);
       }
     };
     fetchFilteredJobs();
@@ -304,13 +299,11 @@ export default function Epag_job_ad() {
   ]);
 
   useEffect(() => {
-    // Ensure that jobs and filters are applied only after data is loaded
     const fetchFilteredJobs = async () => {
       if (!isMyLoading && myjobs.length > 0) {
-        const updatedFilteredJobs = await filterJobs(searchMyjobs); // Filter based on the latest job data
-        setMytotalPages(Math.ceil(updatedFilteredJobs.length / myjobsPerPage)); // Update the total pages for pagination
+        const updatedFilteredJobs = await filterJobs(searchMyjobs); 
+        setMytotalPages(Math.ceil(updatedFilteredJobs.length / myjobsPerPage)); 
 
-        console.log('myjobs', updatedFilteredJobs);
         const indexOfLastJob = mycurrentPage * myjobsPerPage;
         const indexOfFirstJob = indexOfLastJob - myjobsPerPage;
         const jobsToDisplay = updatedFilteredJobs.slice(
@@ -318,8 +311,8 @@ export default function Epag_job_ad() {
           indexOfLastJob
         ); // Paginate jobs
 
-        setMycurrentJobs(jobsToDisplay); // Set the jobs to be displayed for the current page
-        setMyselectedJob(null); // Safely set selected job or null if no jobs available
+        setMycurrentJobs(jobsToDisplay); 
+        setMyselectedJob(null); 
       }
     };
     fetchFilteredJobs();
@@ -331,16 +324,16 @@ export default function Epag_job_ad() {
   // Ensure selectedJob is updated properly when currentJobs changes
   useEffect(() => {
     if (currentJobs.length > 0) {
-      setSelectedJob(null); // Guard against undefined job, select the first available job
+      setSelectedJob(null); 
     }
   }, [currentJobs]);
 
   if (isLoading && selectedOption === "Αγγελίες άλλων") {
-    return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
+    return <div>Loading...</div>; 
   }
 
   if (isMyLoading && selectedOption === "Οι αγγελίες μου") {
-    return <div>Loading...</div>; // Display a loading message or spinner while jobs are being fetched
+    return <div>Loading...</div>; 
   }
 
   return (

@@ -53,7 +53,7 @@ input[type="date"]::-webkit-inner-spin-button {
 
 input[type="date"]::-webkit-calendar-picker-indicator {
     display: none;
-    /* Hide the calendar icon */
+
 }
 
 
@@ -88,9 +88,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 
 
-/* Additional styling for the input field itself */
 input#dob{
-    color: #000; /* Customize the text color inside the input */
+    color: #000; 
     background-color: transparent;
     padding: none;
     margin-left: none;
@@ -246,20 +245,15 @@ input#dob{
 
 .profile-picture {
     width: 150px;
-    /* Adjust size as needed */
     height: 150px;
-    /* Adjust size as needed */
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ddd;
-    /* Optional: Add border if desired */
     background-color: #f0f0f0;
-    /* Optional: Background color if no image */
     margin-bottom: 20px;
     margin-top: 20px;
 }
 
-/* File Upload Container */
 .file-upload-container {
     position: relative;
     display: inline-block;
@@ -282,15 +276,10 @@ input#dob{
     z-index: 2;
     margin-bottom: 20px;
     display: block;
-    /* Or inline-block if needed */
     max-width: 220px;
-    /* Adjust the width to fit your layout */
     white-space: nowrap;
-    /* Prevents text wrapping to the next line */
     overflow: hidden;
-    /* Hides overflowed text */
     text-overflow: ellipsis;
-    /* Adds ellipsis (...) at the end of the text */
 
 }
 
@@ -309,11 +298,8 @@ input[type="file"] {
     width: 100%;
     height: 100%;
     opacity: 0;
-    /* Hide the input visually */
     cursor: pointer;
-    /* Ensure pointer cursor on hover */
     z-index: 0;
-    /* Ensure input is beneath the label */
 }
 
 
@@ -335,7 +321,7 @@ input[type="file"]::file-selector-button {
 }
 
 .form-group.error {
-    border-color: var(--error-red); /* Red border for error state */
+    border-color: var(--error-red); 
 }
 
 .error-message {

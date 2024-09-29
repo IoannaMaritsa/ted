@@ -10,7 +10,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import getImageUrl from "../hooks/getImageUrl";
 import { useAppContext } from "../context/appContext";
 import { format } from 'date-fns';
-import { formatDateRange, formatRelativeTime} from "../utils/timeUtils";
+import { formatDateRange} from "../utils/timeUtils";
 
 export default function Epag_network_profile() {
     const location = useLocation();
@@ -19,9 +19,9 @@ export default function Epag_network_profile() {
     const [loading, setLoading] = useState(true);
     const [sentRequests, setSentRequests] = useState([]);
     const [pendingRequests, setPendingRequests] = useState([]);
-    const [otherProfile, setOtherProfile] = useState(null); // State for the profile
+    const [otherProfile, setOtherProfile] = useState(null); 
     const { user, setMessageContact } = useAppContext();
-    const [contacts, setContacts] = useState([]); // State for the contacts
+    const [contacts, setContacts] = useState([]); 
     const [workExperience, setWorkExperience] = useState([]);
     const [studies, setStudies] = useState([]);
     const [skills, setSkills] = useState([]);
@@ -33,12 +33,6 @@ export default function Epag_network_profile() {
 
 
 
-    // Log the email value for debugging
-    useEffect(() => {
-        console.log("userEmail from state:", userEmail);
-    }, [userEmail]);
-
-    // Fetch the user's profile data based on the email
     useEffect(() => {
         const fetchProfile = async () => {
             console.error("email", userEmail);
@@ -48,7 +42,7 @@ export default function Epag_network_profile() {
                 }
                 try {
 
-                    const profileData = await getUser(userEmail); // Assuming getUser returns a Promise
+                    const profileData = await getUser(userEmail); 
                     setOtherProfile(profileData);
                 } catch (error) {
                     console.error("Error fetching profile:", error);
@@ -61,7 +55,7 @@ export default function Epag_network_profile() {
 
 
     useEffect(() => {
-        //fetch the my contacts
+        //fetch the user's contacts
         const fetchContacts = async () => {
             try {
                 const contacts = await getAllContactsByUserEmail(user.email);
@@ -70,7 +64,7 @@ export default function Epag_network_profile() {
                 console.error('Error fetching contacts:', error);
             }
         };
-        //fetch the contacts of the picked user
+        //fetch the non contacts of the picked user
         const fetchOthercontacts = async () => {
             try {
                 const contacts = await getAllContactsByUserEmail(otherProfile.email);
@@ -78,7 +72,7 @@ export default function Epag_network_profile() {
                 const contactDetailsPromises = contactEmails.map(email => getUser(email));
                 const contactsData = await Promise.all(contactDetailsPromises);
 
-                setOthercontacts(contactsData); // Store the full contact details in state
+                setOthercontacts(contactsData); 
             } catch (error) {
                 console.error('Error getting articles:', error);
             }
@@ -86,11 +80,9 @@ export default function Epag_network_profile() {
 
         fetchContacts();
         fetchOthercontacts();
-        console.log(othercontacts);
     }, [userEmail, otherProfile]);
 
     const handleProfileClick = (user) => {
-        console.log("email2", user.email);
         navigate('/epaggelmatias_network/user_profile', { state: { userEmail: user.email } });
         window.scrollTo(0, 0);
     };
@@ -152,7 +144,6 @@ export default function Epag_network_profile() {
         try {
 
             const newjobs = await getJobsOfUser(otherProfile.email);
-            console.log(`Got a job successfully.`);
             if (newjobs.success)
                 setJobAds(newjobs.data)
 
@@ -213,8 +204,7 @@ export default function Epag_network_profile() {
         if (!isRequestPending(targetUserEmail) && !hasSentRequest(targetUserEmail)) {
             try {
                 const response = await sendFriendRequest(user.email, targetUserEmail);
-                console.log("Friend request response:", response);
-                // Update state with new sent request
+
                 setSentRequests(prev => [...prev, { sender_email: user.email, receiver_email: targetUserEmail, status: 'pending' }]);
             } catch (error) {
                 console.error('Error sending friend request:', error);
@@ -234,7 +224,6 @@ export default function Epag_network_profile() {
                 await addContact(user.email, senderEmail);
                 await addContact(senderEmail, user.email);
                 await deleteFriendRequest(friendRequest.id);
-                // Reload requests
                 const [sent, received] = await Promise.all([
                     getSentFriendRequests(user.profile),
                     getReceivedFriendRequests(user.profile)
@@ -252,7 +241,6 @@ export default function Epag_network_profile() {
             console.log(targetEmail, user.email)
             await removeContact(user.email, targetEmail);
             await removeContact(targetEmail, user.email);
-            // Optionally, refresh the contact list
             const contacts = await getAllContactsByUserEmail(user.email);
             setContacts(contacts.map(contact => contact.contact_email));
         } catch (error) {
@@ -271,7 +259,6 @@ export default function Epag_network_profile() {
             if (request) {
                 await updateFriendRequestStatus(request.id, 'rejected');
                 await deleteFriendRequest(request.id);
-                // Reload requests
                 const [sent, received] = await Promise.all([
                     getSentFriendRequests(user.profile),
                     getReceivedFriendRequests(user.profile)
@@ -339,7 +326,7 @@ export default function Epag_network_profile() {
                 <div className="main-container">
                     <div className="back-icon-container">
                         <img
-                            src="/back-icon.png" // Replace with your icon path
+                            src="/back-icon.png" 
                             alt="Back"
                             className="back-icon"
                             onClick={handleBackClick}
@@ -473,7 +460,6 @@ export default function Epag_network_profile() {
                                     <div key={index} className="work-experience-row">
                                         <div className="work-role">{ad.title}</div>
                                         {ad.publish_date ? <div className="work-duration">{format(ad.publish_date, 'yyyy-MM-dd')}</div> : <span>No date available</span>}
-                                        {/* <div className="work-duration">{ad.publish_date}</div> */}
                                     </div>
                                 ))
                             ) : (
@@ -489,7 +475,7 @@ export default function Epag_network_profile() {
                                     <div key={index} className="work-experience-row">
                                         <div className="work-role">{article.title}</div>
                                         {article.publish_date ? <div className="work-duration">{format(article.publish_date, 'yyyy-MM-dd')}</div> : <span>No date available</span>}
-                                        {/* <div className="work-duration">{article.publish_date}</div> */}
+
                                     </div>
                                 ))
                             ) : (

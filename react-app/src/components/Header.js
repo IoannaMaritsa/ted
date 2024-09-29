@@ -19,7 +19,6 @@ const Header = ({ variant }) => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
-      console.log(token, isLoggedIn)
       try {
         const decoded = jwtDecode(token);
         setIsAdmin(decoded.role === 'admin');
@@ -33,12 +32,6 @@ const Header = ({ variant }) => {
 
   }, [isLoggedIn]);
 
-  useEffect(() => {
-    console.log("logg", isLoggedIn);
-    console.log(localStorage.getItem('token'));
-    console.log(user);
-
-  }, []);
 
 
   const handleProfileClick = () => {
@@ -46,9 +39,9 @@ const Header = ({ variant }) => {
   };
 
   const handleSignOut = () => {
-    logOut(); // Call the logOut function from context
+    logOut(); 
     setShowDropdown(false); // Close dropdown on sign out
-    navigate('/login'); // Use navigate for redirection
+    navigate('/login'); 
   };
 
 

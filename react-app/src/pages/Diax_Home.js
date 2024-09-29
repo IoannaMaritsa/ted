@@ -14,7 +14,6 @@ export default function Diax_Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [exportFormat, setExportFormat] = useState('json');
-  const {setUserProfile } = useAppContext();
 
   const itemsPerPage = 6;
 
@@ -23,7 +22,6 @@ export default function Diax_Home() {
     setCurrentPage(1);
 }, [searchQuery]);
 
-  // Initial users state
   const [users, setUsers] = useState([]);
 
   const getUsers = async () => {

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import "../../css/popup.css";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { format } from 'date-fns'; // Import format function for date formatting
+import { format } from 'date-fns';
 import getImageUrl from "../../hooks/getImageUrl";
 
+// Popup for profile edit
 const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
     const [profilePic, setProfilePic] = useState();
     const [name, setName] = useState(currentProfile.name || '');
@@ -20,15 +21,13 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setProfilePic(file); // Update profilePic state with the file URL
+            setProfilePic(file); 
         }
     };
 
     const handleSave = async () => {
-        // Create a FormData object to hold the data
         const formData = new FormData();
 
-        // Append all the fields to the FormData object
         formData.append('name', name !== currentProfile.name ? name : currentProfile.name);
         formData.append('profession', profession !== currentProfile.profession ? profession : currentProfile.profession);
         formData.append('workplace', workplace !== currentProfile.workplace ? workplace : currentProfile.workplace);
@@ -36,16 +35,14 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
         formData.append('dob', birthday ? format(birthday, 'yyyy-MM-dd') : currentProfile.birthday);
         formData.append('previousPic', currentProfile.profilepic);
 
-        // Check if the profile picture is a file, and append it to the FormData
         if (profilePic && typeof profilePic === 'object') {
-            formData.append('profilepic', profilePic);  // Appending the file
+            formData.append('profilepic', profilePic);  
             console.log('pic', profilePic);
         }
 
-        // Send the FormData to the backend
         try {
-            await onSave(formData); // Pass FormData to onSave for backend API call
-            onClose(); // Close the popup
+            await onSave(formData); 
+            onClose(); 
         } catch (error) {
             console.error('Error saving profile:', error);
         }
@@ -84,7 +81,7 @@ const EditPopup = ({ isOpen, onClose, currentProfile, onSave }) => {
                                         accept="image/*"
                                         onChange={handleImageChange}
                                         className="profile-pic-input2"
-                                        style={{ display: 'none' }} // Hide the default file input
+                                        style={{ display: 'none' }} 
                                     />
                                     <button
                                         onClick={() => document.getElementById('profilePicInput').click()}

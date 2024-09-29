@@ -1,9 +1,8 @@
 const supabase = require('../supabaseClient');
 
-// Function to add a view to a article
+// Add a view to a article
 async function addViewtoArticle(userEmail, articleId) {
     try {
-        // Check if the view already exists
         const { data: view, error: viewError } = await supabase
             .from('article_views')
             .select('*')
@@ -20,7 +19,7 @@ async function addViewtoArticle(userEmail, articleId) {
             const newView = {
                 count: view[0].count + 1,
             };
-            console.log('newcount', newView);
+
 
             const { data, error } = await supabase
                 .from('article_views')
@@ -43,33 +42,24 @@ async function addViewtoArticle(userEmail, articleId) {
                 throw articleViewError;
             }
 
-            console.log(`View added to article ID ${articleId}`);
         }
 
     } catch (error) {
         console.error('Error adding view to article:', error);
-        throw error; // Optional: re-throw error for further handling
+        throw error;
     }
 }
 
-// Function to get article views of a user
+// Get article views of a user
 const getArticleViewsByUser = async (userEmail) => {
     try {
-        // Fetch views associated with the user
         const { data: userViews, error: userViewsError } = await supabase
             .from('article_views')
             .select('*')
             .eq('user_email', userEmail);
 
-            console.log(userEmail, userViews)
         if (userViewsError) {
             throw userViewsError;
-        }
-
-        console.log(userViews)
-        if (!userViews || userViews.length === 0) {
-    
-            return []; // No views found for the user
         }
 
         return userViews;
@@ -80,16 +70,14 @@ const getArticleViewsByUser = async (userEmail) => {
     }
 }
 
-// Function to get article views of a user
+// Get article views of an article
 const getArticleViewsByArticle = async (articleId) => {
     try {
-        // Fetch views associated with the user
         const { data: userViews, error: userViewsError } = await supabase
             .from('article_views')
             .select('*')
             .eq('article_id', articleId);
 
-            console.log(userEmail, userViews)
         if (userViewsError) {
             throw userViewsError;
         }
@@ -102,10 +90,9 @@ const getArticleViewsByArticle = async (articleId) => {
     }
 }
 
-// Function to get article views of a user
+// Get article views of a user
 const getArticleViews = async () => {
     try {
-        // Fetch views associated with the user
         const { data: userViews, error: userViewsError } = await supabase
             .from('article_views')
             .select('*')

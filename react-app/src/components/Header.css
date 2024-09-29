@@ -32,28 +32,24 @@
     max-width: 40px;
     width: 40px;
     cursor: pointer;
-    /* Adjust size as needed */
     max-height: 40px;
     height: 40px;
-    /* Adjust size as needed */
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ddd;
-    /* Optional: Add border if desired */
     background-color: #f0f0f0;
-    /* Optional: Background color if no image */
     margin: 0px;
     margin-top:5px;
     margin-left: 10px;
   }
 
   table tbody tr {
-    background-color: #ffffff; /* White background for all rows */
+    background-color: #ffffff; 
   }
   
-  /* Style for every second row (odd rows) */
+
   table tbody tr:nth-child(even) {
-    background-color: #fbfbfb; /* Slightly darker than white */
+    background-color: #fbfbfb; 
   }
 
 
@@ -62,9 +58,9 @@
   }
   .dropdown {
     position: absolute;
-    top: 80px; /* Adjust as needed */
+    top: 80px;
     right: 0;
-    width: 320px; /* Adjust as needed */
+    width: 320px;
     background-color: white;
     border: 1px solid var(--border-color);
     border-radius: 5px;
@@ -76,11 +72,11 @@
   .dropdown::before {
     content: '';
     position: absolute;
-    top: -20px; /* Adjust based on dropdown height */
-    right: 55px; /* Adjust based on where you want the triangle to appear */
+    top: -20px; 
+    right: 55px; 
     border-width: 10px;
     border-style: solid;
-    border-color: transparent transparent rgb(255, 255, 255) transparent; /* Adjust color to match dropdown background */
+    border-color: transparent transparent rgb(255, 255, 255) transparent; 
 
   }
   

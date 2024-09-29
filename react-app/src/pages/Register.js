@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useAppContext } from '../context/appContext';
-import { format } from 'date-fns'; // Import format function from date-fns
-import { addUser } from '../api'; // Adjust the import path as needed
+import { format } from 'date-fns'; 
+import { addUser } from '../api'; 
 
 export default function Register() {
 
@@ -57,7 +57,7 @@ export default function Register() {
             profilePhoto: null
         }));
         if (fileInputRef.current) {
-            fileInputRef.current.value = ''; // Reset file input value
+            fileInputRef.current.value = '';
         }
     };
 
@@ -119,8 +119,7 @@ export default function Register() {
 
         // Format the date to DD-MM-YYYY
         const formattedDob = formData.dob ? format(formData.dob, "yyyy-MM-dd") : '';
-        console.log(formattedDob);
-        // Access the input fields by their IDs
+
         const firstNameInput = document.getElementById('firstName');
         const lastNameInput = document.getElementById('lastName');
 
@@ -130,16 +129,6 @@ export default function Register() {
 
         // Concatenate first and last name
         const fullName = `${firstNameValue} ${lastNameValue}`;
-
-        // Combine form data with other fields
-        const userData = {
-            name: fullName,
-            email: formData.email,
-            password: formData.password,
-            location: formData.location,
-            dob: formattedDob,
-            profilepic: formData.profilePhoto,
-        };
 
         try {
             // Format the date
@@ -157,13 +146,11 @@ export default function Register() {
 
             // Register the user
             const response = await addUser(userData);
-            console.log(response.status)
             if (response.status === 500 || response.status === 409) {
                 setErrors({ ...errors, emailInUse: true });
             }
             else if (response.status === 201) {
                 setSuccess(true);
-                console.log('User registered successfully:', response);
 
                 // Save user information in session storage
                 sessionStorage.setItem('user', JSON.stringify({
@@ -171,19 +158,17 @@ export default function Register() {
                     email: formData.email,
                 }));
 
-                // Attempt to log in with the registered credentials
                 try {
                     await logIn(formData.email, formData.password);
-                    navigate('/epaggelmatias_homepage'); // Redirect after successful login
+                    navigate('/epaggelmatias_homepage'); 
                 } catch (loginError) {
                     console.error('Login failed:', loginError);
-                    // You might want to show an error message to the user here
+
                 }
             }
 
         } catch (registerError) {
             console.error('Error registering user:', registerError);
-            // You might want to show an error message to the user here
         }
     };
 
@@ -235,8 +220,8 @@ export default function Register() {
                                         id="firstName"
                                         name="firstName"
                                         placeholder="Όνομα"
-                                        value={formData.firstName} // Bind to state
-                                        onChange={handleChange2} // Call handleChange2 on change
+                                        value={formData.firstName} 
+                                        onChange={handleChange2} 
                                         required
                                     />
                                 </div>
@@ -249,8 +234,8 @@ export default function Register() {
                                         id="lastName"
                                         name="lastName"
                                         placeholder="Επώνυμο"
-                                        value={formData.lastName} // Bind to state
-                                        onChange={handleChange2} // Call handleChange2 on change
+                                        value={formData.lastName} 
+                                        onChange={handleChange2} 
                                         required
                                     />
                                 </div>

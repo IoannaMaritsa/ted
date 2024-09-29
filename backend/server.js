@@ -1,23 +1,10 @@
-// if (typeof globalThis === 'undefined') {
-//     global.globalThis = global;
-//   }
-// require('dotenv').config();
-// const express = require('express');
-// const multer = require('multer');
-// const cors = require('cors');
-// const jose = require('node-jose');
-// const https = require('https');
-// const http = require('http');
-// const bcrypt = require('bcrypt');
-// const fs = require('fs');
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
-const usersModel = require("./models/users"); // Adjust the path as necessary
+const usersModel = require("./models/users"); 
 const articlesModel = require("./models/articles");
 const contactsModel = require("./models/contacts");
 const friend_requestsModel = require("./models/friendrequests");
@@ -35,10 +22,19 @@ const articlesViewsModel = require("./models/article_views");
 
 const app = express();
 
+
+// ! Uncomment this for https connection
 // const options = {
 //     key: fs.readFileSync('./certificates/localhost-key.pem'),
 //     cert: fs.readFileSync('./certificates/localhost-cert.pem')
 //   };
+
+// app.use(cors({
+//     origin: ['https://localhost', 'https://localhost:3000'], // Replace with your actual domains
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
 const PORT = process.env.PORT || 5001;
 
 // Middleware to parse JSON
@@ -46,25 +42,13 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-// const keyData = fs.readFileSync('jwtKey.json', 'utf8');
-// let key;
-
-// // Load the key into a keystore
-// (async function loadKey() {
-//     const keystore = jose.JWK.createKeyStore();
-//     key = await keystore.add(JSON.parse(keyData), 'json');
-// })();
 
 // Initialize Multer for handling file uploads
-const storage = multer.memoryStorage(); // Use memoryStorage if you are directly uploading to Supabase
+const storage = multer.memoryStorage(); 
 const upload = multer({ storage });
 
-// Enable CORS with specific configuration
-// app.use(cors({
-//     origin: ['https://localhost', 'https://localhost:3000'], // Replace with your actual domains
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     allowedHeaders: ['Content-Type', 'Authorization']
-// }));
+
+// ! Comment this for https connection
 
 app.use(
   cors({
@@ -73,6 +57,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+
 
 // ---------- USER ROUTES -----------
 // Get all users
@@ -102,12 +88,10 @@ app.get("/users/:email", async (req, res) => {
   }
 });
 
-// Handle form submissions
+// Create a new user
 app.post("/users", upload.single("profilepic"), async (req, res) => {
   try {
     const { name, email, password, location, dob } = req.body;
-
-    // Buffer if uploading to Supabase
     const profilepic = req.file;
 
     console.log("Incoming user data:", {
@@ -128,11 +112,9 @@ app.post("/users", upload.single("profilepic"), async (req, res) => {
       profilepic
     );
     if (result.success === false) {
-      // If the user already exists, send a 409 status with the message
       return res.status(409).json({ error: result.message });
     }
 
-    // If user creation is successful, send a 201 status
     res.status(201).json({ message: result.message });
   } catch (err) {
     console.error("Error adding user:", err);
@@ -146,7 +128,7 @@ app.delete("/users/:email", upload.none(), async (req, res) => {
   try {
     const result = await usersModel.deleteUser(email);
     if (result) {
-      res.status(204).send(); // 204 No Content when deletion is successful
+      res.status(204).send();
     } else {
       res.status(404).json({ error: "User not found" });
     }
@@ -156,11 +138,11 @@ app.delete("/users/:email", upload.none(), async (req, res) => {
   }
 });
 
-// Update user information
+// Update user
 app.put("/users/:email", upload.single("profilepic"), async (req, res) => {
   const { email } = req.params;
   const { name, profession, workplace, location, dob, previousPic } = req.body;
-  const profilepic = req.file; // The uploaded file will be available in req.file
+  const profilepic = req.file; 
 
   try {
     const updatedUser = await usersModel.updateUser(
@@ -184,14 +166,12 @@ app.put("/users/:email", upload.single("profilepic"), async (req, res) => {
   }
 });
 
+// Fetch a user's hashed password and check if it matches with the password given
 app.get("/password", async (req, res) => {
   const { email, password } = req.query;
-  console.log(email, password);
   try {
     const pass = await usersModel.getPassword(email);
-    console.log(pass.password, password);
     const isPasswordValid = await bcrypt.compare(password, pass.password);
-    console.log(isPasswordValid);
     if (isPasswordValid) res.status(201).json(true);
     else res.status(201).json(false);
   } catch (err) {
@@ -199,6 +179,7 @@ app.get("/password", async (req, res) => {
   }
 });
 
+// Update a user's password
 app.put("/password", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -209,6 +190,7 @@ app.put("/password", async (req, res) => {
   }
 });
 
+// Update a user's email
 app.put("/email", async (req, res) => {
   const { email, newemail } = req.body;
   try {
@@ -230,7 +212,7 @@ app.put("/email", async (req, res) => {
   }
 });
 
-// Login route
+// Login
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log("Incoming user data:", {
@@ -240,7 +222,6 @@ app.post("/login", async (req, res) => {
 
   try {
     const response = await usersModel.isAdmin(email);
-    console.log("response1", response);
     if (response != null) {
       const admin = response;
       const isPasswordValid = admin.password === password;
@@ -260,7 +241,6 @@ app.post("/login", async (req, res) => {
       res.json({ token });
     } else {
       const user = await usersModel.getUser(email);
-      console.log("User found:", user);
       if (!user) {
         return res.status(404).json({ error: "Email not found" });
       }
@@ -291,7 +271,7 @@ app.post("/login", async (req, res) => {
 });
 
 // ---------- ARTICLE ROUTES -----------
-// Get a all the articles by user id
+// Get all the articles by user id
 app.get("/articles/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
   try {
@@ -305,7 +285,7 @@ app.get("/articles/:userEmail", async (req, res) => {
   }
 });
 
-// Get a all the articles not made by user
+// Get all the articles not made by user
 app.get("/notarticles/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
   try {
@@ -318,7 +298,8 @@ app.get("/notarticles/:userEmail", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch articles" });
   }
 });
-// Get an articles by its id
+
+// Get an article by its id
 app.get("/article/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -332,13 +313,14 @@ app.get("/article/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch articles" });
   }
 });
-// Delete a article
+
+// Delete an article
 app.delete("/articles/:articleId", upload.none(), async (req, res) => {
   const { articleId } = req.params;
   try {
     const result = await articlesModel.deleteArticleById(articleId);
     if (result) {
-      res.status(204).send(); // 204 No Content when deletion is successful
+      res.status(204).send();
     } else {
       res.status(404).json({ error: "Article not found" });
     }
@@ -347,17 +329,10 @@ app.delete("/articles/:articleId", upload.none(), async (req, res) => {
     res.status(500).json({ error: "Failed to delete article" });
   }
 });
-// Handle article creation
+// Create a new article
 app.post("/articles", async (req, res) => {
   try {
     const { title, authorEmail, publishDate, content } = req.body;
-
-    console.log("Incoming user data:", {
-      title,
-      authorEmail,
-      publishDate,
-      content,
-    });
 
     const result = await articlesModel.addArticle(
       title,
@@ -366,7 +341,6 @@ app.post("/articles", async (req, res) => {
       content
     );
     if (result) {
-      // If user creation is successful, send a 201 status
       res.status(201).json(result);
     } else {
       res.status(404).json({ error: "Article not created" });
@@ -376,8 +350,8 @@ app.post("/articles", async (req, res) => {
     res.status(500).json({ error: "Failed to add user" });
   }
 });
-// ---------- USER INTEREST ROUTES -----------
 
+// ---------- USER INTEREST ROUTES -----------
 // Add an article to a user's list of interests
 app.post("/interests/add", async (req, res) => {
   const { userEmail, articleId } = req.body;
@@ -418,7 +392,7 @@ app.get("/interests/:userEmail", async (req, res) => {
   }
 });
 
-// Get all interests
+// Get all interests for all users and articles
 app.get("/interests", async (req, res) => {
   try {
     const interests = await articlesModel.getAllInterests();
@@ -451,12 +425,11 @@ app.get("/articles/:id/interests", async (req, res) => {
       });
   }
 });
-// ---------- CONTACT ROUTES -----------
 
+// ---------- CONTACT ROUTES -----------
 // Get all contacts for a specific user by email
 app.get("/contacts/:email", async (req, res) => {
   const { email } = req.params;
-  console.log(`Fetching contacts for email: ${email}`);
   try {
     const contacts = await contactsModel.getAllContactsByEmail(email);
     if (!contacts) {
@@ -485,7 +458,6 @@ app.post("/contacts", async (req, res) => {
 // Remove a contact for a user by email
 app.delete("/contacts", async (req, res) => {
   const { userEmail, contactEmail } = req.body;
-  console.log("serverside", userEmail, contactEmail);
   try {
     await contactsModel.removeContact(userEmail, contactEmail);
     res.status(200).json({ message: "Contact removed successfully" });
@@ -498,7 +470,6 @@ app.delete("/contacts", async (req, res) => {
 // Send a friend request
 app.post("/send", async (req, res) => {
   const { senderEmail, receiverEmail } = req.body;
-  console.log("server side");
   try {
     const result = await friend_requestsModel.sendFriendRequest(
       senderEmail,
@@ -567,11 +538,10 @@ app.patch("/friendrequests/:id", async (req, res) => {
   }
 });
 
-// Route to get a friend request by two emails
+// Get a friend request by two emails
 app.get("/friend-request", async (req, res) => {
   const { email1, email2 } = req.query;
 
-  console.log("serverside", email1, email2);
   if (!email1 || !email2) {
     return res.status(400).json({ error: "Missing email parameters" });
   }
@@ -590,12 +560,12 @@ app.get("/friend-request", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-// ---------- EXPERIENCE ROUTES -----------
 
+
+// ---------- EXPERIENCE ROUTES -----------
 // Get all experiences for a specific user by id
 app.get("/experiences/:userId", async (req, res) => {
   const { userId } = req.params;
-  console.log(`Fetching experiences for id: ${userId}`);
   try {
     const experiences = await experiencesModel.getExperiencesByUserId(userId);
     if (!experiences) {
@@ -641,12 +611,11 @@ app.delete("/experiences/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete experience" });
   }
 });
-// ---------- STUDIES ROUTES -----------
 
+// ---------- STUDIES ROUTES -----------
 // Get all studies for a specific user by id
 app.get("/studies/:userId", async (req, res) => {
   const { userId } = req.params;
-  console.log(`Fetching studies for id: ${userId}`);
   try {
     const studies = await studiesModel.getStudiesByUserId(userId);
     if (!studies || studies.length === 0) {
@@ -693,9 +662,9 @@ app.delete("/studies/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete study" });
   }
 });
-// ---------- SKILL ROUTES -----------
 
-// Route to add a skill to a user
+// ---------- SKILL ROUTES -----------
+// Add a skill to a user
 app.post("/skills", async (req, res) => {
   const { userId, skillName } = req.body;
   try {
@@ -714,7 +683,7 @@ app.post("/skills", async (req, res) => {
   }
 });
 
-// Route to delete a skill from a user
+// Delete a skill from a user
 app.delete("/skills", async (req, res) => {
   const { userId, skillId } = req.body;
   try {
@@ -731,14 +700,13 @@ app.delete("/skills", async (req, res) => {
   }
 });
 
-// Route to get all skills for a specific user by user ID
+// Get all skills for a specific user by user ID
 app.get("/skills/:userId", async (req, res) => {
   const { userId } = req.params;
-  console.log(`Fetching skills for id: ${userId}`);
   try {
     const skills = await skillsModel.getAllSkillsForUser(userId);
     if (!skills || skills.length === 0) {
-      return res.status(404).json({ message: "No skills found for user" }); // Ensure to return here
+      return res.status(404).json({ message: "No skills found for user" }); 
     }
     res.status(200).json(skills);
   } catch (error) {
@@ -749,14 +717,13 @@ app.get("/skills/:userId", async (req, res) => {
   }
 });
 
-// Route to get all skills for a specific job
+// Get all skills for a specific job
 app.get("/job_skills/:jobId", async (req, res) => {
   const { jobId } = req.params;
-  console.log(`Fetching skills for id: ${jobId}`);
   try {
     const skills = await skillsModel.getAllSkillsForJob(jobId);
     if (!skills || skills.length === 0) {
-      return res.status(404).json({ message: "No skills found for job" }); // Ensure to return here
+      return res.status(404).json({ message: "No skills found for job" }); 
     }
     res.status(200).json(skills);
   } catch (error) {
@@ -767,7 +734,7 @@ app.get("/job_skills/:jobId", async (req, res) => {
   }
 });
 
-// Route to update job skills
+// Update job skills
 app.put("/job/:jobId/skills", async (req, res) => {
   const { jobId } = req.params;
   const { skills } = req.body;
@@ -796,11 +763,11 @@ app.put("/job/:jobId/skills", async (req, res) => {
   }
 });
 
-// Route to get all skills
+// Get all skills
 app.get("/api/skills", async (req, res) => {
   try {
-    const skills = await skillsModel.getAllSkills(); // Call your skills function
-    res.status(200).json(skills); // Send the skills as JSON
+    const skills = await skillsModel.getAllSkills();
+    res.status(200).json(skills); 
   } catch (error) {
     console.error("Error fetching skills:", error);
     res.status(500).json({ error: "Failed to fetch skills" });
@@ -808,7 +775,7 @@ app.get("/api/skills", async (req, res) => {
 });
 
 // ---------- Comment ROUTES -----------
-// Route to add a comment
+// Add a comment
 app.post("/comments", async (req, res) => {
   const { articleId, authorEmail, text } = req.body;
   try {
@@ -827,7 +794,7 @@ app.post("/comments", async (req, res) => {
   }
 });
 
-// Route to get all comments for a specific article
+// Get all comments for a specific article
 app.get("/comments/:articleId", async (req, res) => {
   const { articleId } = req.params;
   try {
@@ -842,7 +809,7 @@ app.get("/comments/:articleId", async (req, res) => {
   }
 });
 
-// Route to get all comments for a specific article
+// Get all comments for a specific article
 app.get("/comments", async (req, res) => {
   try {
     const comments = await commentsModel.getAllComments();
@@ -855,7 +822,7 @@ app.get("/comments", async (req, res) => {
   }
 });
 
-// Route to get all comments by a specific user
+// Get all comments by a specific user
 app.get("/comments/user/:authorEmail", async (req, res) => {
   const { authorEmail } = req.params;
   try {
@@ -873,7 +840,7 @@ app.get("/comments/user/:authorEmail", async (req, res) => {
   }
 });
 
-// Route to delete a comment
+// Delete a comment
 app.delete("/comments/:commentId", async (req, res) => {
   const { commentId } = req.params;
   try {
@@ -893,14 +860,13 @@ app.delete("/comments/:commentId", async (req, res) => {
 // Add an attachment to an article
 app.post("/attachments", upload.single("file"), async (req, res) => {
   const { articleId, type } = req.body;
-  const attachedFile = req.file; // The file object provided by multer
+  const attachedFile = req.file;
 
   try {
     if (!attachedFile) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // Pass the buffer and the original name to the addAttachment function
     const attachment = await attachmentsModel.addAttachment(
       articleId,
       type,
@@ -936,8 +902,10 @@ app.get("/attachments/:articleId", async (req, res) => {
       .json({ message: "Error fetching attachments", error: error.message });
   }
 });
+
+
 // ---------- Job ROUTES -----------
-//Adding a job
+//Add a job
 app.post("/jobs", async (req, res) => {
   const {
     title,
@@ -976,7 +944,7 @@ app.post("/jobs", async (req, res) => {
     res.status(500).json({ message: "Error adding job", error: error.message });
   }
 });
-//updating job
+// Update a job
 app.put("/jobs/:jobId", async (req, res) => {
   const { jobId } = req.params;
   const updatedData = req.body;
@@ -998,7 +966,7 @@ app.put("/jobs/:jobId", async (req, res) => {
       .json({ message: "Error updating job", error: error.message });
   }
 });
-//deleting job
+// Delete a job
 app.delete("/jobs/:jobId", async (req, res) => {
   const { jobId } = req.params;
 
@@ -1017,7 +985,7 @@ app.delete("/jobs/:jobId", async (req, res) => {
       .json({ message: "Error deleting job", error: error.message });
   }
 });
-//get job adds of a specific user
+//Get job ads of a specific user
 app.get("/jobs/user/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
 
@@ -1036,7 +1004,7 @@ app.get("/jobs/user/:userEmail", async (req, res) => {
       .json({ message: "Error getting jobs for user", error: error.message });
   }
 });
-// ---------- Job ROUTES -----------
+
 //Add a submission
 app.post("/submissions", async (req, res) => {
   const { jobId, userEmail, submissionDate } = req.body;
@@ -1063,7 +1031,8 @@ app.post("/submissions", async (req, res) => {
       .json({ message: "Error adding submission", error: error.message });
   }
 });
-//get all submissions for a job
+
+//Get all submissions for a job
 app.get("/submissions/job/:jobId", async (req, res) => {
   const { jobId } = req.params;
 
@@ -1084,7 +1053,7 @@ app.get("/submissions/job/:jobId", async (req, res) => {
 });
 
 // ---------- MESSAGE ROUTES -----------
-// add a new message
+// Add a new message
 app.post("/messages", async (req, res) => {
   const { senderEmail, receiverEmail, message, created_at } = req.body;
 
@@ -1104,10 +1073,9 @@ app.post("/messages", async (req, res) => {
   }
 });
 
-// get all messages between 2 users
+// Get all messages between 2 users
 app.get("/messages", async (req, res) => {
   const { email1, email2 } = req.query;
-  console.log(req.body);
   try {
     const result = await messagesModel.getMessagesBetweenUsers(email1, email2);
     res.status(200).json(result);
@@ -1118,12 +1086,11 @@ app.get("/messages", async (req, res) => {
       .json({ message: "Error fetching messages", error: err.message });
   }
 });
-// ---------- PRIVACY ROUTES -----------
 
+// ---------- PRIVACY ROUTES -----------
 // Get privacy settings for a user
 app.get("/privacy/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
-  console.log(`Fetching privacy settings`);
   try {
     const privacy = await privacyModel.getPrivacySettings(userEmail);
     if (!privacy) {
@@ -1138,6 +1105,7 @@ app.get("/privacy/:userEmail", async (req, res) => {
   }
 });
 
+// Update privacy settings for a user
 app.put("/api/users/privacy", async (req, res) => {
   const { email, privacyField, newValue } = req.body;
 
@@ -1161,7 +1129,7 @@ app.put("/api/users/privacy", async (req, res) => {
 });
 
 // ---------- JOB VIEWS ROUTES -----------
-//add a view for a job by a user
+// Add a view for a job by a user
 app.post("/job-views", async (req, res) => {
   const { userEmail, jobId } = req.body;
 
@@ -1180,7 +1148,7 @@ app.post("/job-views", async (req, res) => {
   }
 });
 
-//get all the views for a specific user
+//Get all the views for a specific user
 app.get("/job-views-user/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
 
@@ -1198,7 +1166,7 @@ app.get("/job-views-user/:userEmail", async (req, res) => {
 });
 
 // ---------- ARTICLE VIEWS ROUTES -----------
-//add a view for an article by a user
+// Add a view for an article by a user
 app.post("/article-views", async (req, res) => {
   const { userEmail, articleId } = req.body;
 
@@ -1217,7 +1185,7 @@ app.post("/article-views", async (req, res) => {
   }
 });
 
-//get all the views for a specific user
+// Get all the views for a specific user
 app.get("/article-views", async (req, res) => {
   const { userEmail } = req.params;
 
@@ -1234,7 +1202,7 @@ app.get("/article-views", async (req, res) => {
   }
 });
 
-//get all the views for a specific user
+// Get all the views for a specific user
 app.get("/article-views/article", async (req, res) => {
   const { articleId } = req.params;
 
@@ -1251,29 +1219,25 @@ app.get("/article-views/article", async (req, res) => {
   }
 });
 
-// Route to get all articleviews
+// Get all article views
 app.get("/article-views/all", async (req, res) => {
   try {
-    const views = await articlesViewsModel.getArticleViews(); // Call your skills function
-    res.status(200).json(views); // Send the skills as JSON
+    const views = await articlesViewsModel.getArticleViews();
+    res.status(200).json(views);
   } catch (error) {
     console.error("Error fetching skills:", error);
     res.status(500).json({ error: "Failed to fetch skills" });
   }
 });
 
-// app.get('/', (req, res) => {
-//     res.send('Hello, World!');
-//   });
 
-// app.use(express.urlencoded({ extended: true }));
-
-// // Create HTTPS server
+// ! Uncomment this for https connection
+// Create HTTPS server
 // https.createServer(options, app).listen(443, () => {
 //     console.log('HTTPS server running on port 443');
 // });
 
-// Start server
+// Start server (http)
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

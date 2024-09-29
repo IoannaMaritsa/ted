@@ -1,33 +1,28 @@
 const supabase = require('../supabaseClient');
 const { getAttachments } = require('./attachments');
 
-// Function to insert a new article
+// Insert a new article
 const addArticle = async (title, authorEmail, publishDate, content) => {
     try {
         const { data, error } = await supabase
             .from('articles')
             .insert([{ title, author_email: authorEmail, publish_date: publishDate, content }])
-            .select('id') // Ensure that Supabase returns the id of the inserted row
+            .select('id')
             .single();
 
         if (error) {
             throw error;
         }
 
-        if (!data) {
-            throw new Error('Insert operation did not return any data.');
-        }
-
-        const articleId = data.id; // Assuming 'id' is the name of the auto-generated ID column
-        console.log('Article inserted with ID:', articleId);
-        return articleId; // Return the ID of the inserted article
+        const articleId = data.id;
+        return articleId; 
     } catch (err) {
         console.error('Error inserting article:', err);
         throw err;
     }
 };
 
-// Function to get all articles by a specific user
+// Get all articles by a specific user
 const getArticlesByUserEmail = async (userEmail) => {
     try {
         const { data, error } = await supabase
@@ -41,18 +36,17 @@ const getArticlesByUserEmail = async (userEmail) => {
         }
 
         if (data.length === 0) {
-            console.log(`No articles found for user with ID ${userEmail}.`);
+            console.error(`No articles found for user with ID ${userEmail}.`);
             return { success: false, message: 'No articles found', articles: [] };
         }
 
-        console.log(`Found ${data.length} article(s) for user with ID ${userEmail}.`);
         return data;
     } catch (err) {
         console.error('Error retrieving articles:', err);
         return { success: false, message: 'Error retrieving articles' };
     }
 };
-// Function to an article by its id
+// Get an article by its id
 const getArticlesById = async (id) => {
     try {
         const { data, error } = await supabase.from('articles').select('*').eq('id', id).single();
@@ -61,17 +55,16 @@ const getArticlesById = async (id) => {
             throw error;
         }
         if (data.length === 0) {
-            console.log(`No article found with id ${id}.`);
+            console.error(`No article found with id ${id}.`);
             return null;
         }
-        console.log(`Successfully retrieved article with id ${id}.`);
         return data;
     } catch (err) {
         console.error('Error getting article with id:', err);
         throw err;
     }
 };
-// Function to get all articles by a specific user
+// Get all articles created by a other users
 const getArticlesNotByUserEmail = async (userEmail) => {
     try {
         const { data, error } = await supabase
@@ -85,18 +78,17 @@ const getArticlesNotByUserEmail = async (userEmail) => {
         }
 
         if (data.length === 0) {
-            console.log(`No articles found for all users except user with ID ${userEmail}.`);
+            console.error(`No articles found for all users except user with ID ${userEmail}.`);
             return { success: false, message: 'No articles found', articles: [] };
         }
 
-        console.log(`Found ${data.length} article(s) for every but user with ID ${userEmail}.`);
         return data;
     } catch (err) {
         console.error('Error retrieving articles:', err);
         return { success: false, message: 'Error retrieving articles' };
     }
 };
-// Function to delete an article by its ID
+// Delete an article by its ID
 const deleteArticleById = async (articleId) => {
     try {
 
@@ -106,9 +98,7 @@ const deleteArticleById = async (articleId) => {
             for (const attachment of attachments) {
                 
                 const filePath = new URL(attachment.url).pathname.replace('/storage/v1/object/attachments/', '');
-                console.log('found attachment with filepath', filePath);
 
-                // Delete the attachment picture from Supabase Storage
                 const { error: deleteFileError } = await supabase
                     .storage
                     .from('attachments')
@@ -118,7 +108,6 @@ const deleteArticleById = async (articleId) => {
                     console.error('Error deleting image:', deleteFileError);
                     throw deleteFileError;
                 }
-                console.log(`Attachment picture deleted for article with id ${articleId}`);
 
             }
         }
@@ -134,13 +123,10 @@ const deleteArticleById = async (articleId) => {
         }
 
         if (data.length === 0) {
-            console.log(`Article with ID ${articleId} not found.`);
+            console.error(`Article with ID ${articleId} not found.`);
             return { success: false, message: 'Article not found' };
         }
 
-
-
-        console.log(`Article with ID ${articleId} deleted.`);
         return { success: true, message: 'Article deleted successfully' };
     } catch (err) {
         console.error('Error deleting article:', err);
@@ -161,7 +147,6 @@ const addInterest = async (userEmail, articleId) => {
             throw error;
         }
 
-        console.log(`Article ${articleId} added to user ${userEmail}'s interests.`);
     } catch (error) {
         console.error('Error adding interest:', error);
         throw error;
@@ -181,7 +166,6 @@ const removeInterest = async (userEmail, articleId) => {
             throw error;
         }
 
-        console.log(`Article ${articleId} removed from user ${userEmail}'s interests.`);
     } catch (error) {
         console.error('Error removing interest:', error);
         throw error;

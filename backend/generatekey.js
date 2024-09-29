@@ -12,7 +12,6 @@ async function generateKey() {
     const keyJSON = key.toJSON(true); // `true` to include private key material
     fs.writeFileSync('jwtKey.json', JSON.stringify(keyJSON));
 
-    console.log('Key generated and saved to jwtKey.json');
 }
 
 generateKey();

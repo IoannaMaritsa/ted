@@ -56,7 +56,7 @@ export default function FAQ() {
       <div className="help-main-section">
         <div className="help-back-icon-container">
           <img
-            src="/back-icon.png" // Replace with your icon path
+            src="/back-icon.png" 
             alt="Back"
             className="back-icon"
             onClick={handleBackClick}

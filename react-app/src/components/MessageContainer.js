@@ -20,7 +20,7 @@ const MessageContainer = ({ contact, messages = [], onSendMessage }) => {
     // Handle keydown event for sending message on Enter key
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Prevent the default newline behavior
+            e.preventDefault();
             handleSendClick();
         }
     };

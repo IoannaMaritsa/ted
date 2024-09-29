@@ -27,7 +27,7 @@ const MatrixFactorizationArticles = async () => {
       const commentsMap = {};
       const viewsMap = {};
 
-      // Step 1: Prepare maps for fast lookup
+      // Prepare maps for fast look ups
       articles.forEach((article) => {
         interestsMap[article.id] = interests
           .filter((interest) => interest.article_id === article.id)
@@ -45,7 +45,6 @@ const MatrixFactorizationArticles = async () => {
       const matrix = users.map((user) => {
         const row = new Array(articles.length).fill(0); // Initialize with zeros
 
-        // Populate matrix for each article
         articles.forEach((article, index) => {
           // Calculate the engagement score
           let engagementScore = 0;
@@ -88,7 +87,7 @@ const MatrixFactorizationArticles = async () => {
 
     function matrixFactorization(
       R,
-      numFeatures = 1, // Ensure only 1 feature
+      numFeatures = 1, 
       steps = 5000,
       alpha = 0.0002,
       beta = 0.02
@@ -104,19 +103,18 @@ const MatrixFactorizationArticles = async () => {
         new Array(numFeatures).fill(0).map(() => Math.random())
       );
 
-      //Q = transposeMatrix(Q); // Transpose Q for easier matrix multiplication
 
       // Perform Gradient Descent
       for (let step = 0; step < steps; step++) {
         for (let i = 0; i < numUsers; i++) {
-          for (let j = 0; j < numArticles; j++) { // Ensure j iterates over articles
+          for (let j = 0; j < numArticles; j++) { 
             if (R[i].row[j] > 0) {
               // Only factorize known values
               const error = R[i].row[j] - dotProduct(P[i], Q[j]);
 
               for (let k = 0; k < numFeatures; k++) {
-                P[i][0] += alpha * (2 * error * Q[j][0] - beta * P[i][0]); // Use only the first feature
-                Q[j][0] += alpha * (2 * error * P[i][0] - beta * Q[j][0]); // Use only the first feature
+                P[i][0] += alpha * (2 * error * Q[j][0] - beta * P[i][0]); 
+                Q[j][0] += alpha * (2 * error * P[i][0] - beta * Q[j][0]); 
               }
             }
           }
@@ -126,12 +124,8 @@ const MatrixFactorizationArticles = async () => {
     }
 
 
-    function transposeMatrix(matrix) {
-      return matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]));
-    }
-
     function dotProduct(vec1, vec2) {
-      return vec1[0] * vec2[0]; // Since each is a single value
+      return vec1[0] * vec2[0]; 
     }
 
     const { P, Q } = matrixFactorization(matrix);
@@ -151,7 +145,7 @@ const MatrixFactorizationArticles = async () => {
 
     return predictedRatings;
   } catch (err) {
-    console.log("Error:", err);
+    console.error("Error:", err);
   }
 };
 

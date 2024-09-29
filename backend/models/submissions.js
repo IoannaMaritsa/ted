@@ -1,6 +1,6 @@
 const supabase = require('../supabaseClient');
 
-// Function to add a submission
+// Add a submission
 const addSubmission = async (jobId, userEmail, submissionDate) => {
     try {
         const { data, error } = await supabase
@@ -15,7 +15,6 @@ const addSubmission = async (jobId, userEmail, submissionDate) => {
             throw error;
         }
 
-        console.log('Submission added successfully:', data);
         return { success: true, submission: data };
     } catch (err) {
         console.error('Error adding submission:', err);
@@ -23,7 +22,7 @@ const addSubmission = async (jobId, userEmail, submissionDate) => {
     }
 };
 
-// Function to get all submissions for a job
+// Get all submissions for a job
 const getSubmissionsForJob = async (jobId) => {
     try {
         const { data, error } = await supabase
@@ -40,7 +39,6 @@ const getSubmissionsForJob = async (jobId) => {
             throw error;
         }
 
-        console.log('Submissions:', data);
         return { success: true, data: data };
     } catch (err) {
         console.error('Error fetching submissions:', err);

@@ -11,7 +11,6 @@ const getAllUsers = async () => {
             console.error('Error getting users:', error);
             throw error;
         }
-        console.log('Successfully retrieved all users.');
         return data;
     } catch (err) {
         console.error('Error getting users:', err);
@@ -28,10 +27,9 @@ const getUser = async (email) => {
             throw error;
         }
         if (data.length === 0) {
-            console.log(`No user found with email ${email}.`);
+            console.error(`No user found with email ${email}.`);
             return null;
         }
-        console.log(`Successfully retrieved user with email ${email}.`);
         return data;
     } catch (err) {
         console.error('Error getting user by email:', err);
@@ -60,7 +58,7 @@ const uploadProfilePic = async (buffer, originalname) => {
 
     const { data, error } = await supabase
         .storage
-        .from('profilepics') // Adjust the bucket name as necessary
+        .from('profilepics') 
         .upload(timestampedFilename, buffer, {
             contentType: contentType,
         });
@@ -69,7 +67,7 @@ const uploadProfilePic = async (buffer, originalname) => {
         throw error;
     }
 
-    return timestampedFilename; // Return the file path or key for the uploaded file
+    return timestampedFilename; 
 };
 
 
@@ -84,7 +82,6 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
             .single();
 
         if (existingUser) {
-            // Return a specific error indicating that the email is already taken
             return { success: false, message: 'Email already in use' };
         }
 
@@ -95,7 +92,6 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
         if (profilepic) {
             // Upload profile picture and get its URL
             const profilePicPath = await uploadProfilePic(profilepic.buffer, profilepic.originalname);
-            console.log(profilePicPath);
             profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${profilePicPath}`;
         } else {
             profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/default-avatar.jpeg`;
@@ -120,9 +116,6 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
         }
         await addPrivacy(email);
 
-        console.log(`Privacy record created for user with email ${email}`);
-
-        console.log('User added');
         return true;
     } catch (err) {
         console.error('Error adding user:', err);
@@ -130,10 +123,9 @@ const addUser = async (name, email, password, location, dob, profilepic) => {
     }
 };
 
-// Function to delete a user and their profile picture if applicable
+// Delete a user and their profile picture if applicable
 const deleteUser = async (email) => {
     try {
-        // First fetch the user's profile pic
         const { data: user, error: fetchError } = await supabase
             .from('users')
             .select('profilepic')
@@ -149,7 +141,7 @@ const deleteUser = async (email) => {
 
         // Handle profile picture deletion if it's not the default
         if (fileName !== 'default-avatar.jpeg') {
-            // Delete the old profile picture from Supabase Storage
+            // Delete the old profile picture from storage
             const { error: deleteFileError } = await supabase
                 .storage
                 .from('profilepics')
@@ -159,7 +151,6 @@ const deleteUser = async (email) => {
                 console.error('Error deleting image:', deleteFileError);
                 throw deleteFileError;
             }
-            console.log(`Profile picture deleted for user with email ${email}`);
         }
 
         // Delete the user
@@ -186,13 +177,12 @@ const updateUser = async (email, name, profession, workplace, location, dob, pre
         if (profilepic) {
             // Upload profile picture and get its URL
             const profilePicPath = await uploadProfilePic(profilepic.buffer, profilepic.originalname);
-            console.log(profilePicPath);
             profilePicUrl = `https://deenohwgdmmzsnyvpnxz.supabase.co/storage/v1/object/profilepics/${profilePicPath}`;
         } else {
             profilePicUrl = previousPic;
         }
 
-        // Proceed to update the user in the database
+        // Update the user in the database
         const { data: updatedUser, error: updateError } = await supabase
             .from('users')
             .update({
@@ -201,7 +191,7 @@ const updateUser = async (email, name, profession, workplace, location, dob, pre
                 workplace: workplace || null,
                 location: location || null,
                 dob: dob || null,
-                profilepic: profilePicUrl, // Use the new profile picture URL
+                profilepic: profilePicUrl, 
             })
             .eq('email', email)
             .single();
@@ -225,9 +215,7 @@ const updateUser = async (email, name, profession, workplace, location, dob, pre
                 console.error('Error deleting image:', deleteFileError);
                 throw deleteFileError;
             }
-            console.log(`Profile picture deleted for user with email ${email}`);
         }
-        console.log(`User with email ${email} updated successfully.`);
 
         return updatedUser;
     } catch (err) {
@@ -253,7 +241,6 @@ const updateEmail = async (email, newEmail) => {
             throw updateError;
         }
 
-        console.log(`Email updated successfully for user  ${newEmail}.`);
     } catch (error) {
         console.error('Error updating email:', error);
         throw error;
@@ -264,7 +251,6 @@ const updateEmail = async (email, newEmail) => {
 const updatePassword = async (email, newPassword) => {
     try {
         // Hash the new password before storing
-        console.log(email, newPassword)
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         const { data: updatedUser, error: updateError } = await supabase
@@ -276,7 +262,6 @@ const updatePassword = async (email, newPassword) => {
             console.error('Error updating user password:', updateError);
             throw updateError;
         }
-        console.log(`Password updated successfully for user  ${email}.`);
     } catch (error) {
         console.error('Error updating password:', error);
         throw error;
@@ -318,6 +303,8 @@ const getUnconnectedUsers = async (userId) => {
     }
 };
 
+
+// Check if the user is an admin
 const isAdmin = async (email, password) => {
     try {
         const { data, error } = await supabase
@@ -332,6 +319,7 @@ const isAdmin = async (email, password) => {
     }
 }
 
+// Fetch the hased password of a user
 const getPassword = async (email) => {
     try {
         const { data, error } = await supabase

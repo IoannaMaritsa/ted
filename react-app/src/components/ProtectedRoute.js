@@ -1,15 +1,14 @@
-// src/components/ProtectedRoute.js
 import React from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { Navigate } from 'react-router-dom';
-import { useAppContext } from '../context/appContext'; // Adjust path as needed
+import { useAppContext } from '../context/appContext'; 
 
 const ProtectedRoute = ({ element: Component, requiredRole,  ...rest }) => {
     const { isLoggedIn, loading } = useAppContext();
 
 
     if (loading) {
-        // Show a loading spinner or placeholder while loading
+        // Show a white page while loading
         return <div></div>;
     }
 
@@ -22,7 +21,6 @@ const ProtectedRoute = ({ element: Component, requiredRole,  ...rest }) => {
     }
 
     const decoded = jwtDecode(token);
-    console.log("token", decoded)
 
     if (requiredRole === "user" && decoded.role ==="admin") {
         return <Navigate to="/admin" />;

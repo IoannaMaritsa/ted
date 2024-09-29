@@ -3,7 +3,7 @@
     background-color: var(--background-color);
     text-align: left;
     align-items: center;
-    height: 100vh; /* Full viewport height */
+    height: 100vh; 
   }
   
   h2 {

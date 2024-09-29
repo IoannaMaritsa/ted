@@ -23,10 +23,7 @@ import MatrixFactorizationArticles from "../context/MFarticles";
 import getImageUrl from "../hooks/getImageUrl";
 import { formatRelativeTime } from "../utils/timeUtils";
 
-const getCurrentTimestamp = () => {
-  const now = new Date();
-  return now;
-};
+
 
 const Epag_article = () => {
 
@@ -79,7 +76,7 @@ const Epag_article = () => {
   const getUserByEmail = async (email) => {
     try {
       const response = await getUser(email);
-      return response; // Assuming getUser returns user object with name and profilepic
+      return response; 
     } catch (error) {
       console.error("Error fetching user by email:", error);
       throw error;
@@ -89,11 +86,10 @@ const Epag_article = () => {
   const getCommentsOfArticle = async (articleId) => {
     try {
       const response = await getComments(articleId);
-      // Fetch user details for each comment
       const commentsWithUserDetails = await Promise.all(
         response.map(async (comment) => {
           const user = await getUserByEmail(comment.author_email);
-          return { ...comment, user }; // Attach user details to the comment
+          return { ...comment, user }; 
         })
       );
       setComments(commentsWithUserDetails);
@@ -149,7 +145,6 @@ const Epag_article = () => {
 
     try {
       await addComment(parseInt(id), myuser.email, body);
-      // Fetch comments again to include the new comment
       await getCommentsOfArticle(parseInt(id));
       setBody("");
     } catch (error) {
@@ -216,9 +211,8 @@ const Epag_article = () => {
           {attachments.length > 0 && (
             <>
               {attachments.map((attachment, index) => {
-                const { type, url } = attachment; // Destructure type and url from attachment
+                const { type, url } = attachment; 
 
-                // Check the type and render accordingly
                 if (type.startsWith("image/")) {
                   return (
                     <div className="flex-article" key={index}>
@@ -264,29 +258,7 @@ const Epag_article = () => {
             </>
           )}
 
-          {/* {article.attachments.videos.length > 0 && (
-                        <div className="attachments">
-                            <h3>Βίντεο</h3>
-                            {article.attachments.videos.map((video, index) => (
-                                <video width="500" key={index} controls>
-                                    <source src={`/${video}`} type="video/mp4" className='video' />
-                                    Your browser does not support the video tag.
-                                </video>
-                            ))}
-                        </div>
-                    )} */}
-          {/* 
-                    {article.attachments.audios.length > 0 && (
-                        <div className="attachments">
-                            <h3>Ήχοι</h3>
-                            {article.attachments.audios.map((audio, index) => (
-                                <audio key={index} controls>
-                                    <source src={`/${audio}`} type="audio/mpeg" />
-                                    Your browser does not support the audio element.
-                                </audio>
-                            ))}
-                        </div>
-                    )} */}
+
 
           <div className="article-comment-section">
             <h3>Σχόλια</h3>

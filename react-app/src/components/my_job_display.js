@@ -25,15 +25,14 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
         try {
 
             const subs = await getSubmissionsForJob(articleId);
-            console.log('sub', subs);
-            console.log(`Got a submissions successfully.`);
+
             if (subs.success)
                 setSubmissions(subs.data)
 
         } catch (error) {
             console.error('Error getting submissions:', error);
         }
-        console.log(submissions);
+
     };
 
     useEffect(() => {
@@ -78,7 +77,7 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
 
     const [skills, setSkills] = useState([]);
 
-    const skillsPerPage = 12; // 3 rows * 4 columns
+    const skillsPerPage = 12; 
     const [currentPage, setCurrentPage] = useState(1);
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -160,7 +159,6 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
         'Εθελοντική',
     ];
 
-    const { setOtherProfile, otherProfile } = useAppContext();
 
     const navigate = useNavigate();
 
@@ -169,11 +167,7 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
         window.scrollTo(0, 0);
     };
 
-    useEffect(() => {
 
-    }, [otherProfile]);
-
-    console.log("chosen", chosen);
 
     return (
         <div className="black-frame">
@@ -287,7 +281,6 @@ const MyJob = ({ id, init_title, init_company, init_location, init_type, init_pr
                         </div>
                     </div>
 
-                    {/* Display chosen skills */}
                     <div className="chosen-skills-container">
 
                         <div className='chosen-skills-head'>

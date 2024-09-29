@@ -6,7 +6,7 @@ import MainBottom from '../components/MainBottom';
 import '../css/Epag_settings.css';
 import { useAppContext } from '../context/appContext';
 import '../css/popup.css';
-import { checkPassword, updatePassword, updateEmail, getUser } from '../api';
+import { checkPassword, updatePassword, updateEmail} from '../api';
 
 const Epag_settings = () => {
 
@@ -54,12 +54,11 @@ const Epag_settings = () => {
     };
 
     const handleModalClick = (e) => {
-        // Prevent closing the modal when clicking inside the modal content
         e.stopPropagation();
     };
 
     const handleSave1 = async () => {
-        setErrorEmail('');  // Reset the error state
+        setErrorEmail('');  
         try {
             if (email === user?.email) {
                 setErrorEmail("Το email δεν έχει αλλάξει");
@@ -72,11 +71,9 @@ const Epag_settings = () => {
                 setErrorEmail("Εισάγετε έγκυρο email");
                 return;
             }
-            // Call the API to update email in the database
 
             const result = await updateEmail(user?.email, email);
             if (result) {
-                // Update the user in the app context
                 const updatedUser = { ...user, email };
                 setUser(updatedUser);
 
@@ -125,9 +122,6 @@ const Epag_settings = () => {
 
     };
 
-    const HandleSave = () => {
-        //implement save
-    }
 
 
     useEffect(() => {
@@ -150,7 +144,6 @@ const Epag_settings = () => {
                     <h1 className="title2">Ρυθμίσεις</h1>
                 </div>
                 <div className="settings-main-section">
-                    {/* First Half */}
                     <div className="settings-half-section">
 
                         <div className="label12">
@@ -162,7 +155,6 @@ const Epag_settings = () => {
 
                     </div>
 
-                    {/* Second Half */}
                     <div className="settings-half-section">
 
                         <div className="label12">
@@ -178,7 +170,6 @@ const Epag_settings = () => {
                 </div>
 
 
-                {/* Modals */}
                 {isModal1Open && (
                     <div className="modal-overlay" onClick={closeModal1}>
                         <div className="add-work-experience-modal-content6" onClick={handleModalClick}>
