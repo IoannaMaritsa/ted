@@ -52,9 +52,11 @@ const Job = ({ id, title, company, location, publish_date, type, profession, exp
         try {
             await addSubmission(id, myuser.email, timestamp);
             console.log('added sbmission successfully');
+            await getSubmissions(id);
         } catch (error) {
             console.error('Error getting articles:', error);
         }
+
     }
 
     useEffect(() => {
